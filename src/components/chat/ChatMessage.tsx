@@ -16,12 +16,10 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
       isUser ? "justify-end" : "justify-start"
     )}>
       <div className={cn(
-        "max-w-[80%] rounded-2xl px-4 py-3",
-        isUser 
-          ? "bg-primary text-primary-foreground" 
-          : "bg-muted text-foreground"
+        "max-w-[80%]",
+        isUser && "bg-muted rounded-2xl px-4 py-3"
       )}>
-        <div className="text-[15px] leading-relaxed">
+        <div className="text-[15px] leading-relaxed text-foreground">
           {message.type === 'text' && (
             <p className="whitespace-pre-wrap">
               {message.content}
