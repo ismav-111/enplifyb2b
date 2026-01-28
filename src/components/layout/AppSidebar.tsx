@@ -2,7 +2,6 @@ import { useState } from "react";
 import { 
   ChevronDown, 
   ChevronRight, 
-  MessageSquare, 
   Settings, 
   User, 
   LogOut,
@@ -35,14 +34,17 @@ const WorkspaceSection = ({
   workspaces, 
   activeSessionId, 
   onSelectSession,
-  onNewSession
+  onNewSession,
+  defaultExpanded = true
 }: { 
   title: string;
   workspaces: Workspace[];
   activeSessionId: string | null;
   onSelectSession: (workspaceId: string, sessionId: string) => void;
   onNewSession: (workspaceId: string) => void;
+  defaultExpanded?: boolean;
 }) => {
+  const [isSectionExpanded, setIsSectionExpanded] = useState(defaultExpanded);
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set());
 
   const toggleWorkspace = (id: string) => {
@@ -57,59 +59,72 @@ const WorkspaceSection = ({
   if (workspaces.length === 0) return null;
 
   return (
-    <div className="mb-4">
-      <h3 className="px-3 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-        {title}
-      </h3>
-      <div className="space-y-0.5">
-        {workspaces.map((workspace) => (
-          <div key={workspace.id}>
-            <button
-              onClick={() => toggleWorkspace(workspace.id)}
-              className="nav-item w-full justify-between group"
-            >
-              <div className="flex items-center gap-2.5">
-                <WorkspaceIcon type={workspace.type} />
-                <span className="truncate text-sm">{workspace.name}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onNewSession(workspace.id);
-                  }}
-                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-accent rounded transition-all"
-                  title="New chat"
-                >
-                  <Plus className="w-3 h-3" />
-                </button>
-                {expandedWorkspaces.has(workspace.id) ? (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                )}
-              </div>
-            </button>
-            
-            {expandedWorkspaces.has(workspace.id) && workspace.sessions.length > 0 && (
-              <div className="ml-4 pl-3 border-l border-border space-y-0.5 mt-1">
-                {workspace.sessions.map((session) => (
+    <div className="mb-2">
+      <button 
+        onClick={() => setIsSectionExpanded(!isSectionExpanded)}
+        className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group"
+      >
+        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+          {title}
+        </h3>
+        {isSectionExpanded ? (
+          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+        )}
+      </button>
+      
+      {isSectionExpanded && (
+        <div className="space-y-0.5 mt-1">
+          {workspaces.map((workspace) => (
+            <div key={workspace.id}>
+              <button
+                onClick={() => toggleWorkspace(workspace.id)}
+                className="nav-item w-full justify-between group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <WorkspaceIcon type={workspace.type} />
+                  <span className="truncate text-sm">{workspace.name}</span>
+                </div>
+                <div className="flex items-center gap-1">
                   <button
-                    key={session.id}
-                    onClick={() => onSelectSession(workspace.id, session.id)}
-                    className={cn(
-                      "chat-item w-full text-left",
-                      activeSessionId === session.id && "chat-item-active"
-                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNewSession(workspace.id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-accent rounded transition-all"
+                    title="New chat"
                   >
-                    <span className="truncate text-sm">{session.name}</span>
+                    <Plus className="w-3 h-3" />
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+                  {expandedWorkspaces.has(workspace.id) ? (
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </div>
+              </button>
+              
+              {expandedWorkspaces.has(workspace.id) && workspace.sessions.length > 0 && (
+                <div className="ml-4 pl-3 border-l border-border space-y-0.5 mt-1">
+                  {workspace.sessions.map((session) => (
+                    <button
+                      key={session.id}
+                      onClick={() => onSelectSession(workspace.id, session.id)}
+                      className={cn(
+                        "chat-item w-full text-left",
+                        activeSessionId === session.id && "chat-item-active"
+                      )}
+                    >
+                      <span className="truncate text-sm">{session.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -139,6 +154,7 @@ export const AppSidebar = ({
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
+          defaultExpanded={true}
         />
         <WorkspaceSection
           title="Shared Workspaces"
@@ -146,6 +162,7 @@ export const AppSidebar = ({
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
+          defaultExpanded={true}
         />
         <WorkspaceSection
           title="Organization Workspaces"
@@ -153,6 +170,7 @@ export const AppSidebar = ({
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
+          defaultExpanded={true}
         />
       </nav>
 
