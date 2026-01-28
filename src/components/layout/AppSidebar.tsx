@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -8,7 +8,8 @@ import {
   FolderOpen,
   Users,
   Building2,
-  Plus
+  Plus,
+  ChevronUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Workspace } from "@/types/workspace";
@@ -129,6 +130,64 @@ const WorkspaceSection = ({
   );
 };
 
+const UserMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={menuRef}>
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div className="absolute bottom-full left-0 right-0 mb-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
+          <div className="py-1">
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+              <Settings className="w-4 h-4 text-muted-foreground" />
+              Settings
+            </button>
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors">
+              <User className="w-4 h-4 text-muted-foreground" />
+              My Account
+            </button>
+            <div className="h-px bg-border my-1" />
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors">
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* User Profile Button */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
+      >
+        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-medium">
+          JD
+        </div>
+        <div className="flex-1 text-left min-w-0">
+          <p className="text-sm font-medium text-foreground truncate">John Doe</p>
+          <p className="text-xs text-muted-foreground truncate">john@company.com</p>
+        </div>
+        <ChevronUp className={cn(
+          "w-4 h-4 text-muted-foreground transition-transform",
+          !isOpen && "rotate-180"
+        )} />
+      </button>
+    </div>
+  );
+};
+
 export const AppSidebar = ({
   workspaces,
   activeSessionId,
@@ -174,20 +233,9 @@ export const AppSidebar = ({
         />
       </nav>
 
-      {/* Footer Actions */}
-      <div className="border-t border-border p-2 space-y-0.5">
-        <button className="nav-item w-full">
-          <Settings className="w-4 h-4" />
-          <span>Settings</span>
-        </button>
-        <button className="nav-item w-full">
-          <User className="w-4 h-4" />
-          <span>My Account</span>
-        </button>
-        <button className="nav-item w-full text-destructive hover:text-destructive hover:bg-destructive/10">
-          <LogOut className="w-4 h-4" />
-          <span>Logout</span>
-        </button>
+      {/* User Profile & Menu */}
+      <div className="border-t border-border p-2">
+        <UserMenu />
       </div>
     </aside>
   );
