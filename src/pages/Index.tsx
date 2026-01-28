@@ -5,7 +5,6 @@ import { useChat } from "@/hooks/useChat";
 import { mockWorkspaces } from "@/data/mockWorkspaces";
 
 const Index = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeSessionId, setActiveSessionId] = useState<string | null>("session-1");
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>("personal-1");
   const { messages, isLoading, sendMessage, clearMessages } = useChat();
@@ -29,17 +28,13 @@ const Index = () => {
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
-      <div className="relative">
-        <AppSidebar
-          workspaces={mockWorkspaces}
-          activeSessionId={activeSessionId}
-          onSelectSession={handleSelectSession}
-          onNewSession={handleNewSession}
-          isCollapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
-      </div>
-      <main className="flex-1 min-w-0 relative">
+      <AppSidebar
+        workspaces={mockWorkspaces}
+        activeSessionId={activeSessionId}
+        onSelectSession={handleSelectSession}
+        onNewSession={handleNewSession}
+      />
+      <main className="flex-1 min-w-0">
         <ChatArea
           messages={messages}
           onSendMessage={sendMessage}

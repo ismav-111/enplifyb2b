@@ -1,5 +1,5 @@
 import { useState, useRef, KeyboardEvent } from "react";
-import { Send, Paperclip, Sparkles } from "lucide-react";
+import { Send, Search, Sparkles, Plus, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
@@ -9,7 +9,7 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
   const [message, setMessage] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const [activeMode, setActiveMode] = useState<'search' | 'deep'>('search');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
@@ -32,59 +32,68 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
   const handleInput = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
     }
   };
 
   return (
-    <div className="border-t border-border/40 bg-gradient-to-t from-background via-background to-transparent p-4 pb-6">
-      <div className="max-w-4xl mx-auto">
-        <div className={cn(
-          "input-premium flex items-end gap-2 p-2 bg-card border",
-          isFocused ? "border-primary/30" : "border-border/60"
-        )}>
-          <button 
-            className="p-2.5 rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-foreground"
-            title="Attach file"
-          >
-            <Paperclip className="w-5 h-5" />
-          </button>
-          
+    <div className="border-t border-border bg-card p-4">
+      <div className="max-w-4xl mx-auto space-y-3">
+        {/* Input Field */}
+        <div className="flex items-end gap-2 p-3 rounded-xl border border-border bg-background">
           <textarea
             ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             onInput={handleInput}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            placeholder="Ask Enplify.ai anything..."
-            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground/60 min-h-[28px] max-h-[200px] py-2.5 px-1 text-[15px]"
+            placeholder="Ask me anything ..."
+            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[150px] py-1 text-sm"
             rows={1}
             disabled={isLoading}
           />
-          
-          <button
-            onClick={handleSend}
-            disabled={!message.trim() || isLoading}
-            className={cn(
-              "p-2.5 rounded-xl transition-all duration-200",
-              message.trim() && !isLoading
-                ? "btn-primary-glow text-white"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
-            )}
-          >
-            {isLoading ? (
-              <Sparkles className="w-5 h-5 animate-pulse" />
-            ) : (
-              <Send className="w-5 h-5" />
-            )}
+          <div className="flex items-center gap-1">
+            <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
+              <Mic className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleSend}
+              disabled={!message.trim() || isLoading}
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                message.trim() && !isLoading
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground"
+              )}
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Mode Chips & Upload */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setActiveMode('search')}
+              className={cn("chip", activeMode === 'search' && "chip-active")}
+            >
+              <Search className="w-3 h-3" />
+              Search
+            </button>
+            <button 
+              onClick={() => setActiveMode('deep')}
+              className={cn("chip", activeMode === 'deep' && "chip-active")}
+            >
+              <Sparkles className="w-3 h-3" />
+              Deep Reason
+            </button>
+          </div>
+          <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <Plus className="w-3.5 h-3.5" />
+            Upload Files
           </button>
         </div>
-        
-        <p className="text-[11px] text-muted-foreground/60 text-center mt-3 tracking-wide">
-          Enplify.ai may produce inaccurate information. Verify critical data.
-        </p>
       </div>
     </div>
   );

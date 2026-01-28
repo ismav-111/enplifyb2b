@@ -16,12 +16,12 @@ interface MessageTableProps {
 
 export const MessageTable = ({ data }: MessageTableProps) => {
   return (
-    <div className="card-elevated overflow-hidden">
+    <div className="rounded-xl border border-border overflow-hidden bg-card">
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/50 hover:bg-muted/50">
+          <TableRow className="bg-secondary/50 hover:bg-secondary/50">
             {data.headers.map((header, index) => (
-              <TableHead key={index} className="font-semibold text-foreground text-[13px] tracking-wide">
+              <TableHead key={index} className="font-medium text-foreground text-xs">
                 {header}
               </TableHead>
             ))}
@@ -29,9 +29,9 @@ export const MessageTable = ({ data }: MessageTableProps) => {
         </TableHeader>
         <TableBody>
           {data.rows.map((row, rowIndex) => (
-            <TableRow key={rowIndex} className="hover:bg-muted/30 transition-colors">
+            <TableRow key={rowIndex} className="hover:bg-secondary/30">
               {row.map((cell, cellIndex) => (
-                <TableCell key={cellIndex} className="text-[14px]">
+                <TableCell key={cellIndex} className="text-sm">
                   {cell}
                 </TableCell>
               ))}
