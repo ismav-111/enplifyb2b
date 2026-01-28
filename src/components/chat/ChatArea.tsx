@@ -27,19 +27,6 @@ export const ChatArea = ({
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Top Bar */}
-      <header className="flex items-center justify-between px-6 h-14 border-b border-border bg-card">
-        <div className="flex items-center gap-2 text-sm">
-          {workspaceName && (
-            <>
-              <span className="text-muted-foreground">{workspaceName}</span>
-              <span className="text-muted-foreground/50">/</span>
-            </>
-          )}
-          <span className="font-medium text-foreground">{sessionName || "New Chat"}</span>
-        </div>
-      </header>
-
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
