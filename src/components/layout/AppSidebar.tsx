@@ -43,9 +43,7 @@ const WorkspaceSection = ({
   onSelectSession: (workspaceId: string, sessionId: string) => void;
   onNewSession: (workspaceId: string) => void;
 }) => {
-  const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(
-    new Set(workspaces.map(w => w.id))
-  );
+  const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set());
 
   const toggleWorkspace = (id: string) => {
     setExpandedWorkspaces(prev => {
