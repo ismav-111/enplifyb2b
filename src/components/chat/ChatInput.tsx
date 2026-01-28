@@ -1,5 +1,5 @@
 import { useState, useRef, KeyboardEvent } from "react";
-import { Send, Search, Sparkles, Plus, Mic } from "lucide-react";
+import { Send, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
@@ -9,7 +9,6 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
   const [message, setMessage] = useState("");
-  const [activeMode, setActiveMode] = useState<'search' | 'deep'>('search');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
@@ -38,60 +37,38 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
 
   return (
     <div className="border-t border-border bg-card p-4">
-      <div className="max-w-4xl mx-auto space-y-3">
-        {/* Input Field */}
-        <div className="flex items-end gap-2 p-3 rounded-xl border border-border bg-background">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-end gap-2 p-3 rounded-xl border border-border bg-background focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+          <button 
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+            title="Attach file"
+          >
+            <Paperclip className="w-5 h-5" />
+          </button>
+          
           <textarea
             ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             onInput={handleInput}
-            placeholder="Ask me anything ..."
-            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[150px] py-1 text-sm"
+            placeholder="Ask Enplify.ai anything..."
+            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[150px] py-1.5 text-sm"
             rows={1}
             disabled={isLoading}
           />
-          <div className="flex items-center gap-1">
-            <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
-              <Mic className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleSend}
-              disabled={!message.trim() || isLoading}
-              className={cn(
-                "p-2 rounded-lg transition-colors",
-                message.trim() && !isLoading
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-muted-foreground"
-              )}
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Mode Chips & Upload */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => setActiveMode('search')}
-              className={cn("chip", activeMode === 'search' && "chip-active")}
-            >
-              <Search className="w-3 h-3" />
-              Search
-            </button>
-            <button 
-              onClick={() => setActiveMode('deep')}
-              className={cn("chip", activeMode === 'deep' && "chip-active")}
-            >
-              <Sparkles className="w-3 h-3" />
-              Deep Reason
-            </button>
-          </div>
-          <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-            <Plus className="w-3.5 h-3.5" />
-            Upload Files
+          
+          <button
+            onClick={handleSend}
+            disabled={!message.trim() || isLoading}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              message.trim() && !isLoading
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
+            )}
+          >
+            <Send className="w-5 h-5" />
           </button>
         </div>
       </div>
