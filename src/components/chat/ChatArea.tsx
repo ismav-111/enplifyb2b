@@ -29,14 +29,18 @@ export const ChatArea = ({
       ) : (
         <>
           <div className="flex-1 overflow-y-auto">
-            <div className="max-w-4xl mx-auto py-6">
+            <div className="max-w-3xl mx-auto py-8 px-6">
               {messages.map((message) => (
                 <ChatMessage key={message.id} message={message} />
               ))}
               <div ref={messagesEndRef} className="h-4" />
             </div>
           </div>
-          <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
+          <div className="border-t border-border bg-background">
+            <div className="max-w-3xl mx-auto px-6 py-4">
+              <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
+            </div>
+          </div>
         </>
       )}
     </div>
@@ -46,9 +50,6 @@ export const ChatArea = ({
 const EmptyState = ({ onSendMessage, isLoading }: { onSendMessage: (msg: string) => void; isLoading: boolean }) => {
   return (
     <div className="flex flex-col items-center justify-center h-full px-6">
-      <h1 className="text-xl font-medium text-foreground mb-6">
-        How can I help you today?
-      </h1>
       <div className="w-full max-w-2xl">
         <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
       </div>
