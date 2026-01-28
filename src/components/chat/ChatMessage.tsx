@@ -1,6 +1,5 @@
 import { Message } from "@/types/workspace";
 import { cn } from "@/lib/utils";
-import { Bot, User } from "lucide-react";
 import { MessageTable } from "./MessageTable";
 import { MessageChart } from "./MessageChart";
 
@@ -13,27 +12,17 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 
   return (
     <div className={cn(
-      "message-fade-in flex gap-4 px-6 py-5",
-      !isUser && "bg-muted/30"
+      "message-fade-in py-6",
+      isUser ? "border-b border-border/50" : ""
     )}>
-      <div className={cn(
-        "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center",
-        isUser ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-      )}>
-        {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-      </div>
-      
-      <div className="flex-1 min-w-0 space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm text-foreground">
-            {isUser ? 'You' : 'Enplify.ai'}
-          </span>
-          <span className="text-xs text-muted-foreground">
-            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          <span className="font-semibold text-sm text-foreground">
+            {isUser ? 'You' : 'Enplify'}
           </span>
         </div>
         
-        <div className="text-sm text-foreground/90 leading-relaxed">
+        <div className="text-[15px] text-foreground leading-relaxed">
           {message.type === 'text' && (
             <p className="whitespace-pre-wrap">
               {message.content}
