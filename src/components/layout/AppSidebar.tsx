@@ -104,7 +104,6 @@ const WorkspaceSection = ({
                       activeSessionId === session.id && "chat-item-active"
                     )}
                   >
-                    <MessageSquare className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                     <span className="truncate text-sm">{session.name}</span>
                   </button>
                 ))}
