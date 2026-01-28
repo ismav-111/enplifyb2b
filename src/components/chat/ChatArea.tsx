@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { Message } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
-import { MoreHorizontal, Link2, Share2, ChevronDown } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -29,21 +29,14 @@ export const ChatArea = ({
     <div className="flex flex-col h-full bg-background">
       {/* Top Bar */}
       <header className="flex items-center justify-between px-6 h-14 border-b border-border bg-card">
-        <button className="flex items-center gap-2 text-sm font-medium hover:bg-secondary px-3 py-1.5 rounded-lg transition-colors">
-          Enplify AI 3.5
-          <ChevronDown className="w-4 h-4 text-muted-foreground" />
-        </button>
-        <div className="flex items-center gap-1">
-          <button className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground">
-            <MoreHorizontal className="w-4 h-4" />
-          </button>
-          <button className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground">
-            <Link2 className="w-4 h-4" />
-          </button>
-          <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-secondary rounded-lg transition-colors text-sm font-medium">
-            <Share2 className="w-4 h-4" />
-            Share
-          </button>
+        <div className="flex items-center gap-2 text-sm">
+          {workspaceName && (
+            <>
+              <span className="text-muted-foreground">{workspaceName}</span>
+              <span className="text-muted-foreground/50">/</span>
+            </>
+          )}
+          <span className="font-medium text-foreground">{sessionName || "New Chat"}</span>
         </div>
       </header>
 
@@ -71,27 +64,28 @@ const EmptyState = ({ onSendMessage }: { onSendMessage: (msg: string) => void })
   const suggestions = [
     "Show me quarterly sales data as a chart",
     "Create a comparison table of products",
-    "Summarize the key metrics from last quarter",
+    "Summarize the key performance metrics",
     "Analyze trends in the dataset"
   ];
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 pb-20">
-      <div className="text-center max-w-xl">
-        <h1 className="text-2xl font-semibold text-foreground mb-2">
-          How can I help you today?
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          I can analyze data, create visualizations, generate reports, and provide insights.
-        </p>
+      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+        <Sparkles className="w-6 h-6 text-primary" />
       </div>
+      <h1 className="text-xl font-semibold text-foreground mb-2">
+        How can I help you today?
+      </h1>
+      <p className="text-muted-foreground text-sm text-center max-w-md mb-8">
+        I can analyze data, create visualizations, generate reports, and provide actionable insights.
+      </p>
       
-      <div className="mt-8 grid grid-cols-2 gap-3 max-w-lg w-full">
+      <div className="grid grid-cols-2 gap-3 max-w-lg w-full">
         {suggestions.map((text, i) => (
           <button
             key={i}
             onClick={() => onSendMessage(text)}
-            className="p-4 text-left text-sm rounded-xl border border-border bg-card hover:bg-secondary/50 transition-colors"
+            className="p-4 text-left text-sm rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors"
           >
             {text}
           </button>
