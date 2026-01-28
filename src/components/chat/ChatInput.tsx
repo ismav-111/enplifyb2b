@@ -1,5 +1,5 @@
 import { useState, useRef, KeyboardEvent } from "react";
-import { Send, Paperclip } from "lucide-react";
+import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
@@ -36,24 +36,17 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
   };
 
   return (
-    <div className="border-t border-border bg-card p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-end gap-2 p-3 rounded-xl border border-border bg-background focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
-          <button 
-            className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-            title="Attach file"
-          >
-            <Paperclip className="w-5 h-5" />
-          </button>
-          
+    <div className="p-4 pb-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="flex items-end gap-3 px-4 py-3 rounded-2xl border border-border bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
           <textarea
             ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             onInput={handleInput}
-            placeholder="Ask Enplify.ai anything..."
-            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[150px] py-1.5 text-sm"
+            placeholder="Ask anything..."
+            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[150px] py-1 text-sm"
             rows={1}
             disabled={isLoading}
           />
@@ -62,10 +55,10 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
             onClick={handleSend}
             disabled={!message.trim() || isLoading}
             className={cn(
-              "p-2 rounded-lg transition-colors",
+              "p-2 rounded-xl transition-all",
               message.trim() && !isLoading
                 ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
+                : "text-muted-foreground cursor-not-allowed"
             )}
           >
             <Send className="w-5 h-5" />
