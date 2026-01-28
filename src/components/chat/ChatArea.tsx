@@ -36,10 +36,8 @@ export const ChatArea = ({
               <div ref={messagesEndRef} className="h-4" />
             </div>
           </div>
-          <div className="border-t border-border bg-background">
-            <div className="max-w-3xl mx-auto px-6 py-4">
-              <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
-            </div>
+          <div className="max-w-3xl mx-auto w-full px-6 pb-6">
+            <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
           </div>
         </>
       )}

@@ -12,17 +12,16 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 
   return (
     <div className={cn(
-      "message-fade-in py-6",
-      isUser ? "border-b border-border/50" : ""
+      "message-fade-in flex mb-4",
+      isUser ? "justify-end" : "justify-start"
     )}>
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-sm text-foreground">
-            {isUser ? 'You' : 'Enplify'}
-          </span>
-        </div>
-        
-        <div className="text-[15px] text-foreground leading-relaxed">
+      <div className={cn(
+        "max-w-[80%] rounded-2xl px-4 py-3",
+        isUser 
+          ? "bg-primary text-primary-foreground" 
+          : "bg-muted text-foreground"
+      )}>
+        <div className="text-[15px] leading-relaxed">
           {message.type === 'text' && (
             <p className="whitespace-pre-wrap">
               {message.content}
