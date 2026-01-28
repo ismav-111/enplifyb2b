@@ -73,30 +73,33 @@ const WorkspaceSection = ({
 
   return (
     <div className="mb-2">
-      <div className="w-full flex items-center justify-between px-3 py-2 group">
-        <button 
-          onClick={() => setIsSectionExpanded(!isSectionExpanded)}
-          className="flex items-center gap-1.5 hover:bg-accent/50 rounded px-1 -ml-1 transition-colors"
-        >
+      <button 
+        onClick={() => setIsSectionExpanded(!isSectionExpanded)}
+        className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/header"
+      >
+        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+          {title}
+        </h3>
+        <div className="flex items-center gap-1">
+          {onNewWorkspace && (
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                onNewWorkspace();
+              }}
+              className="opacity-0 group-hover/header:opacity-100 p-1 hover:bg-accent rounded transition-all"
+              title="New workspace"
+            >
+              <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+            </span>
+          )}
           {isSectionExpanded ? (
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
           ) : (
             <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
           )}
-          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-            {title}
-          </h3>
-        </button>
-        {onNewWorkspace && (
-          <button
-            onClick={onNewWorkspace}
-            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-accent rounded transition-all"
-            title="New workspace"
-          >
-            <Plus className="w-3.5 h-3.5 text-muted-foreground" />
-          </button>
-        )}
-      </div>
+        </div>
+      </button>
       
       {isSectionExpanded && (
         <div className="space-y-0.5 mt-1">
