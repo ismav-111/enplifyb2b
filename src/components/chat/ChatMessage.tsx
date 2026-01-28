@@ -34,79 +34,73 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
       "message-fade-in flex mb-4 group",
       isUser ? "justify-end" : "justify-start"
     )}>
-      <div className="flex flex-col gap-1">
+      <div className={cn("flex flex-col gap-1", isUser ? "items-end" : "items-start")}>
+        {/* Message content */}
         <div className={cn(
-          "relative flex items-start gap-2",
-          isUser && "flex-row-reverse"
+          "max-w-[80%]",
+          isUser && "bg-muted rounded-2xl px-4 py-3"
         )}>
-          {/* Action buttons */}
+          <div className="text-[15px] leading-relaxed text-foreground">
+            {message.type === 'text' && (
+              <p className="whitespace-pre-wrap">
+                {message.content}
+                {message.isStreaming && <span className="streaming-cursor" />}
+              </p>
+            )}
+            
+            {message.type === 'table' && message.tableData && (
+              <div className="space-y-3">
+                {message.content && <p className="whitespace-pre-wrap">{message.content}</p>}
+                <MessageTable data={message.tableData} />
+              </div>
+            )}
+            
+            {message.type === 'chart' && message.chartData && (
+              <div className="space-y-3">
+                {message.content && <p className="whitespace-pre-wrap">{message.content}</p>}
+                <MessageChart data={message.chartData} />
+              </div>
+            )}
+          </div>
+          
+          {message.isStreaming && !message.content && (
+            <div className="streaming-dots">
+              <span />
+              <span />
+              <span />
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons and Timestamp */}
+        <div className={cn(
+          "flex items-center gap-2",
+          isUser ? "flex-row-reverse" : "flex-row"
+        )}>
+          <span className="text-xs text-muted-foreground">
+            {formatTimestamp(message.timestamp)}
+          </span>
           <div className={cn(
-            "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity",
-            isUser ? "flex-row-reverse" : "flex-row"
+            "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
           )}>
             <button
               onClick={handleCopy}
-              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+              className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
               title="Copy message"
             >
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
             </button>
             {isUser && (
               <button
                 onClick={handleEdit}
-                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                className="p-1 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
                 title="Edit message"
               >
-                <Pencil className="w-3.5 h-3.5" />
+                <Pencil className="w-3 h-3" />
               </button>
             )}
           </div>
-
-          {/* Message content */}
-          <div className={cn(
-            "max-w-[80%]",
-            isUser && "bg-muted rounded-2xl px-4 py-3"
-          )}>
-            <div className="text-[15px] leading-relaxed text-foreground">
-              {message.type === 'text' && (
-                <p className="whitespace-pre-wrap">
-                  {message.content}
-                  {message.isStreaming && <span className="streaming-cursor" />}
-                </p>
-              )}
-              
-              {message.type === 'table' && message.tableData && (
-                <div className="space-y-3">
-                  {message.content && <p className="whitespace-pre-wrap">{message.content}</p>}
-                  <MessageTable data={message.tableData} />
-                </div>
-              )}
-              
-              {message.type === 'chart' && message.chartData && (
-                <div className="space-y-3">
-                  {message.content && <p className="whitespace-pre-wrap">{message.content}</p>}
-                  <MessageChart data={message.chartData} />
-                </div>
-              )}
-            </div>
-            
-            {message.isStreaming && !message.content && (
-              <div className="streaming-dots">
-                <span />
-                <span />
-                <span />
-              </div>
-            )}
-          </div>
         </div>
-
-        {/* Timestamp */}
-        <span className={cn(
-          "text-xs text-muted-foreground",
-          isUser ? "text-right pr-1" : "text-left pl-1"
-        )}>
-          {formatTimestamp(message.timestamp)}
-        </span>
       </div>
     </div>
   );
