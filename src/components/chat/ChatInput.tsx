@@ -62,12 +62,6 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
             >
               <Paperclip className="w-5 h-5" />
             </button>
-            <button 
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-              title="Attach image"
-            >
-              <Image className="w-5 h-5" />
-            </button>
           </div>
           
           <button
