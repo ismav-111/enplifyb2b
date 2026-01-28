@@ -12,12 +12,27 @@ export interface Workspace {
   sessions: ChatSession[];
 }
 
+export interface Source {
+  title: string;
+  url: string;
+  snippet?: string;
+}
+
+export interface ProcessingStep {
+  id: string;
+  label: string;
+  status: 'pending' | 'active' | 'complete';
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   type: 'text' | 'table' | 'chart';
   isStreaming?: boolean;
+  isProcessing?: boolean;
+  processingSteps?: ProcessingStep[];
+  sources?: Source[];
   timestamp: Date;
   tableData?: {
     headers: string[];
