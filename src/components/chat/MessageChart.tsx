@@ -9,11 +9,11 @@ interface MessageChartProps {
 }
 
 const CHART_COLORS = [
-  'hsl(238, 43%, 56%)',
-  'hsl(238, 43%, 70%)',
-  'hsl(238, 43%, 45%)',
-  'hsl(220, 14%, 60%)',
-  'hsl(238, 30%, 65%)',
+  'hsl(243, 75%, 59%)',
+  'hsl(243, 60%, 70%)',
+  'hsl(280, 70%, 60%)',
+  'hsl(220, 60%, 55%)',
+  'hsl(243, 50%, 50%)',
 ];
 
 export const MessageChart = ({ data }: MessageChartProps) => {
@@ -22,46 +22,59 @@ export const MessageChart = ({ data }: MessageChartProps) => {
     value: data.values[index],
   }));
 
+  const tooltipStyle = {
+    contentStyle: { 
+      backgroundColor: 'hsl(0, 0%, 100%)',
+      border: '1px solid hsl(225, 20%, 90%)',
+      borderRadius: '12px',
+      boxShadow: '0 10px 25px -5px rgb(0 0 0 / 0.1)',
+      padding: '12px 16px',
+    },
+    labelStyle: {
+      fontWeight: 600,
+      marginBottom: '4px',
+    }
+  };
+
   const renderChart = () => {
     if (data.type === 'bar') {
       return (
-        <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 13%, 91%)" />
-          <XAxis dataKey="name" stroke="hsl(220, 10%, 46%)" fontSize={12} />
-          <YAxis stroke="hsl(220, 10%, 46%)" fontSize={12} />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'hsl(0, 0%, 100%)',
-              border: '1px solid hsl(220, 13%, 91%)',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-            }}
-          />
-          <Bar dataKey="value" fill="hsl(238, 43%, 56%)" radius={[4, 4, 0, 0]} />
+        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+          <defs>
+            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="hsl(243, 75%, 59%)" />
+              <stop offset="100%" stopColor="hsl(280, 70%, 60%)" />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(225, 15%, 92%)" vertical={false} />
+          <XAxis dataKey="name" stroke="hsl(225, 12%, 50%)" fontSize={12} tickLine={false} axisLine={false} />
+          <YAxis stroke="hsl(225, 12%, 50%)" fontSize={12} tickLine={false} axisLine={false} />
+          <Tooltip {...tooltipStyle} />
+          <Bar dataKey="value" fill="url(#barGradient)" radius={[6, 6, 0, 0]} />
         </BarChart>
       );
     }
     
     if (data.type === 'line') {
       return (
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 13%, 91%)" />
-          <XAxis dataKey="name" stroke="hsl(220, 10%, 46%)" fontSize={12} />
-          <YAxis stroke="hsl(220, 10%, 46%)" fontSize={12} />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'hsl(0, 0%, 100%)',
-              border: '1px solid hsl(220, 13%, 91%)',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-            }}
-          />
+        <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+          <defs>
+            <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="hsl(243, 75%, 59%)" />
+              <stop offset="100%" stopColor="hsl(280, 70%, 60%)" />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(225, 15%, 92%)" vertical={false} />
+          <XAxis dataKey="name" stroke="hsl(225, 12%, 50%)" fontSize={12} tickLine={false} axisLine={false} />
+          <YAxis stroke="hsl(225, 12%, 50%)" fontSize={12} tickLine={false} axisLine={false} />
+          <Tooltip {...tooltipStyle} />
           <Line 
             type="monotone" 
             dataKey="value" 
-            stroke="hsl(238, 43%, 56%)" 
-            strokeWidth={2}
-            dot={{ fill: 'hsl(238, 43%, 56%)', strokeWidth: 0 }}
+            stroke="url(#lineGradient)" 
+            strokeWidth={3}
+            dot={{ fill: 'hsl(243, 75%, 59%)', strokeWidth: 0, r: 5 }}
+            activeDot={{ r: 7, fill: 'hsl(280, 70%, 60%)' }}
           />
         </LineChart>
       );
@@ -73,29 +86,25 @@ export const MessageChart = ({ data }: MessageChartProps) => {
           data={chartData}
           cx="50%"
           cy="50%"
-          outerRadius={80}
+          innerRadius={50}
+          outerRadius={90}
           dataKey="value"
+          paddingAngle={3}
           label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+          labelLine={{ stroke: 'hsl(225, 12%, 50%)', strokeWidth: 1 }}
         >
           {chartData.map((_, index) => (
             <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip 
-          contentStyle={{ 
-            backgroundColor: 'hsl(0, 0%, 100%)',
-            border: '1px solid hsl(220, 13%, 91%)',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-          }}
-        />
+        <Tooltip {...tooltipStyle} />
       </PieChart>
     );
   };
 
   return (
-    <div className="border rounded-lg p-4 bg-card">
-      <div className="h-64">
+    <div className="card-elevated p-6">
+      <div className="h-72">
         <ResponsiveContainer width="100%" height="100%">
           {renderChart()}
         </ResponsiveContainer>

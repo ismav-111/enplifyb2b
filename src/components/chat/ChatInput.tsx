@@ -9,6 +9,7 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
   const [message, setMessage] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
@@ -36,14 +37,14 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
   };
 
   return (
-    <div className="border-t border-border bg-background p-4">
+    <div className="border-t border-border/40 bg-gradient-to-t from-background via-background to-transparent p-4 pb-6">
       <div className="max-w-4xl mx-auto">
         <div className={cn(
-          "flex items-end gap-2 p-3 rounded-xl border bg-card transition-all",
-          "focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50"
+          "input-premium flex items-end gap-2 p-2 bg-card border",
+          isFocused ? "border-primary/30" : "border-border/60"
         )}>
           <button 
-            className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2.5 rounded-xl hover:bg-muted transition-all text-muted-foreground hover:text-foreground"
             title="Attach file"
           >
             <Paperclip className="w-5 h-5" />
@@ -55,8 +56,10 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             onInput={handleInput}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder="Ask Enplify.ai anything..."
-            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[200px] py-1"
+            className="flex-1 resize-none bg-transparent border-0 focus:outline-none focus:ring-0 text-foreground placeholder:text-muted-foreground/60 min-h-[28px] max-h-[200px] py-2.5 px-1 text-[15px]"
             rows={1}
             disabled={isLoading}
           />
@@ -65,9 +68,9 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
             onClick={handleSend}
             disabled={!message.trim() || isLoading}
             className={cn(
-              "p-2 rounded-lg transition-all",
+              "p-2.5 rounded-xl transition-all duration-200",
               message.trim() && !isLoading
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                ? "btn-primary-glow text-white"
                 : "bg-muted text-muted-foreground cursor-not-allowed"
             )}
           >
@@ -79,8 +82,8 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
           </button>
         </div>
         
-        <p className="text-xs text-muted-foreground text-center mt-2">
-          Enplify.ai can make mistakes. Verify important information.
+        <p className="text-[11px] text-muted-foreground/60 text-center mt-3 tracking-wide">
+          Enplify.ai may produce inaccurate information. Verify critical data.
         </p>
       </div>
     </div>
