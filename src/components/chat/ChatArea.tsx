@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { Message } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
-import { Sparkles, Table, BarChart3, FileText, Zap } from "lucide-react";
+import { MoreHorizontal, Link2, Share2, ChevronDown } from "lucide-react";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -11,13 +11,6 @@ interface ChatAreaProps {
   workspaceName?: string;
   sessionName?: string;
 }
-
-const suggestions = [
-  { icon: BarChart3, text: "Show me quarterly sales data as a chart", color: "text-blue-500" },
-  { icon: Table, text: "Create a comparison table of products", color: "text-emerald-500" },
-  { icon: FileText, text: "Summarize the key metrics", color: "text-amber-500" },
-  { icon: Zap, text: "Analyze trends in the dataset", color: "text-purple-500" }
-];
 
 export const ChatArea = ({ 
   messages, 
@@ -35,58 +28,31 @@ export const ChatArea = ({
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Top Bar */}
-      <header className="flex items-center justify-between px-6 h-16 border-b border-border/60 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="flex items-center gap-2">
-          {workspaceName && (
-            <>
-              <span className="text-sm text-muted-foreground font-medium">{workspaceName}</span>
-              <span className="text-muted-foreground/40">/</span>
-            </>
-          )}
-          <h1 className="font-semibold text-foreground">
-            {sessionName || "New Chat"}
-          </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full status-online text-xs font-medium">
-            <span className="status-dot" />
-            Connected
-          </div>
+      <header className="flex items-center justify-between px-6 h-14 border-b border-border bg-card">
+        <button className="flex items-center gap-2 text-sm font-medium hover:bg-secondary px-3 py-1.5 rounded-lg transition-colors">
+          Enplify AI 3.5
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        </button>
+        <div className="flex items-center gap-1">
+          <button className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground">
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+          <button className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground">
+            <Link2 className="w-4 h-4" />
+          </button>
+          <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-secondary rounded-lg transition-colors text-sm font-medium">
+            <Share2 className="w-4 h-4" />
+            Share
+          </button>
         </div>
       </header>
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center px-4 pb-20">
-            <div className="icon-wrapper-solid w-20 h-20 mb-8 shadow-premium">
-              <Sparkles className="w-9 h-9 text-white" />
-            </div>
-            <h2 className="text-3xl font-bold text-foreground mb-3 tracking-tight">
-              How can I help you today?
-            </h2>
-            <p className="text-muted-foreground max-w-md text-base leading-relaxed">
-              Ask me anything. I can analyze data, create visualizations, generate reports, and provide actionable insights.
-            </p>
-            <div className="mt-10 grid gap-3 grid-cols-1 sm:grid-cols-2 max-w-2xl w-full">
-              {suggestions.map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => onSendMessage(suggestion.text)}
-                  className="card-interactive group px-5 py-4 text-left flex items-start gap-4"
-                >
-                  <div className={`icon-wrapper w-10 h-10 flex-shrink-0 ${suggestion.color}`}>
-                    <suggestion.icon className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors leading-relaxed">
-                    {suggestion.text}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+          <EmptyState onSendMessage={onSendMessage} />
         ) : (
-          <div className="max-w-4xl mx-auto py-4">
+          <div className="max-w-4xl mx-auto py-6">
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
@@ -97,6 +63,40 @@ export const ChatArea = ({
 
       {/* Input Area */}
       <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
+    </div>
+  );
+};
+
+const EmptyState = ({ onSendMessage }: { onSendMessage: (msg: string) => void }) => {
+  const suggestions = [
+    "Show me quarterly sales data as a chart",
+    "Create a comparison table of products",
+    "Summarize the key metrics from last quarter",
+    "Analyze trends in the dataset"
+  ];
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-6 pb-20">
+      <div className="text-center max-w-xl">
+        <h1 className="text-2xl font-semibold text-foreground mb-2">
+          How can I help you today?
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          I can analyze data, create visualizations, generate reports, and provide insights.
+        </p>
+      </div>
+      
+      <div className="mt-8 grid grid-cols-2 gap-3 max-w-lg w-full">
+        {suggestions.map((text, i) => (
+          <button
+            key={i}
+            onClick={() => onSendMessage(text)}
+            className="p-4 text-left text-sm rounded-xl border border-border bg-card hover:bg-secondary/50 transition-colors"
+          >
+            {text}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
