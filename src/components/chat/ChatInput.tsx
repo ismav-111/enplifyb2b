@@ -1,12 +1,6 @@
 import { useState, useRef, KeyboardEvent } from "react";
-import { ArrowUp, ChevronDown } from "lucide-react";
+import { ArrowUp, Paperclip, Image } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -15,7 +9,6 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
   const [message, setMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState("Encore");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
@@ -42,8 +35,6 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
     }
   };
 
-  const models = ["Encore", "Claude", "GPT-4", "Gemini"];
-
   return (
     <div className="w-full">
       <div className="rounded-2xl border border-border bg-card shadow-sm hover:shadow-md focus-within:shadow-md transition-all">
@@ -64,25 +55,20 @@ export const ChatInput = ({ onSendMessage, isLoading }: ChatInputProps) => {
         
         {/* Bottom toolbar */}
         <div className="flex items-center justify-between px-4 pb-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors">
-                {selectedModel}
-                <ChevronDown className="w-4 h-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-32">
-              {models.map((model) => (
-                <DropdownMenuItem 
-                  key={model} 
-                  onClick={() => setSelectedModel(model)}
-                  className="text-sm"
-                >
-                  {model}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-1">
+            <button 
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+              title="Attach file"
+            >
+              <Paperclip className="w-5 h-5" />
+            </button>
+            <button 
+              className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+              title="Attach image"
+            >
+              <Image className="w-5 h-5" />
+            </button>
+          </div>
           
           <button
             onClick={handleSend}
