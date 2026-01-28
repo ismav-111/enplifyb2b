@@ -28,16 +28,18 @@ const Index = () => {
   const activeSession = activeWorkspace?.sessions.find(s => s.id === activeSessionId);
 
   return (
-    <div className="flex h-screen w-full bg-background">
-      <AppSidebar
-        workspaces={mockWorkspaces}
-        activeSessionId={activeSessionId}
-        onSelectSession={handleSelectSession}
-        onNewSession={handleNewSession}
-        isCollapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
-      <main className="flex-1 min-w-0">
+    <div className="flex h-screen w-full bg-background overflow-hidden">
+      <div className="relative">
+        <AppSidebar
+          workspaces={mockWorkspaces}
+          activeSessionId={activeSessionId}
+          onSelectSession={handleSelectSession}
+          onNewSession={handleNewSession}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+      </div>
+      <main className="flex-1 min-w-0 relative">
         <ChatArea
           messages={messages}
           onSendMessage={sendMessage}
