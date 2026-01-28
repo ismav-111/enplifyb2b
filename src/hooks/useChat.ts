@@ -92,10 +92,8 @@ export const useChat = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const simulateProcessing = useCallback(async (messageId: string) => {
-    // Initialize processing steps
     const steps: ProcessingStep[] = processingStepsTemplate.map(s => ({ ...s, status: 'pending' as const }));
     
-    // Add processing message
     setMessages(prev => [...prev, {
       id: messageId,
       role: 'assistant',
@@ -106,7 +104,6 @@ export const useChat = () => {
       timestamp: new Date()
     }]);
 
-    // Animate through processing steps
     for (let i = 0; i < steps.length; i++) {
       await new Promise(resolve => setTimeout(resolve, 400 + Math.random() * 300));
       
@@ -122,7 +119,6 @@ export const useChat = () => {
       );
     }
 
-    // Complete last step
     await new Promise(resolve => setTimeout(resolve, 300));
     setMessages(prev => 
       prev.map(msg => {
@@ -137,7 +133,6 @@ export const useChat = () => {
   }, []);
 
   const simulateStreaming = useCallback(async (messageId: string, response: Partial<Message>) => {
-    // Transition from processing to streaming
     setMessages(prev => 
       prev.map(msg => 
         msg.id === messageId 
@@ -154,7 +149,6 @@ export const useChat = () => {
       )
     );
 
-    // Simulate streaming text
     const words = getStreamedText(response.content || "I'm analyzing your request and preparing the response.");
     
     for (let i = 0; i <= words.length; i++) {
@@ -168,7 +162,6 @@ export const useChat = () => {
       );
     }
 
-    // Mark streaming as complete
     setMessages(prev => 
       prev.map(msg => 
         msg.id === messageId 
@@ -179,7 +172,6 @@ export const useChat = () => {
   }, []);
 
   const sendMessage = useCallback(async (content: string) => {
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -193,10 +185,8 @@ export const useChat = () => {
 
     const messageId = (Date.now() + 1).toString();
 
-    // Start processing animation
     await simulateProcessing(messageId);
 
-    // Find matching demo response or use default
     const lowerContent = content.toLowerCase();
     const matchedResponse = demoResponses.find(r => lowerContent.includes(r.trigger));
     
