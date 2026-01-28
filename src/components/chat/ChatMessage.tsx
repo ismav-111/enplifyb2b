@@ -2,6 +2,8 @@ import { Message } from "@/types/workspace";
 import { cn } from "@/lib/utils";
 import { MessageTable } from "./MessageTable";
 import { MessageChart } from "./MessageChart";
+import { ProcessingIndicator } from "./ProcessingIndicator";
+import { SourcesList } from "./SourcesList";
 import { Copy, Pencil, Check } from "lucide-react";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -40,6 +42,11 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
           "max-w-[80%]",
           isUser && "bg-muted rounded-2xl px-4 py-3"
         )}>
+          {/* Processing indicator for assistant messages */}
+          {!isUser && message.isProcessing && message.processingSteps && (
+            <ProcessingIndicator steps={message.processingSteps} />
+          )}
+
           <div className="text-[15px] leading-relaxed text-foreground">
             {message.type === 'text' && (
               <p className="whitespace-pre-wrap">
@@ -69,6 +76,11 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
               <span />
               <span />
             </div>
+          )}
+
+          {/* Sources section for completed assistant messages */}
+          {!isUser && !message.isStreaming && !message.isProcessing && message.sources && message.sources.length > 0 && (
+            <SourcesList sources={message.sources} />
           )}
         </div>
 
