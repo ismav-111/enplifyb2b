@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { 
+import {
   ChevronDown, 
   ChevronRight, 
   Settings, 
@@ -33,6 +32,7 @@ interface AppSidebarProps {
   activeSessionId: string | null;
   onSelectSession: (workspaceId: string, sessionId: string) => void;
   onNewSession: (workspaceId: string) => void;
+  onOpenDocuments: () => void;
 }
 
 const WorkspaceIcon = ({ type }: { type: Workspace['type'] }) => {
@@ -274,9 +274,8 @@ export const AppSidebar = ({
   activeSessionId,
   onSelectSession,
   onNewSession,
+  onOpenDocuments,
 }: AppSidebarProps) => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const personalWorkspaces = workspaces.filter(w => w.type === 'personal');
   const sharedWorkspaces = workspaces.filter(w => w.type === 'shared');
   const orgWorkspaces = workspaces.filter(w => w.type === 'organization');
@@ -286,7 +285,6 @@ export const AppSidebar = ({
     console.log('Create new workspace');
   };
 
-
   return (
     <aside className="flex flex-col h-screen w-64 bg-card border-r border-border">
       {/* Logo */}
@@ -294,14 +292,11 @@ export const AppSidebar = ({
         <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
       </div>
 
-      {/* Primary Navigation */}
+      {/* Documents Button */}
       <div className="px-2 pt-3 pb-2 border-b border-border">
         <button
-          onClick={() => navigate('/')}
-          className={cn(
-            "nav-item w-full",
-            location.pathname === '/' && "nav-item-active"
-          )}
+          onClick={onOpenDocuments}
+          className="nav-item w-full"
         >
           <FileText className="w-4 h-4" />
           <span className="text-sm">Documents</span>
