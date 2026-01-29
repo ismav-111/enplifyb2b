@@ -61,7 +61,12 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
         {/* Sources list */}
         <div className="overflow-y-auto h-[calc(100%-57px)]">
           <div className="divide-y divide-border">
-            {sources.map((source, index) => (
+            {/* Deduplicate sources by URL */}
+            {sources
+              .filter((source, index, self) => 
+                index === self.findIndex(s => s.url === source.url)
+              )
+              .map((source, index) => (
               <div key={index} className="px-5 py-4">
                 {/* Source type / domain */}
                 <span className="text-[11px] font-medium text-muted-foreground tracking-wide">
