@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Crown, MoreHorizontal, Plus, Trash2, UserPlus } from "lucide-react";
+import { MoreHorizontal, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,29 +25,13 @@ interface Administrator {
   name: string;
   email: string;
   role: "owner" | "admin";
-  avatar?: string;
 }
 
 export const AdministratorsSection = () => {
   const [admins, setAdmins] = useState<Administrator[]>([
-    {
-      id: "1",
-      name: "John Doe",
-      email: "john@acmecorp.com",
-      role: "owner",
-    },
-    {
-      id: "2",
-      name: "Sarah Chen",
-      email: "sarah@acmecorp.com",
-      role: "admin",
-    },
-    {
-      id: "3",
-      name: "Michael Park",
-      email: "michael@acmecorp.com",
-      role: "admin",
-    },
+    { id: "1", name: "John Doe", email: "john@acmecorp.com", role: "owner" },
+    { id: "2", name: "Sarah Chen", email: "sarah@acmecorp.com", role: "admin" },
+    { id: "3", name: "Michael Park", email: "michael@acmecorp.com", role: "admin" },
   ]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -78,45 +62,40 @@ export const AdministratorsSection = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground">Administrators</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage who has administrative access to your organization
-          </p>
-        </div>
+    <section>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          Administrators
+        </h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2 shrink-0">
-              <UserPlus className="w-4 h-4" />
-              Invite
-            </Button>
+            <button className="text-xs text-primary hover:text-primary/80 font-medium transition-colors">
+              + Invite Member
+            </button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Invite Administrator</DialogTitle>
               <DialogDescription>
-                Send an invitation to add a new administrator to your organization.
+                Send an invitation to add a new administrator.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="invite-email">Email Address</Label>
-                <Input
-                  id="invite-email"
-                  type="email"
-                  placeholder="colleague@company.com"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                />
-              </div>
+            <div className="py-4">
+              <Label htmlFor="invite-email" className="text-xs">Email Address</Label>
+              <Input
+                id="invite-email"
+                type="email"
+                placeholder="colleague@company.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="h-9 mt-2"
+              />
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleInvite} disabled={!inviteEmail}>
+              <Button onClick={handleInvite} disabled={!inviteEmail} size="sm">
                 Send Invitation
               </Button>
             </DialogFooter>
@@ -124,46 +103,40 @@ export const AdministratorsSection = () => {
         </Dialog>
       </div>
 
-      {/* Administrators List */}
-      <div className="bg-card border border-border rounded-xl divide-y divide-border">
+      <div className="border border-border rounded-lg bg-card divide-y divide-border">
         {admins.map((admin) => (
           <div
             key={admin.id}
-            className="px-4 py-3 flex items-center justify-between gap-4"
+            className="px-5 py-3 flex items-center justify-between group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-muted-foreground">
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                 {getInitials(admin.name)}
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-foreground">{admin.name}</p>
-                  {admin.role === "owner" && (
-                    <Crown className="w-3.5 h-3.5 text-primary" />
-                  )}
-                </div>
+                <p className="text-sm font-medium text-foreground">{admin.name}</p>
                 <p className="text-xs text-muted-foreground">{admin.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded">
+              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-2 py-1 bg-muted rounded">
                 {admin.role}
               </span>
               {admin.role !== "owner" && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <button className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all">
                       <MoreHorizontal className="w-4 h-4" />
-                    </Button>
+                    </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Make Owner</DropdownMenuItem>
+                  <DropdownMenuContent align="end" className="w-36">
+                    <DropdownMenuItem className="text-xs">Make Owner</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      className="text-destructive focus:text-destructive"
+                      className="text-xs text-destructive focus:text-destructive"
                       onClick={() => handleRemove(admin.id)}
                     >
-                      <Trash2 className="w-4 h-4 mr-2" />
+                      <Trash2 className="w-3.5 h-3.5 mr-2" />
                       Remove
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -173,6 +146,6 @@ export const AdministratorsSection = () => {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
