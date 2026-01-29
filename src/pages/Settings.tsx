@@ -117,6 +117,9 @@ const Settings = () => {
           <div className="w-full max-w-2xl px-8 py-16">
             {/* Page Title */}
             <div className="mb-12">
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Settings
+              </p>
               <h1 className="text-2xl font-semibold text-foreground tracking-tight">
                 {getPageTitle()}
               </h1>
