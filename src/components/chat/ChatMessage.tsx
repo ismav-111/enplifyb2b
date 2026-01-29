@@ -96,12 +96,12 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
           "max-w-[80%]",
           isUser && !isEditing && "bg-muted rounded-2xl px-4 py-3"
         )}>
-          {/* Thinking panel for assistant messages */}
-          {!isUser && message.isProcessing && message.processingSteps && (
+          {/* Thinking panel for assistant messages - show during and after processing */}
+          {!isUser && message.processingSteps && message.processingSteps.length > 0 && (
             <ThinkingPanel 
               steps={message.processingSteps} 
               thinkingContent={message.thinkingContent}
-              isComplete={false}
+              isComplete={!message.isProcessing}
             />
           )}
 
