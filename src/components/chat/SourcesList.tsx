@@ -82,60 +82,55 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
   const hasMore = sources.length > 5;
 
   return (
-    <div className="mt-3 pt-3 border-t border-border/50">
-      <div className="flex items-center gap-2.5">
-        {/* Stacked source icons */}
-        <button 
-          onClick={() => onViewSources(sources)}
-          className="flex items-center -space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
-        >
-          {displaySources.map((source, index) => {
-            const sourceType = detectSourceType(source.url, source.sourceType);
-            const config = sourceTypeConfig[sourceType];
-            
-            return (
-              <TooltipProvider key={index} delayDuration={200}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className={cn(
-                        "w-7 h-7 rounded-full border-2 border-background flex items-center justify-center",
-                        "shadow-sm hover:z-10 hover:scale-110 transition-transform",
-                        config.bgColor
-                      )}
-                      style={{ zIndex: displayCount - index }}
-                    >
-                      <SourceIcon sourceType={sourceType} className="w-3.5 h-3.5 text-white" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[200px]">
-                    <p className="text-xs font-medium">{config.label}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{source.title}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            );
-          })}
-          {hasMore && (
-            <div
-              className="w-7 h-7 rounded-full border-2 border-background bg-muted flex items-center justify-center shadow-sm"
-              style={{ zIndex: 0 }}
-            >
-              <span className="text-[10px] font-medium text-muted-foreground">
-                +{sources.length - 5}
-              </span>
-            </div>
-          )}
-        </button>
-
-        {/* Sources label */}
-        <button 
-          onClick={() => onViewSources(sources)}
-          className="text-xs text-muted-foreground font-medium hover:text-foreground transition-colors"
-        >
-          Sources
-        </button>
+    <button 
+      onClick={() => onViewSources(sources)}
+      className="flex items-center gap-1.5 hover:opacity-80 transition-opacity cursor-pointer ml-2"
+    >
+      {/* Stacked source icons - smaller and tighter */}
+      <div className="flex items-center -space-x-1.5">
+        {displaySources.map((source, index) => {
+          const sourceType = detectSourceType(source.url, source.sourceType);
+          const config = sourceTypeConfig[sourceType];
+          
+          return (
+            <TooltipProvider key={index} delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className={cn(
+                      "w-5 h-5 rounded-full border-[1.5px] border-background flex items-center justify-center",
+                      "shadow-sm hover:z-10 transition-transform",
+                      config.bgColor
+                    )}
+                    style={{ zIndex: displayCount - index }}
+                  >
+                    <SourceIcon sourceType={sourceType} className="w-2.5 h-2.5 text-white" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[200px]">
+                  <p className="text-xs font-medium">{config.label}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{source.title}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        })}
+        {hasMore && (
+          <div
+            className="w-5 h-5 rounded-full border-[1.5px] border-background bg-muted flex items-center justify-center shadow-sm"
+            style={{ zIndex: 0 }}
+          >
+            <span className="text-[8px] font-medium text-muted-foreground">
+              +{sources.length - 5}
+            </span>
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Sources label */}
+      <span className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+        {sources.length} {sources.length === 1 ? 'source' : 'sources'}
+      </span>
+    </button>
   );
 };
