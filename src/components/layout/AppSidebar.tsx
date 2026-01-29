@@ -286,8 +286,6 @@ export const AppSidebar = ({
     console.log('Create new workspace');
   };
 
-  const isDocumentsActive = location.pathname === '/documents';
-  const isChatActive = location.pathname === '/';
 
   return (
     <aside className="flex flex-col h-screen w-64 bg-card border-r border-border">
@@ -301,18 +299,8 @@ export const AppSidebar = ({
         <button
           onClick={() => navigate('/')}
           className={cn(
-            "nav-item w-full mb-1",
-            isChatActive && "nav-item-active"
-          )}
-        >
-          <MessageSquare className="w-4 h-4" />
-          <span className="text-sm">Chat</span>
-        </button>
-        <button
-          onClick={() => navigate('/documents')}
-          className={cn(
             "nav-item w-full",
-            isDocumentsActive && "nav-item-active"
+            location.pathname === '/' && "nav-item-active"
           )}
         >
           <FileText className="w-4 h-4" />
