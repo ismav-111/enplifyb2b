@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -12,7 +13,8 @@ import {
   ChevronUp,
   MoreHorizontal,
   Pencil,
-  Trash2
+  Trash2,
+  FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Workspace } from "@/types/workspace";
@@ -272,6 +274,8 @@ export const AppSidebar = ({
   onSelectSession,
   onNewSession,
 }: AppSidebarProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const personalWorkspaces = workspaces.filter(w => w.type === 'personal');
   const sharedWorkspaces = workspaces.filter(w => w.type === 'shared');
   const orgWorkspaces = workspaces.filter(w => w.type === 'organization');
@@ -280,6 +284,8 @@ export const AppSidebar = ({
     // TODO: Implement new workspace creation
     console.log('Create new workspace');
   };
+
+  const isDocumentsActive = location.pathname === '/documents';
 
   return (
     <aside className="flex flex-col h-screen w-64 bg-card border-r border-border">
@@ -316,6 +322,20 @@ export const AppSidebar = ({
           defaultExpanded={true}
         />
       </nav>
+
+      {/* Documents Link */}
+      <div className="px-2 pb-2">
+        <button
+          onClick={() => navigate('/documents')}
+          className={cn(
+            "nav-item w-full",
+            isDocumentsActive && "nav-item-active"
+          )}
+        >
+          <FileText className="w-4 h-4" />
+          <span className="text-sm">Documents</span>
+        </button>
+      </div>
 
       {/* User Profile & Menu */}
       <div className="border-t border-border p-2">
