@@ -2,7 +2,7 @@ import { Message, Source } from "@/types/workspace";
 import { cn } from "@/lib/utils";
 import { MessageTable } from "./MessageTable";
 import { MessageChart } from "./MessageChart";
-import { ProcessingIndicator } from "./ProcessingIndicator";
+import { ThinkingPanel } from "./ThinkingPanel";
 import { SourcesList } from "./SourcesList";
 import { Copy, Pencil, Check, RefreshCw, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -96,9 +96,13 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
           "max-w-[80%]",
           isUser && !isEditing && "bg-muted rounded-2xl px-4 py-3"
         )}>
-          {/* Processing indicator for assistant messages */}
+          {/* Thinking panel for assistant messages */}
           {!isUser && message.isProcessing && message.processingSteps && (
-            <ProcessingIndicator steps={message.processingSteps} />
+            <ThinkingPanel 
+              steps={message.processingSteps} 
+              thinkingContent={message.thinkingContent}
+              isComplete={false}
+            />
           )}
 
           {/* Edit mode for user messages */}

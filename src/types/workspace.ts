@@ -21,10 +21,21 @@ export interface Source {
   sourceType?: SourceType;
 }
 
+export interface ProcessingStepDetail {
+  text: string;
+}
+
 export interface ProcessingStep {
   id: string;
   label: string;
   status: 'pending' | 'active' | 'complete';
+  details?: ProcessingStepDetail[];
+}
+
+export interface ThinkingState {
+  isThinking: boolean;
+  steps: ProcessingStep[];
+  thinkingContent?: string;
 }
 
 export interface Message {
@@ -35,6 +46,7 @@ export interface Message {
   isStreaming?: boolean;
   isProcessing?: boolean;
   processingSteps?: ProcessingStep[];
+  thinkingContent?: string;
   sources?: Source[];
   timestamp: Date;
   tableData?: {
