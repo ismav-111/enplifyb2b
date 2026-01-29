@@ -165,52 +165,58 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
               <span />
             </div>
           )}
-
-          {/* Sources section for completed assistant messages */}
-          {!isUser && !message.isStreaming && !message.isProcessing && message.sources && message.sources.length > 0 && (
-            <SourcesList sources={message.sources} onViewSources={handleViewSources} />
-          )}
         </div>
 
-        {/* Action buttons and Timestamp - only show when not editing */}
+        {/* Action buttons, Timestamp, and Sources row - only show when not editing */}
         {!isEditing && (
           <div className={cn(
             "flex items-center gap-3",
             isUser ? "flex-row-reverse" : "flex-row"
           )}>
-            <span className="text-xs text-muted-foreground">
-              {formatTimestamp(message.timestamp)}
-            </span>
+            {/* Left side: timestamp and actions */}
             <div className={cn(
-              "flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+              "flex items-center gap-3",
+              isUser ? "flex-row-reverse" : "flex-row"
             )}>
-              <button
-                onClick={handleCopy}
-                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                title="Copy message"
-              >
-                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </button>
-              {isUser ? (
+              <span className="text-xs text-muted-foreground">
+                {formatTimestamp(message.timestamp)}
+              </span>
+              <div className={cn(
+                "flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+              )}>
                 <button
-                  onClick={handleEdit}
+                  onClick={handleCopy}
                   className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                  title="Edit message"
+                  title="Copy message"
                 >
-                  <Pencil className="w-4 h-4" />
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </button>
-              ) : (
-                !message.isStreaming && !message.isProcessing && (
+                {isUser ? (
                   <button
-                    onClick={handleRegenerate}
+                    onClick={handleEdit}
                     className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                    title="Regenerate response"
+                    title="Edit message"
                   >
-                    <RefreshCw className="w-4 h-4" />
+                    <Pencil className="w-4 h-4" />
                   </button>
-                )
-              )}
+                ) : (
+                  !message.isStreaming && !message.isProcessing && (
+                    <button
+                      onClick={handleRegenerate}
+                      className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                      title="Regenerate response"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </button>
+                  )
+                )}
+              </div>
             </div>
+
+            {/* Right side: Sources for assistant messages */}
+            {!isUser && !message.isStreaming && !message.isProcessing && message.sources && message.sources.length > 0 && (
+              <SourcesList sources={message.sources} onViewSources={handleViewSources} />
+            )}
           </div>
         )}
       </div>
