@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { ChatArea } from "@/components/chat/ChatArea";
+import { SourcesSidebar } from "@/components/chat/SourcesSidebar";
 import { useChat } from "@/hooks/useChat";
 import { mockWorkspaces } from "@/data/mockWorkspaces";
+import { Source } from "@/types/workspace";
 
 const Index = () => {
   const [activeSessionId, setActiveSessionId] = useState<string | null>("session-1");
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>("personal-1");
   const { messages, isLoading, sendMessage, clearMessages } = useChat();
+  
+  // Sources sidebar state
+  const [sourcesSidebarOpen, setSourcesSidebarOpen] = useState(false);
+  const [activeSources, setActiveSources] = useState<Source[]>([]);
 
   const handleSelectSession = (workspaceId: string, sessionId: string) => {
     if (sessionId !== activeSessionId) {
@@ -15,12 +21,19 @@ const Index = () => {
     }
     setActiveWorkspaceId(workspaceId);
     setActiveSessionId(sessionId);
+    setSourcesSidebarOpen(false);
   };
 
   const handleNewSession = (workspaceId: string) => {
     clearMessages();
     setActiveWorkspaceId(workspaceId);
     setActiveSessionId(null);
+    setSourcesSidebarOpen(false);
+  };
+
+  const handleViewSources = (sources: Source[]) => {
+    setActiveSources(sources);
+    setSourcesSidebarOpen(true);
   };
 
   const activeWorkspace = mockWorkspaces.find(w => w.id === activeWorkspaceId);
@@ -41,8 +54,14 @@ const Index = () => {
           isLoading={isLoading}
           workspaceName={activeWorkspace?.name}
           sessionName={activeSession?.name}
+          onViewSources={handleViewSources}
         />
       </main>
+      <SourcesSidebar 
+        sources={activeSources}
+        isOpen={sourcesSidebarOpen}
+        onClose={() => setSourcesSidebarOpen(false)}
+      />
     </div>
   );
 };
