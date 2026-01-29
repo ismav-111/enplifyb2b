@@ -9,7 +9,7 @@ import { Source } from "@/types/workspace";
 const Index = () => {
   const [activeSessionId, setActiveSessionId] = useState<string | null>("session-1");
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>("personal-1");
-  const { messages, isLoading, sendMessage, clearMessages } = useChat();
+  const { messages, isLoading, sendMessage, clearMessages, editMessage, regenerateResponse } = useChat();
   
   // Sources sidebar state
   const [sourcesSidebarOpen, setSourcesSidebarOpen] = useState(false);
@@ -55,6 +55,8 @@ const Index = () => {
           workspaceName={activeWorkspace?.name}
           sessionName={activeSession?.name}
           onViewSources={handleViewSources}
+          onEditMessage={editMessage}
+          onRegenerateResponse={regenerateResponse}
         />
       </main>
       <SourcesSidebar 

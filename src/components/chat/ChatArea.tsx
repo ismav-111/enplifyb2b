@@ -10,6 +10,8 @@ interface ChatAreaProps {
   workspaceName?: string;
   sessionName?: string;
   onViewSources?: (sources: Source[]) => void;
+  onEditMessage?: (messageId: string, newContent: string) => void;
+  onRegenerateResponse?: (messageId: string) => void;
 }
 
 export const ChatArea = ({ 
@@ -17,6 +19,8 @@ export const ChatArea = ({
   onSendMessage, 
   isLoading,
   onViewSources,
+  onEditMessage,
+  onRegenerateResponse,
 }: ChatAreaProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -37,6 +41,8 @@ export const ChatArea = ({
                   key={message.id} 
                   message={message} 
                   onViewSources={onViewSources}
+                  onEditMessage={onEditMessage}
+                  onRegenerateResponse={onRegenerateResponse}
                 />
               ))}
               <div ref={messagesEndRef} className="h-4" />
