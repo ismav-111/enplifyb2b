@@ -65,8 +65,8 @@ export const SourcesList = ({ sources }: SourcesListProps) => {
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-border">
-      <div className="flex items-center gap-3">
+    <div className="mt-3 pt-3 border-t border-border/50">
+      <div className="flex items-center gap-2.5">
         {/* Stacked source icons */}
         <Dialog>
           <DialogTrigger asChild>
