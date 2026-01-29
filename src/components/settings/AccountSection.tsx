@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { Check, Pencil, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
-interface EditableFieldProps {
+interface FieldRowProps {
   label: string;
   value: string;
   editable?: boolean;
   onSave?: (value: string) => void;
 }
 
-const EditableField = ({ label, value, editable = false, onSave }: EditableFieldProps) => {
+const FieldRow = ({ label, value, editable = false, onSave }: FieldRowProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
 
@@ -25,55 +24,44 @@ const EditableField = ({ label, value, editable = false, onSave }: EditableField
   };
 
   return (
-    <div className="py-4 border-b border-border last:border-b-0">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            {label}
-          </label>
-          {isEditing ? (
+    <div className="flex items-center justify-between py-4 border-b border-border last:border-b-0 group">
+      <div className="flex-1 min-w-0">
+        <span className="text-sm text-muted-foreground">{label}</span>
+      </div>
+      <div className="flex items-center gap-3">
+        {isEditing ? (
+          <>
             <Input
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
-              className="mt-1.5 h-9"
+              className="h-8 w-48 text-sm"
               autoFocus
             />
-          ) : (
-            <p className="mt-1 text-sm text-foreground truncate">{value || "—"}</p>
-          )}
-        </div>
-        {editable && (
-          <div className="flex items-center gap-1">
-            {isEditing ? (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={handleCancel}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-primary"
-                  onClick={handleSave}
-                >
-                  <Check className="w-4 h-4" />
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+            <button
+              onClick={handleCancel}
+              className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleSave}
+              className="p-1.5 text-primary hover:text-primary/80 transition-colors"
+            >
+              <Check className="w-4 h-4" />
+            </button>
+          </>
+        ) : (
+          <>
+            <span className="text-sm text-foreground">{value || "—"}</span>
+            {editable && (
+              <button
                 onClick={() => setIsEditing(true)}
+                className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all"
               >
                 <Pencil className="w-3.5 h-3.5" />
-              </Button>
+              </button>
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
@@ -85,38 +73,28 @@ export const AccountSection = () => {
   const [phone, setPhone] = useState("+1 (555) 123-4567");
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">Account</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage your account information and preferences
-        </p>
-      </div>
-
-      <div className="bg-card border border-border rounded-xl">
-        <div className="px-6">
-          <EditableField
-            label="Organization Name"
+    <section>
+      <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
+        Profile
+      </h2>
+      <div className="border border-border rounded-lg bg-card">
+        <div className="px-5">
+          <FieldRow
+            label="Organization"
             value={orgName}
             editable
             onSave={setOrgName}
           />
-          <EditableField
-            label="Email"
-            value="john@acmecorp.com"
-          />
-          <EditableField
-            label="Username"
-            value="john.doe"
-          />
-          <EditableField
-            label="Phone Number"
+          <FieldRow label="Email" value="john@acmecorp.com" />
+          <FieldRow label="Username" value="john.doe" />
+          <FieldRow
+            label="Phone"
             value={phone}
             editable
             onSave={setPhone}
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
