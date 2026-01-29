@@ -1,4 +1,4 @@
-import { Message } from "@/types/workspace";
+import { Message, Source } from "@/types/workspace";
 import { cn } from "@/lib/utils";
 import { MessageTable } from "./MessageTable";
 import { MessageChart } from "./MessageChart";
@@ -10,9 +10,10 @@ import { format } from "date-fns";
 
 interface ChatMessageProps {
   message: Message;
+  onViewSources?: (sources: Source[]) => void;
 }
 
-export const ChatMessage = ({ message }: ChatMessageProps) => {
+export const ChatMessage = ({ message, onViewSources }: ChatMessageProps) => {
   const isUser = message.role === 'user';
   const [copied, setCopied] = useState(false);
 
@@ -23,12 +24,15 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
   };
 
   const handleEdit = () => {
-    // Edit functionality placeholder
     console.log('Edit message:', message.id);
   };
 
   const formatTimestamp = (timestamp: Date) => {
     return format(timestamp, 'h:mm a');
+  };
+
+  const handleViewSources = (sources: Source[]) => {
+    onViewSources?.(sources);
   };
 
   return (
@@ -80,7 +84,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
 
           {/* Sources section for completed assistant messages */}
           {!isUser && !message.isStreaming && !message.isProcessing && message.sources && message.sources.length > 0 && (
-            <SourcesList sources={message.sources} />
+            <SourcesList sources={message.sources} onViewSources={handleViewSources} />
           )}
         </div>
 

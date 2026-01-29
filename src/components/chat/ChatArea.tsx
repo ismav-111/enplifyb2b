@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { Message } from "@/types/workspace";
+import { Message, Source } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 
@@ -9,12 +9,14 @@ interface ChatAreaProps {
   isLoading: boolean;
   workspaceName?: string;
   sessionName?: string;
+  onViewSources?: (sources: Source[]) => void;
 }
 
 export const ChatArea = ({ 
   messages, 
   onSendMessage, 
   isLoading,
+  onViewSources,
 }: ChatAreaProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +33,11 @@ export const ChatArea = ({
           <div className="flex-1 overflow-y-auto">
             <div className="max-w-3xl mx-auto py-8 px-6">
               {messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
+                <ChatMessage 
+                  key={message.id} 
+                  message={message} 
+                  onViewSources={onViewSources}
+                />
               ))}
               <div ref={messagesEndRef} className="h-4" />
             </div>
