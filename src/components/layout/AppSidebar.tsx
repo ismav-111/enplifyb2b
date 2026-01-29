@@ -14,7 +14,8 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
-  FileText
+  FileText,
+  MessageSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Workspace } from "@/types/workspace";
@@ -286,12 +287,37 @@ export const AppSidebar = ({
   };
 
   const isDocumentsActive = location.pathname === '/documents';
+  const isChatActive = location.pathname === '/';
 
   return (
     <aside className="flex flex-col h-screen w-64 bg-card border-r border-border">
       {/* Logo */}
       <div className="flex items-center px-4 h-14 border-b border-border">
         <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
+      </div>
+
+      {/* Primary Navigation */}
+      <div className="px-2 pt-3 pb-2 border-b border-border">
+        <button
+          onClick={() => navigate('/')}
+          className={cn(
+            "nav-item w-full mb-1",
+            isChatActive && "nav-item-active"
+          )}
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span className="text-sm">Chat</span>
+        </button>
+        <button
+          onClick={() => navigate('/documents')}
+          className={cn(
+            "nav-item w-full",
+            isDocumentsActive && "nav-item-active"
+          )}
+        >
+          <FileText className="w-4 h-4" />
+          <span className="text-sm">Documents</span>
+        </button>
       </div>
 
       {/* Workspaces */}
@@ -322,20 +348,6 @@ export const AppSidebar = ({
           defaultExpanded={true}
         />
       </nav>
-
-      {/* Documents Link */}
-      <div className="px-2 pb-2">
-        <button
-          onClick={() => navigate('/documents')}
-          className={cn(
-            "nav-item w-full",
-            isDocumentsActive && "nav-item-active"
-          )}
-        >
-          <FileText className="w-4 h-4" />
-          <span className="text-sm">Documents</span>
-        </button>
-      </div>
 
       {/* User Profile & Menu */}
       <div className="border-t border-border p-2">
