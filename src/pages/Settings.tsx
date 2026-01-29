@@ -88,9 +88,6 @@ const Settings = () => {
 
         {/* Settings Navigation */}
         <div className="px-3 pt-4 flex-1">
-          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">
-            Settings
-          </h2>
           <nav className="space-y-0.5">
             {navItems.map((item) => (
               <button
