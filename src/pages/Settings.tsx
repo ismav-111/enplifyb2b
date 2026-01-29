@@ -68,15 +68,15 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-border min-h-screen bg-card flex flex-col">
+      {/* Sidebar - Fixed */}
+      <aside className="w-64 border-r border-border h-screen bg-card flex flex-col sticky top-0">
         {/* Logo */}
-        <div className="h-14 px-5 flex items-center border-b border-border">
+        <div className="h-14 px-5 flex items-center border-b border-border shrink-0">
           <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
         </div>
 
         {/* Back to Dashboard */}
-        <div className="px-3 pt-4 pb-2">
+        <div className="px-3 pt-4 pb-2 shrink-0">
           <button
             onClick={() => navigate("/")}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
@@ -87,8 +87,8 @@ const Settings = () => {
         </div>
 
         {/* Settings Navigation */}
-        <div className="px-3 pt-4 flex-1">
-          <nav className="space-y-0.5">
+        <div className="px-3 pt-4 flex-1 overflow-y-auto">
+          <nav className="space-y-1">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -100,8 +100,8 @@ const Settings = () => {
                     : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                 )}
               >
-                <item.icon className="w-4 h-4" />
-                {item.label}
+                <item.icon className="w-4 h-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
               </button>
             ))}
           </nav>
@@ -110,17 +110,17 @@ const Settings = () => {
 
       {/* Content Area */}
       <main className="flex-1 overflow-auto">
-        <div className="min-h-screen flex justify-center">
-          <div className="w-full max-w-2xl px-8 py-16">
+        <div className="flex justify-center">
+          <div className="w-full max-w-2xl px-8 py-12">
             {/* Page Title */}
-            <div className="mb-12">
-              <p className="text-sm font-medium text-muted-foreground mb-1">
+            <div className="mb-10">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
                 Settings
               </p>
               <h1 className="text-2xl font-semibold text-foreground tracking-tight">
                 {getPageTitle()}
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground mt-1.5">
                 {getPageSubtitle()}
               </p>
             </div>
