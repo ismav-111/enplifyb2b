@@ -243,13 +243,6 @@ const UserMenu = () => {
               <Settings className="w-4 h-4 text-muted-foreground" />
               Settings
             </button>
-            <button 
-              onClick={() => handleNavigation("/settings")}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-            >
-              <User className="w-4 h-4 text-muted-foreground" />
-              My Account
-            </button>
             <div className="h-px bg-border my-1" />
             <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors">
               <LogOut className="w-4 h-4" />
