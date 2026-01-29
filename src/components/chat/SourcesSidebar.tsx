@@ -8,23 +8,17 @@ interface SourcesSidebarProps {
   onClose: () => void;
 }
 
-// Extract domain from URL
-const getDomain = (url: string) => {
-  try {
-    return new URL(url).hostname.replace("www.", "").toUpperCase();
-  } catch {
-    return "SOURCE";
-  }
-};
-
-// Get source type label
+// Get source type label based on URL patterns
 const getSourceType = (url: string) => {
   const domain = url.toLowerCase();
-  if (domain.includes("github")) return "CODE REPOSITORY";
-  if (domain.includes("docs") || domain.includes("documentation")) return "DOCUMENTATION";
-  if (domain.includes("research") || domain.includes("arxiv")) return "RESEARCH PAPER";
-  if (domain.includes("slides") || domain.includes("presentation")) return "RESEARCH PRESENTATION";
-  return getDomain(url);
+  if (domain.includes("github")) return "Code Repository";
+  if (domain.includes("docs") || domain.includes("documentation")) return "Documentation";
+  if (domain.includes("research") || domain.includes("arxiv")) return "Research Paper";
+  if (domain.includes("slides") || domain.includes("presentation")) return "Presentation";
+  if (domain.includes("analytics")) return "Analytics";
+  if (domain.includes("dashboard")) return "Dashboard";
+  if (domain.includes("finance")) return "Financial Report";
+  return "Web Source";
 };
 
 export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps) => {
@@ -68,25 +62,22 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
               )
               .map((source, index) => (
               <div key={index} className="px-5 py-4">
-                {/* Source type / domain */}
-                <span className="text-[11px] font-medium text-muted-foreground tracking-wide">
+                {/* Source type badge */}
+                <span className="inline-block text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                   {getSourceType(source.url)}
                 </span>
                 
-                {/* Title */}
-                <h3 className="text-sm font-semibold text-foreground mt-1.5 leading-snug">
-                  {source.title}
-                </h3>
-                
-                {/* Link */}
+                {/* Clickable title with external link */}
                 <a
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-1.5"
+                  className="group flex items-start gap-1.5 mt-2"
                 >
-                  View source
-                  <ExternalLink className="w-3 h-3" />
+                  <h3 className="text-sm font-semibold text-foreground leading-snug group-hover:text-primary transition-colors">
+                    {source.title}
+                  </h3>
+                  <ExternalLink className="w-3 h-3 text-muted-foreground group-hover:text-primary mt-0.5 flex-shrink-0 transition-colors" />
                 </a>
                 
                 {/* Snippet */}
