@@ -67,68 +67,69 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background border-b border-border">
-        <div className="h-14 px-6 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
-            <div className="h-5 w-px bg-border" />
-            <button
-              onClick={() => navigate("/")}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Dashboard
-            </button>
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <aside className="w-64 border-r border-border min-h-screen bg-card flex flex-col">
+        {/* Logo */}
+        <div className="h-14 px-5 flex items-center border-b border-border">
+          <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
+        </div>
+
+        {/* Back to Dashboard */}
+        <div className="px-3 pt-4 pb-2">
+          <button
+            onClick={() => navigate("/")}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </button>
+        </div>
+
+        {/* Settings Navigation */}
+        <div className="px-3 pt-4 flex-1">
+          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">
+            Settings
+          </h2>
+          <nav className="space-y-0.5">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
+                  activeTab === item.id
+                    ? "bg-accent text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                )}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      {/* Content Area */}
+      <main className="flex-1 overflow-auto">
+        <div className="min-h-screen flex justify-center">
+          <div className="w-full max-w-2xl px-8 py-16">
+            {/* Page Title */}
+            <div className="mb-12">
+              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+                {getPageTitle()}
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                {getPageSubtitle()}
+              </p>
+            </div>
+
+            {/* Content */}
+            {renderContent()}
           </div>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="flex">
-        {/* Sidebar Navigation */}
-        <aside className="w-64 border-r border-border min-h-[calc(100vh-3.5rem)] bg-card/50">
-          <div className="p-4">
-            <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-3 mb-3">
-              Settings
-            </h2>
-            <nav className="space-y-1">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors",
-                    activeTab === item.id
-                      ? "bg-accent text-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  )}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          </div>
-        </aside>
-
-        {/* Content Area */}
-        <main className="flex-1 max-w-2xl px-12 py-12">
-          {/* Page Title */}
-          <div className="mb-12">
-            <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-              {getPageTitle()}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {getPageSubtitle()}
-            </p>
-          </div>
-
-          {/* Content */}
-          {renderContent()}
-        </main>
-      </div>
+      </main>
     </div>
   );
 };
