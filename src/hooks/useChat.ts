@@ -206,10 +206,72 @@ export const useChat = () => {
     setMessages([]);
   }, []);
 
+  const editMessage = useCallback(async (messageId: string, newContent: string) => {
+    // Find the message index
+    const messageIndex = messages.findIndex(m => m.id === messageId);
+    if (messageIndex === -1) return;
+
+    // Update the user message
+    setMessages(prev => {
+      const updated = [...prev];
+      updated[messageIndex] = { ...updated[messageIndex], content: newContent };
+      // Remove all messages after this one (they'll be regenerated)
+      return updated.slice(0, messageIndex + 1);
+    });
+
+    // Regenerate the response
+    setIsLoading(true);
+    const responseId = (Date.now() + 1).toString();
+    await simulateProcessing(responseId);
+    
+    const lowerContent = newContent.toLowerCase();
+    const matchedResponse = demoResponses.find(r => lowerContent.includes(r.trigger));
+    
+    const response = matchedResponse?.response || {
+      type: 'text' as const,
+      content: `I've processed your updated query: "${newContent}"\n\nThis is a demonstration of the Enplify.ai interface.`,
+      sources: demoSources.slice(0, 3)
+    };
+
+    await simulateStreaming(responseId, response);
+    setIsLoading(false);
+  }, [messages, simulateProcessing, simulateStreaming]);
+
+  const regenerateResponse = useCallback(async (messageId: string) => {
+    // Find the assistant message and the user message before it
+    const messageIndex = messages.findIndex(m => m.id === messageId);
+    if (messageIndex === -1 || messageIndex === 0) return;
+
+    const userMessage = messages[messageIndex - 1];
+    if (userMessage.role !== 'user') return;
+
+    // Remove the assistant message
+    setMessages(prev => prev.slice(0, messageIndex));
+
+    // Regenerate
+    setIsLoading(true);
+    const responseId = (Date.now() + 1).toString();
+    await simulateProcessing(responseId);
+    
+    const lowerContent = userMessage.content.toLowerCase();
+    const matchedResponse = demoResponses.find(r => lowerContent.includes(r.trigger));
+    
+    const response = matchedResponse?.response || {
+      type: 'text' as const,
+      content: `I've re-analyzed your query: "${userMessage.content}"\n\nHere's a fresh perspective on your request.`,
+      sources: demoSources.slice(2, 6)
+    };
+
+    await simulateStreaming(responseId, response);
+    setIsLoading(false);
+  }, [messages, simulateProcessing, simulateStreaming]);
+
   return {
     messages,
     isLoading,
     sendMessage,
-    clearMessages
+    clearMessages,
+    editMessage,
+    regenerateResponse
   };
 };
