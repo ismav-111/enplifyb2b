@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontal, Trash2, UserPlus } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,7 +15,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
@@ -24,14 +23,17 @@ interface Administrator {
   id: string;
   name: string;
   email: string;
-  role: "owner" | "admin";
+  isCurrentUser: boolean;
 }
+
+// Mock current user ID - in real app this would come from auth context
+const CURRENT_USER_ID = "1";
 
 export const AdministratorsSection = () => {
   const [admins, setAdmins] = useState<Administrator[]>([
-    { id: "1", name: "John Doe", email: "john@acmecorp.com", role: "owner" },
-    { id: "2", name: "Sarah Chen", email: "sarah@acmecorp.com", role: "admin" },
-    { id: "3", name: "Michael Park", email: "michael@acmecorp.com", role: "admin" },
+    { id: "1", name: "John Doe", email: "john@acmecorp.com", isCurrentUser: true },
+    { id: "2", name: "Sarah Chen", email: "sarah@acmecorp.com", isCurrentUser: false },
+    { id: "3", name: "Michael Park", email: "michael@acmecorp.com", isCurrentUser: false },
   ]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -41,7 +43,7 @@ export const AdministratorsSection = () => {
       id: Date.now().toString(),
       name: inviteEmail.split("@")[0],
       email: inviteEmail,
-      role: "admin",
+      isCurrentUser: false,
     };
     setAdmins([...admins, newAdmin]);
     setInviteEmail("");
@@ -120,9 +122,9 @@ export const AdministratorsSection = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-2 py-1 bg-muted rounded">
-                {admin.role}
+                {admin.isCurrentUser ? "You" : "Admin"}
               </span>
-              {admin.role !== "owner" && (
+              {!admin.isCurrentUser && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all">
@@ -130,8 +132,6 @@ export const AdministratorsSection = () => {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-36">
-                    <DropdownMenuItem className="text-xs">Make Owner</DropdownMenuItem>
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-xs text-destructive focus:text-destructive"
                       onClick={() => handleRemove(admin.id)}
