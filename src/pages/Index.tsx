@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { ChatArea } from "@/components/chat/ChatArea";
 import { SourcesSidebar } from "@/components/chat/SourcesSidebar";
+import { DocumentsDrawer } from "@/components/documents/DocumentsDrawer";
 import { useChat } from "@/hooks/useChat";
 import { mockWorkspaces } from "@/data/mockWorkspaces";
 import { Source } from "@/types/workspace";
@@ -15,6 +16,9 @@ const Index = () => {
   const [sourcesSidebarOpen, setSourcesSidebarOpen] = useState(false);
   const [activeSources, setActiveSources] = useState<Source[]>([]);
 
+  // Documents drawer state
+  const [documentsOpen, setDocumentsOpen] = useState(false);
+
   const handleSelectSession = (workspaceId: string, sessionId: string) => {
     if (sessionId !== activeSessionId) {
       clearMessages();
@@ -22,6 +26,7 @@ const Index = () => {
     setActiveWorkspaceId(workspaceId);
     setActiveSessionId(sessionId);
     setSourcesSidebarOpen(false);
+    setDocumentsOpen(false);
   };
 
   const handleNewSession = (workspaceId: string) => {
@@ -29,11 +34,18 @@ const Index = () => {
     setActiveWorkspaceId(workspaceId);
     setActiveSessionId(null);
     setSourcesSidebarOpen(false);
+    setDocumentsOpen(false);
   };
 
   const handleViewSources = (sources: Source[]) => {
     setActiveSources(sources);
     setSourcesSidebarOpen(true);
+    setDocumentsOpen(false);
+  };
+
+  const handleOpenDocuments = () => {
+    setDocumentsOpen(true);
+    setSourcesSidebarOpen(false);
   };
 
   const activeWorkspace = mockWorkspaces.find(w => w.id === activeWorkspaceId);
@@ -46,6 +58,7 @@ const Index = () => {
         activeSessionId={activeSessionId}
         onSelectSession={handleSelectSession}
         onNewSession={handleNewSession}
+        onOpenDocuments={handleOpenDocuments}
       />
       <main className="flex-1 min-w-0">
         <ChatArea
@@ -63,6 +76,10 @@ const Index = () => {
         sources={activeSources}
         isOpen={sourcesSidebarOpen}
         onClose={() => setSourcesSidebarOpen(false)}
+      />
+      <DocumentsDrawer
+        isOpen={documentsOpen}
+        onClose={() => setDocumentsOpen(false)}
       />
     </div>
   );
