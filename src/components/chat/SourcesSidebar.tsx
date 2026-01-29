@@ -1,5 +1,5 @@
 import { Source, SourceType } from "@/types/workspace";
-import { X, ExternalLink, FileText, Presentation, Globe, FileSpreadsheet, FileIcon } from "lucide-react";
+import { X, FileText, Presentation, Globe, FileSpreadsheet, FileIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SourcesSidebarProps {
@@ -123,50 +123,44 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
               const config = sourceTypeConfig[sourceType];
               
               return (
-                <div 
-                  key={index} 
-                  className="p-4 rounded-lg border border-border/50 bg-card hover:bg-muted/50 hover:border-border transition-all duration-200 cursor-default"
+                <a
+                  key={index}
+                  href={source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block p-4 rounded-lg border border-border/50 bg-card hover:bg-muted/50 hover:border-border transition-all duration-200 cursor-pointer group"
                 >
-                  {/* Clickable icon + source label link */}
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-2.5 hover:opacity-80 transition-opacity"
-                  >
-                    {/* Source Icon */}
+                  {/* Source Icon + Label */}
+                  <div className="flex items-center gap-2.5">
                     <div className={cn(
-                      "w-6 h-6 rounded flex items-center justify-center flex-shrink-0",
+                      "w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0",
                       config.bgColor
                     )}>
-                      <SourceIcon sourceType={sourceType} className="w-3.5 h-3.5 text-white" />
+                      <SourceIcon sourceType={sourceType} className="w-4 h-4 text-white" />
                     </div>
                     
-                    {/* Source label + domain */}
                     <div className="flex flex-col min-w-0">
-                      <span className={cn("text-xs font-medium", config.color)}>
+                      <span className={cn("text-xs font-semibold", config.color)}>
                         {config.label}
                       </span>
                       <span className="text-[10px] text-muted-foreground truncate max-w-[180px]">
                         {getDomain(source.url)}
                       </span>
                     </div>
-                    
-                    <ExternalLink className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0 ml-auto" />
-                  </a>
+                  </div>
                   
                   {/* Title */}
-                  <h3 className="text-sm font-semibold text-foreground leading-snug mt-3">
+                  <h3 className="text-sm font-medium text-foreground leading-snug mt-3 group-hover:text-primary transition-colors">
                     {source.title}
                   </h3>
                   
                   {/* Snippet */}
                   {source.snippet && (
-                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed line-clamp-3">
+                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed line-clamp-2">
                       {source.snippet}
                     </p>
                   )}
-                </div>
+                </a>
               );
             })}
           </div>
