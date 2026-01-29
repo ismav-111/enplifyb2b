@@ -1,13 +1,15 @@
 import { useState, useCallback } from "react";
 import { Message, ProcessingStep, Source } from "@/types/workspace";
 
-// Demo sources for showcase
+// Demo sources for showcase with varied source types
 const demoSources: Source[] = [
-  { title: "Enterprise Analytics Report 2024", url: "https://analytics.example.com/report-2024", snippet: "Comprehensive analysis of enterprise metrics..." },
-  { title: "Market Research Database", url: "https://research.example.com/markets", snippet: "Industry benchmarks and trends..." },
-  { title: "Internal Sales Dashboard", url: "https://dashboard.example.com/sales", snippet: "Real-time sales performance data..." },
-  { title: "Customer Insights Platform", url: "https://insights.example.com/customers", snippet: "Customer behavior and preferences..." },
-  { title: "Financial Quarterly Review", url: "https://finance.example.com/q4", snippet: "Q4 financial performance summary..." },
+  { title: "Q4 Sales Pipeline Report", url: "https://salesforce.com/reports/q4-pipeline", snippet: "Comprehensive analysis of enterprise sales pipeline and forecasts...", sourceType: "salesforce" },
+  { title: "Customer Support Tickets Analysis", url: "https://servicenow.com/incidents/analysis", snippet: "Service desk metrics and resolution times...", sourceType: "servicenow" },
+  { title: "CRM Contact Insights", url: "https://zoho.com/crm/contacts", snippet: "Customer relationship data and engagement history...", sourceType: "zoho" },
+  { title: "Annual Financial Summary 2024.pdf", url: "https://docs.example.com/finance-2024.pdf", snippet: "Complete financial statements and performance metrics...", sourceType: "pdf" },
+  { title: "Board Presentation Q4.pptx", url: "https://slides.example.com/board-q4.pptx", snippet: "Executive summary and strategic initiatives...", sourceType: "ppt" },
+  { title: "Market Research Database", url: "https://research.example.com/markets", snippet: "Industry benchmarks and competitive analysis...", sourceType: "website" },
+  { title: "Sales Data Export.xlsx", url: "https://data.example.com/sales-export.xlsx", snippet: "Raw sales transaction data for analysis...", sourceType: "excel" },
 ];
 
 // Processing steps that simulate searching

@@ -12,10 +12,13 @@ export interface Workspace {
   sessions: ChatSession[];
 }
 
+export type SourceType = 'website' | 'pdf' | 'ppt' | 'salesforce' | 'zoho' | 'servicenow' | 'excel' | 'doc';
+
 export interface Source {
   title: string;
   url: string;
   snippet?: string;
+  sourceType?: SourceType;
 }
 
 export interface ProcessingStep {
