@@ -7,6 +7,7 @@ import { WorkspaceDangerZone } from "./workspace/WorkspaceDangerZone";
 
 interface WorkspaceSettingsProps {
   type: "organization" | "my" | "shared";
+  subTab: "general" | "configuration" | "guardrails";
 }
 
 const workspaceDefaults = {
@@ -30,29 +31,43 @@ const workspaceDefaults = {
   },
 };
 
-export const WorkspaceSettingsSection = ({ type }: WorkspaceSettingsProps) => {
+export const WorkspaceSettingsSection = ({ type, subTab }: WorkspaceSettingsProps) => {
   const defaults = workspaceDefaults[type];
   const [workspaceName, setWorkspaceName] = useState(defaults.name);
   const [description, setDescription] = useState(defaults.description);
 
-  return (
-    <div className="space-y-12">
-      <WorkspaceGeneralSection
-        workspaceName={workspaceName}
-        onNameChange={setWorkspaceName}
-        description={description}
-        onDescriptionChange={setDescription}
-        createdAt={defaults.createdAt}
-        createdBy={defaults.createdBy}
-      />
+  if (subTab === "general") {
+    return (
+      <div className="space-y-12">
+        <WorkspaceGeneralSection
+          workspaceName={workspaceName}
+          onNameChange={setWorkspaceName}
+          description={description}
+          onDescriptionChange={setDescription}
+          createdAt={defaults.createdAt}
+          createdBy={defaults.createdBy}
+        />
+        <WorkspaceUsersSection />
+        <WorkspaceDangerZone workspaceType={type} />
+      </div>
+    );
+  }
 
-      <WorkspaceUsersSection />
+  if (subTab === "configuration") {
+    return (
+      <div className="space-y-12">
+        <WorkspaceDataSourcesSection />
+      </div>
+    );
+  }
 
-      <WorkspaceDataSourcesSection />
+  if (subTab === "guardrails") {
+    return (
+      <div className="space-y-12">
+        <WorkspaceGuardRailsSection />
+      </div>
+    );
+  }
 
-      <WorkspaceGuardRailsSection />
-
-      <WorkspaceDangerZone workspaceType={type} />
-    </div>
-  );
+  return null;
 };
