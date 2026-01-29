@@ -126,11 +126,7 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
                     <ExternalLink className="w-3 h-3 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
                   </a>
                   
-                  {/* Source type badge */}
-                  <span className="inline-block text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full mt-2">
-                    {getSourceType(source.url)}
-                  </span>
-                  
+
                   {/* Title */}
                   <h3 className="text-sm font-semibold text-foreground leading-snug mt-2">
                     {source.title}
