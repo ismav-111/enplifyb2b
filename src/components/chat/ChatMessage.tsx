@@ -171,31 +171,26 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
           )}
         </div>
 
-        {/* Action buttons, Timestamp, and Sources row - only show when not editing */}
+        {/* Footer row - only show when not editing */}
         {!isEditing && (
           <div className={cn(
             "flex items-center gap-3",
             isUser ? "flex-row-reverse" : "flex-row"
           )}>
-            {/* Left side: timestamp and actions */}
-            <div className={cn(
-              "flex items-center gap-3",
-              isUser ? "flex-row-reverse" : "flex-row"
-            )}>
-              <span className="text-xs text-muted-foreground">
-                {formatTimestamp(message.timestamp)}
-              </span>
-              <div className={cn(
-                "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-              )}>
-                <button
-                  onClick={handleCopy}
-                  className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                  title="Copy message"
-                >
-                  {copied ? <Check className="w-[18px] h-[18px]" /> : <Copy className="w-[18px] h-[18px]" />}
-                </button>
-                {isUser ? (
+            {isUser ? (
+              // User message footer: timestamp, then actions
+              <>
+                <span className="text-xs text-muted-foreground">
+                  {formatTimestamp(message.timestamp)}
+                </span>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={handleCopy}
+                    className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                    title="Copy message"
+                  >
+                    {copied ? <Check className="w-[18px] h-[18px]" /> : <Copy className="w-[18px] h-[18px]" />}
+                  </button>
                   <button
                     onClick={handleEdit}
                     className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
@@ -203,8 +198,23 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
                   >
                     <Pencil className="w-[18px] h-[18px]" />
                   </button>
-                ) : (
-                  !message.isStreaming && !message.isProcessing && (
+                </div>
+              </>
+            ) : (
+              // System message footer: sources → actions → timestamp
+              <>
+                {!message.isStreaming && !message.isProcessing && message.sources && message.sources.length > 0 && (
+                  <SourcesList sources={message.sources} onViewSources={handleViewSources} />
+                )}
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={handleCopy}
+                    className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                    title="Copy message"
+                  >
+                    {copied ? <Check className="w-[18px] h-[18px]" /> : <Copy className="w-[18px] h-[18px]" />}
+                  </button>
+                  {!message.isStreaming && !message.isProcessing && (
                     <button
                       onClick={handleRegenerate}
                       className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
@@ -212,14 +222,12 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
                     >
                       <RefreshCw className="w-[18px] h-[18px]" />
                     </button>
-                  )
-                )}
-              </div>
-            </div>
-
-            {/* Right side: Sources for assistant messages */}
-            {!isUser && !message.isStreaming && !message.isProcessing && message.sources && message.sources.length > 0 && (
-              <SourcesList sources={message.sources} onViewSources={handleViewSources} />
+                  )}
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {formatTimestamp(message.timestamp)}
+                </span>
+              </>
             )}
           </div>
         )}
