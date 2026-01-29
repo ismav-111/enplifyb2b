@@ -12,12 +12,49 @@ const demoSources: Source[] = [
   { title: "Sales Data Export.xlsx", url: "https://data.example.com/sales-export.xlsx", snippet: "Raw sales transaction data for analysis...", sourceType: "excel" },
 ];
 
-// Processing steps that simulate searching
+// Processing steps that simulate searching with detailed content
 const processingStepsTemplate: Omit<ProcessingStep, 'status'>[] = [
-  { id: "understand", label: "Understanding your query..." },
-  { id: "search", label: "Searching enterprise databases..." },
-  { id: "analyze", label: "Analyzing relevant data sources..." },
-  { id: "generate", label: "Generating insights..." },
+  { 
+    id: "sources", 
+    label: "Checking data sources",
+    details: [
+      { text: "Scanning connected enterprise databases and documents..." },
+      { text: "Identifying relevant data chunks from indexed sources." },
+      { text: "No duplicate or overlapping data detected." }
+    ]
+  },
+  { 
+    id: "understand", 
+    label: "Understanding the query",
+    details: [
+      { text: "Analyzing query intent and extracting key entities." },
+      { text: "Mapping request to available data schemas." }
+    ]
+  },
+  { 
+    id: "extract", 
+    label: "Extracting and processing data",
+    details: [
+      { text: "Retrieving relevant records from matched sources." },
+      { text: "Normalizing data formats for consistency." }
+    ]
+  },
+  { 
+    id: "synthesize", 
+    label: "Synthesizing findings",
+    details: [
+      { text: "Aggregating insights from multiple sources." },
+      { text: "Validating data accuracy and completeness." }
+    ]
+  },
+  { 
+    id: "validate", 
+    label: "Validation before finalizing",
+    details: [
+      { text: "Ensuring response directly addresses the question." },
+      { text: "Confirming all claims are supported by source data." }
+    ]
+  },
 ];
 
 // Demo responses for showcase
