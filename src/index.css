@@ -132,17 +132,17 @@
   /* Navigation items */
   .nav-item {
     @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors;
-    @apply text-muted-foreground hover:bg-accent hover:text-accent-foreground;
+    @apply text-foreground hover:bg-accent;
   }
 
   .nav-item-active {
-    @apply bg-accent text-accent-foreground font-medium;
+    @apply bg-accent font-medium;
   }
 
   /* Chat items */
   .chat-item {
     @apply relative flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors cursor-pointer;
-    @apply text-muted-foreground hover:bg-accent hover:text-accent-foreground;
+    @apply text-foreground/70 hover:bg-accent hover:text-foreground;
   }
 
   .chat-item-active {
