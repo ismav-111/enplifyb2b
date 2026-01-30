@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Eye, EyeOff } from "lucide-react";
+import { Copy, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -93,14 +93,14 @@ export const ApiKeysSection = () => {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
           API Keys
         </h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <button className="text-xs text-primary hover:text-primary/80 font-medium transition-colors">
-              + Create Key
-            </button>
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary">
+              <Plus className="w-4 h-4" />
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -132,9 +132,9 @@ export const ApiKeysSection = () => {
       </div>
 
       {keys.length > 0 ? (
-        <div className="border border-border rounded-lg bg-card divide-y divide-border">
+        <div className="border border-border/50 rounded-xl bg-card shadow-sm divide-y divide-border/40">
           {keys.map((apiKey) => (
-            <div key={apiKey.id} className="px-5 py-4">
+            <div key={apiKey.id} className="group px-5 py-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-foreground">
@@ -149,10 +149,10 @@ export const ApiKeysSection = () => {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      Delete
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -175,13 +175,13 @@ export const ApiKeysSection = () => {
                 </AlertDialog>
               </div>
               <div className="flex items-center gap-2">
-                <code className="flex-1 text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-2 rounded">
+                <code className="flex-1 text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
                   {visibleKeys.has(apiKey.id) ? apiKey.key : maskKey(apiKey.key)}
                 </code>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-muted-foreground"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   onClick={() => toggleKeyVisibility(apiKey.id)}
                 >
                   {visibleKeys.has(apiKey.id) ? (
@@ -193,7 +193,7 @@ export const ApiKeysSection = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-muted-foreground"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   onClick={() => copyKey(apiKey.key)}
                 >
                   <Copy className="w-4 h-4" />
@@ -203,7 +203,7 @@ export const ApiKeysSection = () => {
           ))}
         </div>
       ) : (
-        <div className="border border-dashed border-border rounded-lg py-8 text-center">
+        <div className="border border-dashed border-border/50 rounded-xl py-8 text-center">
           <p className="text-sm text-muted-foreground">No API keys created</p>
         </div>
       )}
