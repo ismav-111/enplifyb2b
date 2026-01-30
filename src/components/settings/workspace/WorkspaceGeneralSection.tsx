@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Check, Pencil, X, ImageIcon } from "lucide-react";
+import { Check, X, ImageIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface WorkspaceGeneralSectionProps {
   workspaceName: string;
@@ -32,6 +33,11 @@ const EditableField = ({ value, onSave, multiline }: EditableFieldProps) => {
     setIsEditing(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") handleCancel();
+    if (e.key === "Enter" && !multiline) handleSave();
+  };
+
   if (isEditing) {
     return (
       <div className="flex items-start gap-2">
@@ -39,6 +45,7 @@ const EditableField = ({ value, onSave, multiline }: EditableFieldProps) => {
           <Textarea
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="min-h-[60px] w-64 text-sm resize-none"
             autoFocus
           />
@@ -46,37 +53,44 @@ const EditableField = ({ value, onSave, multiline }: EditableFieldProps) => {
           <Input
             value={editValue}
             onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="h-8 w-48 text-sm"
             autoFocus
           />
         )}
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
           onClick={handleCancel}
-          className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
         >
-          <X className="w-4 h-4" />
-        </button>
-        <button
+          <X className="w-3.5 h-3.5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 text-primary hover:text-primary"
           onClick={handleSave}
-          className="p-1.5 text-primary hover:text-primary/80 transition-colors"
         >
-          <Check className="w-4 h-4" />
-        </button>
+          <Check className="w-3.5 h-3.5" />
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex items-start gap-2 group">
+    <div className="flex items-start gap-3">
       <span className={`text-sm text-foreground ${multiline ? "max-w-[300px]" : ""}`}>
         {value || <span className="text-muted-foreground italic">Not set</span>}
       </span>
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-7 text-xs text-muted-foreground hover:text-foreground"
         onClick={() => setIsEditing(true)}
-        className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all"
       >
-        <Pencil className="w-3.5 h-3.5" />
-      </button>
+        Edit
+      </Button>
     </div>
   );
 };
@@ -88,14 +102,11 @@ interface SettingRowProps {
 }
 
 const SettingRow = ({ label, description, children }: SettingRowProps) => (
-  <div className="flex items-center justify-between py-4 border-b border-border last:border-b-0">
-    <div className="flex-1 min-w-0 pr-4">
-      <p className="text-sm font-medium text-foreground">{label}</p>
-      {description && (
-        <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
-      )}
+  <div className="grid grid-cols-[140px_1fr] items-start py-4 border-b border-border last:border-b-0 gap-4">
+    <div className="min-w-0">
+      <p className="text-sm text-muted-foreground">{label}</p>
     </div>
-    <div className="shrink-0">{children}</div>
+    <div>{children}</div>
   </div>
 );
 
@@ -125,22 +136,26 @@ export const WorkspaceGeneralSection = ({
                   <ImageIcon className="w-5 h-5 text-muted-foreground" />
                 )}
               </div>
-              <button className="text-xs font-medium text-primary hover:text-primary/80 transition-colors">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              >
                 Change
-              </button>
+              </Button>
             </div>
           </SettingRow>
-          <SettingRow label="Workspace Name">
+          <SettingRow label="Name">
             <EditableField value={workspaceName} onSave={onNameChange} />
           </SettingRow>
-          <SettingRow label="Description" description="Brief description of this workspace">
+          <SettingRow label="Description">
             <EditableField value={description} onSave={onDescriptionChange} multiline />
           </SettingRow>
-          <SettingRow label="Created" description="When this workspace was created">
-            <span className="text-sm text-muted-foreground">{createdAt}</span>
+          <SettingRow label="Created">
+            <span className="text-sm text-foreground">{createdAt}</span>
           </SettingRow>
           <SettingRow label="Created By">
-            <span className="text-sm text-muted-foreground">{createdBy}</span>
+            <span className="text-sm text-foreground">{createdBy}</span>
           </SettingRow>
         </div>
       </div>

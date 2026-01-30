@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { Check, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,6 +11,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 
 interface SSOProvider {
@@ -142,40 +153,66 @@ export const SSOSection = () => {
           {providers.map((provider) => (
             <div
               key={provider.id}
-              className="px-5 py-4 flex items-center justify-between group"
+              className="grid grid-cols-[1fr_auto] items-center px-5 py-4 gap-4"
             >
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground">
-                      {provider.name}
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-foreground">
+                    {provider.name}
+                  </span>
+                  {provider.status === "active" ? (
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary">
+                      <Check className="w-2.5 h-2.5" />
+                      Active
                     </span>
-                    {provider.status === "active" ? (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary">
-                        <Check className="w-2.5 h-2.5" />
-                        Active
-                      </span>
-                    ) : (
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
-                        Pending
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {provider.type} · {provider.domain}
-                  </p>
+                  ) : (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+                      Pending
+                    </span>
+                  )}
                 </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {provider.type} · {provider.domain}
+                </p>
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors">
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
-                  onClick={() => handleRemoveProvider(provider.id)}
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs text-muted-foreground"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                  Configure
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                    >
+                      Remove
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Remove SSO Provider</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to remove {provider.name}? Users will no longer be able to sign in using this provider.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleRemoveProvider(provider.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Remove
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           ))}

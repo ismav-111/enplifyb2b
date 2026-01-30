@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,11 +12,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 
 interface Administrator {
@@ -25,9 +30,6 @@ interface Administrator {
   email: string;
   isCurrentUser: boolean;
 }
-
-// Mock current user ID - in real app this would come from auth context
-const CURRENT_USER_ID = "1";
 
 export const AdministratorsSection = () => {
   const [admins, setAdmins] = useState<Administrator[]>([
@@ -109,38 +111,56 @@ export const AdministratorsSection = () => {
         {admins.map((admin) => (
           <div
             key={admin.id}
-            className="px-5 py-3 flex items-center justify-between group"
+            className="grid grid-cols-[1fr_80px_60px] items-center px-5 py-3 gap-4"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground shrink-0">
                 {getInitials(admin.name)}
               </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">{admin.name}</p>
-                <p className="text-xs text-muted-foreground">{admin.email}</p>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{admin.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{admin.email}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            
+            <div className="flex justify-center">
               <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-2 py-1 bg-muted rounded">
                 {admin.isCurrentUser ? "You" : "Admin"}
               </span>
-              {!admin.isCurrentUser && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-36">
-                    <DropdownMenuItem
-                      className="text-xs text-destructive focus:text-destructive"
-                      onClick={() => handleRemove(admin.id)}
+            </div>
+
+            <div className="flex justify-end">
+              {!admin.isCurrentUser ? (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs text-muted-foreground hover:text-destructive"
                     >
-                      <Trash2 className="w-3.5 h-3.5 mr-2" />
                       Remove
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Remove Administrator</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to remove {admin.name} as an administrator? They will lose access to admin features.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleRemove(admin.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Remove
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                <span className="h-7" />
               )}
             </div>
           </div>
