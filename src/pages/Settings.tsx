@@ -244,51 +244,45 @@ const Settings = () => {
 
     return (
       <div className="mb-2">
-        <div className="flex items-center">
-          <button
-            onClick={() => handleSectionHeaderClick(sectionKey)}
-            className={cn(
-              "flex-1 flex items-center px-3 py-2 rounded-lg transition-colors text-left",
-              isListActive 
-                ? "bg-accent text-foreground" 
-                : "hover:bg-accent/50"
-            )}
-          >
-            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              {title}
-            </h3>
-          </button>
-          <div className="flex items-center gap-0.5 pr-2">
+        <button
+          onClick={() => handleSectionHeaderClick(sectionKey)}
+          className={cn(
+            "w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors group/header",
+            isListActive 
+              ? "bg-accent text-foreground" 
+              : "hover:bg-accent/50"
+          )}
+        >
+          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            {title}
+          </h3>
+          <div className="flex items-center gap-1">
             {showAddButton && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
+              <span
                 onClick={(e) => {
                   e.stopPropagation();
                   handleOpenCreateDialog(sectionKey);
                 }}
+                className="opacity-0 group-hover/header:opacity-100 p-1 hover:bg-accent rounded transition-all"
               >
-                <Plus className="w-3.5 h-3.5" />
-              </Button>
+                <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+              </span>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
+            <span
               onClick={(e) => {
                 e.stopPropagation();
                 toggleSection(sectionKey);
               }}
+              className="p-1 hover:bg-accent rounded transition-all"
             >
               {isExpanded ? (
                 <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
               ) : (
                 <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
               )}
-            </Button>
+            </span>
           </div>
-        </div>
+        </button>
 
         {isExpanded && (
           <div className="space-y-0.5 mt-1">
