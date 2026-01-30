@@ -42,6 +42,7 @@ interface DataSource {
   connected: boolean;
   description: string;
   lastSynced?: string;
+  stats?: string;
   configFields: ConfigField[];
 }
 
@@ -192,6 +193,7 @@ const initialDataSources: DataSource[] = [
     icon: youtubeLogo, 
     connected: false, 
     description: "YouTube video content",
+    stats: "0 videos",
     configFields: [
       { id: "apiKey", label: "API Key", type: "password", placeholder: "Enter YouTube API key" },
       { id: "channelId", label: "Channel ID (optional)", type: "text", placeholder: "Enter channel ID" },
@@ -206,6 +208,7 @@ const initialDataSources: DataSource[] = [
     connected: true, 
     description: "Web page crawling", 
     lastSynced: "30 minutes ago",
+    stats: "156 pages crawled",
     configFields: [
       { id: "url", label: "Website URL", type: "url", placeholder: "https://example.com" },
       { id: "depth", label: "Crawl Depth", type: "text", placeholder: "2" },
@@ -278,8 +281,8 @@ const DataSourceCard = ({
             <div>
               <p className="text-sm font-medium text-foreground">{source.name}</p>
               <p className="text-xs text-muted-foreground">
-                {source.connected && source.lastSynced 
-                  ? `Last synced ${source.lastSynced}` 
+                {source.connected 
+                  ? (source.stats ? `${source.stats} · Last synced ${source.lastSynced}` : `Last synced ${source.lastSynced}`)
                   : source.description
                 }
               </p>
