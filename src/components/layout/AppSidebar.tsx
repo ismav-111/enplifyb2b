@@ -75,7 +75,7 @@ const WorkspaceSection = ({
   if (workspaces.length === 0 && !onNewWorkspace) return null;
 
   return (
-    <div className="mb-2">
+    <div className="mb-1">
       <button 
         onClick={() => setIsSectionExpanded(!isSectionExpanded)}
         className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/header"
@@ -308,7 +308,7 @@ export const AppSidebar = ({
       </div>
 
       {/* Workspaces */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2">
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
         <WorkspaceSection
           title="My Workspaces"
           workspaces={personalWorkspaces}
@@ -318,6 +318,12 @@ export const AppSidebar = ({
           onNewWorkspace={handleNewWorkspace}
           defaultExpanded={true}
         />
+        
+        {/* Separator */}
+        <div className="py-2">
+          <div className="h-px bg-border/60" />
+        </div>
+        
         <WorkspaceSection
           title="Shared Workspaces"
           workspaces={sharedWorkspaces}
@@ -326,8 +332,14 @@ export const AppSidebar = ({
           onNewSession={onNewSession}
           defaultExpanded={true}
         />
+        
+        {/* Separator */}
+        <div className="py-2">
+          <div className="h-px bg-border/60" />
+        </div>
+        
         <WorkspaceSection
-          title="Organization Workspaces"
+          title="Org Workspaces"
           workspaces={orgWorkspaces}
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
