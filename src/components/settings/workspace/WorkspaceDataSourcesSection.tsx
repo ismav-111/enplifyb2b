@@ -1,6 +1,20 @@
 import { useState } from "react";
-import { Plus, Check, X, ExternalLink } from "lucide-react";
+import { Plus, Check, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Brand logos
+import sharepointLogo from "@/assets/logos/sharepoint.svg";
+import onedriveLogo from "@/assets/logos/onedrive.svg";
+import googleDriveLogo from "@/assets/logos/google-drive.svg";
+import salesforceLogo from "@/assets/logos/salesforce.svg";
+import zohoLogo from "@/assets/logos/zoho.svg";
+import servicenowLogo from "@/assets/logos/servicenow.svg";
+import snowflakeLogo from "@/assets/logos/snowflake.svg";
+import sqlDatabaseLogo from "@/assets/logos/sql-database.svg";
+import youtubeLogo from "@/assets/logos/youtube.svg";
+import pdfLogo from "@/assets/logos/pdf.svg";
+import powerpointLogo from "@/assets/logos/powerpoint.svg";
+import excelLogo from "@/assets/logos/excel.svg";
 
 type DataSourceCategory = "cloud_storage" | "crm_business" | "data_analytics" | "content" | "documents";
 
@@ -8,7 +22,7 @@ interface DataSource {
   id: string;
   name: string;
   category: DataSourceCategory;
-  icon: string;
+  icon: string | null;
   connected: boolean;
   description: string;
 }
@@ -31,27 +45,27 @@ const categoryOrder: DataSourceCategory[] = [
 
 const initialDataSources: DataSource[] = [
   // Cloud Storage
-  { id: "sharepoint", name: "SharePoint", category: "cloud_storage", icon: "📁", connected: false, description: "Microsoft SharePoint integration" },
-  { id: "onedrive", name: "OneDrive", category: "cloud_storage", icon: "☁️", connected: true, description: "Microsoft OneDrive files" },
-  { id: "gdrive", name: "Google Drive", category: "cloud_storage", icon: "📂", connected: false, description: "Google Drive documents" },
+  { id: "sharepoint", name: "SharePoint", category: "cloud_storage", icon: sharepointLogo, connected: false, description: "Microsoft SharePoint integration" },
+  { id: "onedrive", name: "OneDrive", category: "cloud_storage", icon: onedriveLogo, connected: true, description: "Microsoft OneDrive files" },
+  { id: "gdrive", name: "Google Drive", category: "cloud_storage", icon: googleDriveLogo, connected: false, description: "Google Drive documents" },
   
   // CRM & Business
-  { id: "salesforce", name: "Salesforce", category: "crm_business", icon: "💼", connected: true, description: "Salesforce CRM data" },
-  { id: "zoho", name: "Zoho", category: "crm_business", icon: "📊", connected: false, description: "Zoho CRM integration" },
-  { id: "servicenow", name: "ServiceNow", category: "crm_business", icon: "🎫", connected: false, description: "ServiceNow ITSM" },
+  { id: "salesforce", name: "Salesforce", category: "crm_business", icon: salesforceLogo, connected: true, description: "Salesforce CRM data" },
+  { id: "zoho", name: "Zoho", category: "crm_business", icon: zohoLogo, connected: false, description: "Zoho CRM integration" },
+  { id: "servicenow", name: "ServiceNow", category: "crm_business", icon: servicenowLogo, connected: false, description: "ServiceNow ITSM" },
   
   // Data & Analytics
-  { id: "snowflake", name: "Snowflake", category: "data_analytics", icon: "❄️", connected: false, description: "Snowflake data warehouse" },
-  { id: "sql", name: "SQL Database", category: "data_analytics", icon: "🗄️", connected: false, description: "SQL database connection" },
+  { id: "snowflake", name: "Snowflake", category: "data_analytics", icon: snowflakeLogo, connected: false, description: "Snowflake data warehouse" },
+  { id: "sql", name: "SQL Database", category: "data_analytics", icon: sqlDatabaseLogo, connected: false, description: "SQL database connection" },
   
   // Content
-  { id: "youtube", name: "YouTube", category: "content", icon: "▶️", connected: false, description: "YouTube video content" },
-  { id: "website", name: "Website", category: "content", icon: "🌐", connected: true, description: "Web page crawling" },
+  { id: "youtube", name: "YouTube", category: "content", icon: youtubeLogo, connected: false, description: "YouTube video content" },
+  { id: "website", name: "Website", category: "content", icon: null, connected: true, description: "Web page crawling" },
   
   // Documents
-  { id: "pdf", name: "PDF", category: "documents", icon: "📄", connected: true, description: "PDF document upload" },
-  { id: "ppt", name: "PowerPoint", category: "documents", icon: "📑", connected: true, description: "PPT/PPTX files" },
-  { id: "excel", name: "Excel", category: "documents", icon: "📗", connected: true, description: "Excel spreadsheets" },
+  { id: "pdf", name: "PDF", category: "documents", icon: pdfLogo, connected: true, description: "PDF document upload" },
+  { id: "ppt", name: "PowerPoint", category: "documents", icon: powerpointLogo, connected: true, description: "PPT/PPTX files" },
+  { id: "excel", name: "Excel", category: "documents", icon: excelLogo, connected: true, description: "Excel spreadsheets" },
 ];
 
 interface DataSourceCardProps {
@@ -69,7 +83,17 @@ const DataSourceCard = ({ source, onToggle }: DataSourceCardProps) => (
     )}
   >
     <div className="flex items-center gap-3">
-      <span className="text-xl">{source.icon}</span>
+      <div className="w-6 h-6 flex items-center justify-center">
+        {source.icon ? (
+          <img 
+            src={source.icon} 
+            alt={`${source.name} logo`} 
+            className="w-5 h-5 object-contain"
+          />
+        ) : (
+          <Globe className="w-5 h-5 text-muted-foreground" />
+        )}
+      </div>
       <div>
         <p className="text-sm font-medium text-foreground">{source.name}</p>
         <p className="text-xs text-muted-foreground">{source.description}</p>
