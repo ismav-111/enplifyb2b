@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FolderOpen } from "lucide-react";
+import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -232,6 +232,7 @@ interface DataSourceCardProps {
   onDisconnect: (id: string) => void;
   onSync: (id: string) => void;
   onClear: (id: string) => void;
+  onView: (id: string) => void;
 }
 
 const DataSourceCard = ({ 
@@ -241,7 +242,8 @@ const DataSourceCard = ({
   onConnect, 
   onDisconnect,
   onSync, 
-  onClear 
+  onClear,
+  onView 
 }: DataSourceCardProps) => {
   const [configValues, setConfigValues] = useState<Record<string, string>>({});
 
@@ -254,7 +256,7 @@ const DataSourceCard = ({
   };
 
   return (
-    <Collapsible open={isExpanded && !source.connected}>
+    <Collapsible open={isExpanded}>
       <div
         className={cn(
           "rounded-lg border transition-colors",
@@ -293,6 +295,14 @@ const DataSourceCard = ({
           <div className="flex items-center gap-1">
             {source.connected && (
               <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onView(source.id)}
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                >
+                  <Eye className="w-4 h-4" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -340,35 +350,43 @@ const DataSourceCard = ({
                       <Label htmlFor={`${source.id}-${field.id}`} className="text-xs">
                         {field.label}
                       </Label>
-                      <Input
-                        id={`${source.id}-${field.id}`}
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={configValues[field.id] || ""}
-                        onChange={(e) => handleConfigChange(field.id, e.target.value)}
-                        className="h-9 text-sm"
-                      />
+                      {source.connected ? (
+                        <p className="text-sm text-foreground py-1.5">
+                          {field.type === "password" ? "••••••••••••" : configValues[field.id] || "—"}
+                        </p>
+                      ) : (
+                        <Input
+                          id={`${source.id}-${field.id}`}
+                          type={field.type}
+                          placeholder={field.placeholder}
+                          value={configValues[field.id] || ""}
+                          onChange={(e) => handleConfigChange(field.id, e.target.value)}
+                          className="h-9 text-sm"
+                        />
+                      )}
                     </div>
                   ))}
                 </div>
 
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onToggleExpand(source.id)}
-                    className="h-8 px-3 text-xs"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleSaveAndSync}
-                    className="h-8 px-4 text-xs"
-                  >
-                    Save & Sync
-                  </Button>
-                </div>
+                {!source.connected && (
+                  <div className="flex justify-end gap-2 pt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onToggleExpand(source.id)}
+                      className="h-8 px-3 text-xs"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleSaveAndSync}
+                      className="h-8 px-4 text-xs"
+                    >
+                      Save & Sync
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -463,6 +481,11 @@ export const WorkspaceDataSourcesSection = () => {
     console.log("Clear data for:", id);
   };
 
+  const handleView = (id: string) => {
+    // Toggle expand to show configuration for viewing
+    setExpandedSourceId(prev => prev === id ? null : id);
+  };
+
   const handleUpload = (id: string) => {
     console.log("Upload files for:", id);
   };
@@ -506,6 +529,7 @@ export const WorkspaceDataSourcesSection = () => {
                       onDisconnect={handleDisconnect}
                       onSync={handleSync}
                       onClear={handleClear}
+                      onView={handleView}
                     />
                   ))}
                 </div>
