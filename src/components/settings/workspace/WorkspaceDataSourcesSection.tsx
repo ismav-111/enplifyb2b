@@ -289,45 +289,38 @@ const DataSourceCard = ({
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {source.connected && (
               <>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => onSync(source.id)}
-                  className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
-                  <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
-                  Sync
+                  <RefreshCw className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => onClear(source.id)}
-                  className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
                 >
-                  <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-                  Clear
+                  <Trash2 className="w-4 h-4" />
                 </Button>
-                <div className="w-px h-6 bg-border mx-1" />
+                <div className="w-px h-5 bg-border mx-1" />
               </>
             )}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">
-                {source.connected ? "Connected" : "Disconnected"}
-              </span>
-              <Switch
-                checked={source.connected}
-                onCheckedChange={() => {
-                  if (source.connected) {
-                    onDisconnect(source.id);
-                  } else {
-                    onToggleExpand(source.id);
-                  }
-                }}
-              />
-            </div>
+            <Switch
+              checked={source.connected}
+              onCheckedChange={() => {
+                if (source.connected) {
+                  onDisconnect(source.id);
+                } else {
+                  onToggleExpand(source.id);
+                }
+              }}
+            />
           </div>
         </div>
 
