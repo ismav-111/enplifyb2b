@@ -7,6 +7,7 @@ import { AdministratorsSection } from "@/components/settings/AdministratorsSecti
 import { ApiKeysSection } from "@/components/settings/ApiKeysSection";
 import { DangerZoneSection } from "@/components/settings/DangerZoneSection";
 import { WorkspaceSettingsSection } from "@/components/settings/WorkspaceSettingsSection";
+import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceListSection";
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
 import { EditWorkspaceDialog } from "@/components/settings/workspace/EditWorkspaceDialog";
 import { DeleteWorkspaceDialog } from "@/components/settings/workspace/DeleteWorkspaceDialog";
@@ -19,6 +20,7 @@ import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
 type WorkspaceSubTab = "general" | "configuration" | "guardrails";
+type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
   { id: "general" as const, label: "General", icon: Settings2 },
@@ -38,7 +40,7 @@ const WorkspaceIcon = ({ type }: { type: string }) => {
 const Settings = () => {
   const navigate = useNavigate();
   const [workspaces, setWorkspaces] = useState<Workspace[]>(mockWorkspaces);
-  const [activeTab, setActiveTab] = useState<"account" | string>("account");
+  const [activeTab, setActiveTab] = useState<ActiveView>("account");
   const [activeSubTab, setActiveSubTab] = useState<WorkspaceSubTab>("general");
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["personal", "shared", "organization"]));
   const [expandedWorkspace, setExpandedWorkspace] = useState<string | null>(null);
@@ -62,6 +64,11 @@ const Settings = () => {
       else next.add(section);
       return next;
     });
+  };
+
+  const handleSectionHeaderClick = (sectionKey: "personal" | "shared" | "organization") => {
+    setActiveTab(`workspace-list-${sectionKey}`);
+    setExpandedWorkspace(null);
   };
 
   const handleWorkspaceClick = (workspaceId: string) => {
@@ -135,6 +142,7 @@ const Settings = () => {
   };
 
   const renderContent = () => {
+    // Account section
     if (activeTab === "account") {
       return (
         <div className="space-y-16">
@@ -147,6 +155,47 @@ const Settings = () => {
       );
     }
 
+    // Workspace list views
+    if (activeTab === "workspace-list-personal") {
+      return (
+        <WorkspaceListSection
+          type="personal"
+          workspaces={personalWorkspaces}
+          onCreateWorkspace={() => handleOpenCreateDialog("personal")}
+          onEditWorkspace={handleEditWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspaceClick}
+          onOpenWorkspace={handleOpenWorkspaceSettings}
+        />
+      );
+    }
+
+    if (activeTab === "workspace-list-shared") {
+      return (
+        <WorkspaceListSection
+          type="shared"
+          workspaces={sharedWorkspaces}
+          onCreateWorkspace={() => handleOpenCreateDialog("shared")}
+          onEditWorkspace={handleEditWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspaceClick}
+          onOpenWorkspace={handleOpenWorkspaceSettings}
+        />
+      );
+    }
+
+    if (activeTab === "workspace-list-organization") {
+      return (
+        <WorkspaceListSection
+          type="organization"
+          workspaces={orgWorkspaces}
+          onCreateWorkspace={() => handleOpenCreateDialog("organization")}
+          onEditWorkspace={handleEditWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspaceClick}
+          onOpenWorkspace={handleOpenWorkspaceSettings}
+        />
+      );
+    }
+
+    // Individual workspace settings
     const workspace = getActiveWorkspace();
     if (!workspace) return null;
 
@@ -156,6 +205,10 @@ const Settings = () => {
 
   const getPageTitle = () => {
     if (activeTab === "account") return "My Account";
+    if (activeTab === "workspace-list-personal") return "My Workspaces";
+    if (activeTab === "workspace-list-shared") return "Shared Workspaces";
+    if (activeTab === "workspace-list-organization") return "Org Workspaces";
+    
     const workspace = getActiveWorkspace();
     if (!workspace) return "";
     const subItem = subItems.find(s => s.id === activeSubTab);
@@ -164,6 +217,9 @@ const Settings = () => {
 
   const getPageSubtitle = () => {
     if (activeTab === "account") return "Manage your account settings and preferences";
+    if (activeTab === "workspace-list-personal") return "Manage your personal workspaces";
+    if (activeTab === "workspace-list-shared") return "View workspaces shared with you";
+    if (activeTab === "workspace-list-organization") return "Manage organization-wide workspaces";
     
     switch (activeSubTab) {
       case "general":
@@ -180,41 +236,59 @@ const Settings = () => {
   const renderWorkspaceSection = (
     title: string, 
     workspaceList: Workspace[], 
-    sectionKey: string,
+    sectionKey: "personal" | "shared" | "organization",
     showAddButton: boolean = false
   ) => {
     const isExpanded = expandedSections.has(sectionKey);
+    const isListActive = activeTab === `workspace-list-${sectionKey}`;
 
     return (
       <div className="mb-2">
-        <button
-          onClick={() => toggleSection(sectionKey)}
-          className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group"
-        >
-          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-            {title}
-          </h3>
-          <div className="flex items-center gap-1">
+        <div className="flex items-center">
+          <button
+            onClick={() => handleSectionHeaderClick(sectionKey)}
+            className={cn(
+              "flex-1 flex items-center px-3 py-2 rounded-lg transition-colors text-left",
+              isListActive 
+                ? "bg-accent text-foreground" 
+                : "hover:bg-accent/50"
+            )}
+          >
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              {title}
+            </h3>
+          </button>
+          <div className="flex items-center gap-0.5 pr-2">
             {showAddButton && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-6 w-6"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleOpenCreateDialog(sectionKey as "personal" | "shared" | "organization");
+                  handleOpenCreateDialog(sectionKey);
                 }}
               >
                 <Plus className="w-3.5 h-3.5" />
               </Button>
             )}
-            {isExpanded ? (
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
-            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSection(sectionKey);
+              }}
+            >
+              {isExpanded ? (
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+              )}
+            </Button>
           </div>
-        </button>
+        </div>
 
         {isExpanded && (
           <div className="space-y-0.5 mt-1">
@@ -330,7 +404,7 @@ const Settings = () => {
             <div className="pt-4">
               {renderWorkspaceSection("My Workspaces", personalWorkspaces, "personal", true)}
               {renderWorkspaceSection("Shared Workspaces", sharedWorkspaces, "shared", false)}
-              {renderWorkspaceSection("Organization Workspaces", orgWorkspaces, "organization", true)}
+              {renderWorkspaceSection("Org Workspaces", orgWorkspaces, "organization", true)}
             </div>
           </nav>
         </div>
