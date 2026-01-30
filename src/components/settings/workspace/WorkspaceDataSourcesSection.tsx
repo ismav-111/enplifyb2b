@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FileText, ChevronDown } from "lucide-react";
+import { RefreshCw, Trash2, Globe, Upload, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -287,7 +287,7 @@ const DataSourceCard = ({
           </div>
           
           <div className="flex items-center gap-2">
-            {source.connected ? (
+            {source.connected && (
               <>
                 <Button
                   variant="ghost"
@@ -308,30 +308,23 @@ const DataSourceCard = ({
                   Clear
                 </Button>
                 <div className="w-px h-6 bg-border mx-1" />
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Connected</span>
-                  <Switch
-                    checked={source.connected}
-                    onCheckedChange={() => onDisconnect(source.id)}
-                  />
-                </div>
               </>
-            ) : (
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant={isExpanded ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => onToggleExpand(source.id)}
-                  className="h-8 px-3 text-xs"
-                >
-                  Connect
-                  <ChevronDown className={cn(
-                    "w-3.5 h-3.5 ml-1.5 transition-transform",
-                    isExpanded && "rotate-180"
-                  )} />
-                </Button>
-              </CollapsibleTrigger>
             )}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">
+                {source.connected ? "Connected" : "Disconnected"}
+              </span>
+              <Switch
+                checked={source.connected}
+                onCheckedChange={() => {
+                  if (source.connected) {
+                    onDisconnect(source.id);
+                  } else {
+                    onToggleExpand(source.id);
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
 
