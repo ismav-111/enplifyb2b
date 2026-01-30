@@ -1,13 +1,8 @@
 import { useState } from "react";
-import { Plus, MoreHorizontal, Trash2, Mail } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -15,6 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface WorkspaceUser {
   id: string;
@@ -101,21 +107,21 @@ export const WorkspaceUsersSection = () => {
                   <SelectItem value="viewer">Viewer</SelectItem>
                 </SelectContent>
               </Select>
-              <button
-                onClick={handleInvite}
-                className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
+              <Button onClick={handleInvite} size="sm">
                 Invite
-              </button>
+              </Button>
             </div>
           </div>
         )}
 
         <div className="divide-y divide-border">
           {users.map((user) => (
-            <div key={user.id} className="px-5 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-8 h-8">
+            <div
+              key={user.id}
+              className="grid grid-cols-[1fr_100px_70px] items-center px-5 py-3 gap-4"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="w-8 h-8 shrink-0">
                   <AvatarImage src={user.avatar} />
                   <AvatarFallback className="text-xs bg-muted">
                     {user.name
@@ -125,8 +131,8 @@ export const WorkspaceUsersSection = () => {
                       .toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <p className="text-sm font-medium text-foreground">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
                     {user.name}
                     {user.isCurrentUser && (
                       <span className="ml-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wide px-1.5 py-0.5 bg-muted rounded">
@@ -134,12 +140,13 @@ export const WorkspaceUsersSection = () => {
                       </span>
                     )}
                   </p>
-                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+
+              <div className="flex justify-center">
                 {user.isCurrentUser ? (
-                  <span className="text-xs text-muted-foreground px-2 py-1">
+                  <span className="text-xs text-muted-foreground">
                     {roleLabels[user.role]}
                   </span>
                 ) : (
@@ -157,23 +164,40 @@ export const WorkspaceUsersSection = () => {
                     </SelectContent>
                   </Select>
                 )}
-                {!user.isCurrentUser && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuItem
-                        onClick={() => handleRemoveUser(user.id)}
-                        className="text-destructive focus:text-destructive"
+              </div>
+
+              <div className="flex justify-end">
+                {!user.isCurrentUser ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs text-muted-foreground hover:text-destructive"
                       >
-                        <Trash2 className="w-4 h-4 mr-2" />
                         Remove
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Remove User</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to remove {user.name} from this workspace? They will lose access to all workspace resources.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleRemoveUser(user.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Remove
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (
+                  <span className="h-7" />
                 )}
               </div>
             </div>

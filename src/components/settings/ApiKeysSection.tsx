@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Eye, EyeOff, MoreHorizontal, Trash2 } from "lucide-react";
+import { Copy, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,14 +12,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface ApiKey {
   id: string;
@@ -30,7 +34,6 @@ interface ApiKey {
 }
 
 export const ApiKeysSection = () => {
-  const { toast } = useToast();
   const [keys, setKeys] = useState<ApiKey[]>([
     {
       id: "1",
@@ -62,7 +65,7 @@ export const ApiKeysSection = () => {
 
   const copyKey = (key: string) => {
     navigator.clipboard.writeText(key);
-    toast({ title: "Copied to clipboard" });
+    toast.success("Copied to clipboard");
   };
 
   const handleCreateKey = () => {
@@ -75,12 +78,12 @@ export const ApiKeysSection = () => {
     setKeys([...keys, newKey]);
     setNewKeyName("");
     setIsDialogOpen(false);
-    toast({ title: "API key created" });
+    toast.success("API key created");
   };
 
   const handleDeleteKey = (id: string) => {
     setKeys(keys.filter((k) => k.id !== id));
-    toast({ title: "API key deleted" });
+    toast.success("API key deleted");
   };
 
   const maskKey = (key: string) => {
@@ -131,45 +134,54 @@ export const ApiKeysSection = () => {
       {keys.length > 0 ? (
         <div className="border border-border rounded-lg bg-card divide-y divide-border">
           {keys.map((apiKey) => (
-            <div key={apiKey.id} className="px-5 py-4 group">
-              <div className="flex items-center justify-between mb-2">
-                <div>
+            <div key={apiKey.id} className="px-5 py-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-foreground">
                     {apiKey.name}
                   </span>
-                  <span className="text-xs text-muted-foreground ml-3">
+                  <span className="text-xs text-muted-foreground">
                     Created {apiKey.createdAt}
                     {apiKey.lastUsed && ` · Last used ${apiKey.lastUsed}`}
                   </span>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-36">
-                    <DropdownMenuItem className="text-xs" onClick={() => copyKey(apiKey.key)}>
-                      <Copy className="w-3.5 h-3.5 mr-2" />
-                      Copy Key
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-xs text-destructive focus:text-destructive"
-                      onClick={() => handleDeleteKey(apiKey.id)}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs text-muted-foreground hover:text-destructive"
                     >
-                      <Trash2 className="w-3.5 h-3.5 mr-2" />
                       Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete API Key</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete the "{apiKey.name}" API key? This action cannot be undone and any applications using this key will stop working.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDeleteKey(apiKey.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
               <div className="flex items-center gap-2">
                 <code className="flex-1 text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-2 rounded">
                   {visibleKeys.has(apiKey.id) ? apiKey.key : maskKey(apiKey.key)}
                 </code>
-                <button
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground"
                   onClick={() => toggleKeyVisibility(apiKey.id)}
                 >
                   {visibleKeys.has(apiKey.id) ? (
@@ -177,13 +189,15 @@ export const ApiKeysSection = () => {
                   ) : (
                     <Eye className="w-4 h-4" />
                   )}
-                </button>
-                <button
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground"
                   onClick={() => copyKey(apiKey.key)}
                 >
                   <Copy className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </div>
           ))}

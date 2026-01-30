@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, Pencil, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface FieldRowProps {
   label: string;
@@ -23,46 +24,59 @@ const FieldRow = ({ label, value, editable = false, onSave }: FieldRowProps) => 
     setIsEditing(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSave();
+    if (e.key === "Escape") handleCancel();
+  };
+
   return (
-    <div className="flex items-center justify-between py-4 border-b border-border last:border-b-0 group">
-      <div className="flex-1 min-w-0">
-        <span className="text-sm text-muted-foreground">{label}</span>
+    <div className="grid grid-cols-[140px_1fr_80px] items-center py-3.5 border-b border-border last:border-b-0 gap-4">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      
+      <div className="min-w-0">
+        {isEditing ? (
+          <Input
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="h-8 text-sm max-w-xs"
+            autoFocus
+          />
+        ) : (
+          <span className="text-sm text-foreground">{value || "—"}</span>
+        )}
       </div>
-      <div className="flex items-center gap-3">
+
+      <div className="flex items-center justify-end gap-1">
         {isEditing ? (
           <>
-            <Input
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className="h-8 w-48 text-sm"
-              autoFocus
-            />
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
               onClick={handleCancel}
-              className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <X className="w-4 h-4" />
-            </button>
-            <button
+              <X className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-primary hover:text-primary"
               onClick={handleSave}
-              className="p-1.5 text-primary hover:text-primary/80 transition-colors"
             >
-              <Check className="w-4 h-4" />
-            </button>
+              <Check className="w-3.5 h-3.5" />
+            </Button>
           </>
-        ) : (
-          <>
-            <span className="text-sm text-foreground">{value || "—"}</span>
-            {editable && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="p-1.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-all"
-              >
-                <Pencil className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </>
-        )}
+        ) : editable ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => setIsEditing(true)}
+          >
+            Edit
+          </Button>
+        ) : null}
       </div>
     </div>
   );
