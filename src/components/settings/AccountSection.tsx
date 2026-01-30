@@ -30,7 +30,7 @@ const FieldRow = ({ label, value, editable = false, onSave }: FieldRowProps) => 
   };
 
   return (
-    <div className="grid grid-cols-[140px_1fr_80px] items-center py-3.5 border-b border-border last:border-b-0 gap-4">
+    <div className="group grid grid-cols-[140px_1fr_40px] items-center py-3.5 border-b border-border/40 last:border-b-0 gap-4">
       <span className="text-sm text-muted-foreground">{label}</span>
       
       <div className="min-w-0">
@@ -53,10 +53,10 @@ const FieldRow = ({ label, value, editable = false, onSave }: FieldRowProps) => 
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground"
               onClick={handleCancel}
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </Button>
             <Button
               variant="ghost"
@@ -64,17 +64,17 @@ const FieldRow = ({ label, value, editable = false, onSave }: FieldRowProps) => 
               className="h-7 w-7 text-primary hover:text-primary"
               onClick={handleSave}
             >
-              <Check className="w-3.5 h-3.5" />
+              <Check className="w-4 h-4" />
             </Button>
           </>
         ) : editable ? (
           <Button
             variant="ghost"
-            size="sm"
-            className="h-7 text-xs text-muted-foreground hover:text-foreground"
+            size="icon"
+            className="h-7 w-7 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={() => setIsEditing(true)}
           >
-            Edit
+            <Pencil className="w-4 h-4" />
           </Button>
         ) : null}
       </div>
@@ -88,10 +88,10 @@ export const AccountSection = () => {
 
   return (
     <section>
-      <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
+      <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
         Profile
       </h2>
-      <div className="border border-border rounded-lg bg-card">
+      <div className="border border-border/50 rounded-xl bg-card shadow-sm">
         <div className="px-5">
           <FieldRow
             label="Organization"

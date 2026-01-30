@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -68,14 +68,14 @@ export const AdministratorsSection = () => {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
           Administrators
         </h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <button className="text-xs text-primary hover:text-primary/80 font-medium transition-colors">
-              + Invite Member
-            </button>
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary">
+              <UserPlus className="w-4 h-4" />
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -107,11 +107,11 @@ export const AdministratorsSection = () => {
         </Dialog>
       </div>
 
-      <div className="border border-border rounded-lg bg-card divide-y divide-border">
+      <div className="border border-border/50 rounded-xl bg-card shadow-sm divide-y divide-border/40">
         {admins.map((admin) => (
           <div
             key={admin.id}
-            className="grid grid-cols-[1fr_80px_60px] items-center px-5 py-3 gap-4"
+            className="group grid grid-cols-[1fr_70px_40px] items-center px-5 py-3 gap-4"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground shrink-0">
@@ -135,10 +135,10 @@ export const AdministratorsSection = () => {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      Remove
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -160,7 +160,7 @@ export const AdministratorsSection = () => {
                   </AlertDialogContent>
                 </AlertDialog>
               ) : (
-                <span className="h-7" />
+                <span className="w-7" />
               )}
             </div>
           </div>

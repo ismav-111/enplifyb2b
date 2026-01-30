@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -73,21 +73,22 @@ export const WorkspaceUsersSection = () => {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
           Users
         </h2>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setShowInvite(!showInvite)}
-          className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+          className="h-7 w-7 text-muted-foreground hover:text-primary"
         >
-          <Plus className="w-3.5 h-3.5" />
-          Add User
-        </button>
+          <UserPlus className="w-4 h-4" />
+        </Button>
       </div>
 
-      <div className="border border-border rounded-lg bg-card">
+      <div className="border border-border/50 rounded-xl bg-card shadow-sm">
         {showInvite && (
-          <div className="px-5 py-4 border-b border-border bg-muted/30">
+          <div className="px-5 py-4 border-b border-border/40 bg-muted/30">
             <div className="flex items-center gap-3">
               <div className="flex-1">
                 <Input
@@ -114,11 +115,11 @@ export const WorkspaceUsersSection = () => {
           </div>
         )}
 
-        <div className="divide-y divide-border">
+        <div className="divide-y divide-border/40">
           {users.map((user) => (
             <div
               key={user.id}
-              className="grid grid-cols-[1fr_100px_70px] items-center px-5 py-3 gap-4"
+              className="group grid grid-cols-[1fr_100px_40px] items-center px-5 py-3 gap-4"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="w-8 h-8 shrink-0">
@@ -172,10 +173,10 @@ export const WorkspaceUsersSection = () => {
                     <AlertDialogTrigger asChild>
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                        size="icon"
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                       >
-                        Remove
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -197,7 +198,7 @@ export const WorkspaceUsersSection = () => {
                     </AlertDialogContent>
                   </AlertDialog>
                 ) : (
-                  <span className="h-7" />
+                  <span className="w-7" />
                 )}
               </div>
             </div>
