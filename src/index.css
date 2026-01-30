@@ -8,35 +8,42 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 220 20% 14%;
+    --background: 0 0% 99%;
+    --foreground: 0 0% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 14%;
+    --card-foreground: 0 0% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 14%;
+    --popover-foreground: 0 0% 13%;
 
     --primary: 230 80% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 15% 95%;
-    --secondary-foreground: 220 15% 30%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 25%;
 
-    --muted: 210 15% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 210 15% 93%;
-    --accent-foreground: 220 15% 20%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 13%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 15% 90%;
-    --input: 210 15% 92%;
+    --border: 0 0% 90%;
+    --input: 0 0% 92%;
     --ring: 230 80% 55%;
 
     --radius: 0.5rem;
+
+    /* Sidebar specific */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 13%;
+    --sidebar-muted-foreground: 0 0% 45%;
+    --sidebar-border: 0 0% 92%;
+    --sidebar-accent: 0 0% 96%;
   }
 
   .dark {
