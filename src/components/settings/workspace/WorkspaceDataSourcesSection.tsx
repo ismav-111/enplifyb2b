@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FileText } from "lucide-react";
+import { RefreshCw, Trash2, Globe, Upload, FolderOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { DocumentManagementSheet } from "./DocumentManagementSheet";
 
 // Brand logos
 import sharepointLogo from "@/assets/logos/sharepoint.svg";
@@ -384,7 +385,7 @@ interface DocumentTypeCardProps {
 }
 
 const DocumentTypeCard = ({ doc, onUpload, onManage }: DocumentTypeCardProps) => (
-  <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-card">
+  <div className="group flex items-center justify-between p-4 rounded-lg border border-border/50 bg-card shadow-sm hover:border-border transition-colors">
     <div className="flex items-center gap-3">
       <div className="w-8 h-8 flex items-center justify-center rounded-md bg-muted/50">
         <img 
@@ -401,24 +402,22 @@ const DocumentTypeCard = ({ doc, onUpload, onManage }: DocumentTypeCardProps) =>
       </div>
     </div>
     
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       <Button
         variant="ghost"
-        size="sm"
+        size="icon"
         onClick={() => onManage(doc.id)}
-        className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground"
+        className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        <FileText className="w-3.5 h-3.5 mr-1.5" />
-        Manage
+        <FolderOpen className="w-4 h-4" />
       </Button>
       <Button
-        variant="outline"
-        size="sm"
+        variant="ghost"
+        size="icon"
         onClick={() => onUpload(doc.id)}
-        className="h-8 px-3 text-xs"
+        className="h-8 w-8 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        <Upload className="w-3.5 h-3.5 mr-1.5" />
-        Upload
+        <Upload className="w-4 h-4" />
       </Button>
     </div>
   </div>
@@ -428,6 +427,8 @@ export const WorkspaceDataSourcesSection = () => {
   const [dataSources, setDataSources] = useState<DataSource[]>(initialDataSources);
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>(initialDocumentTypes);
   const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
+  const [manageSheetOpen, setManageSheetOpen] = useState(false);
+  const [selectedDocType, setSelectedDocType] = useState<DocumentType | null>(null);
 
   const handleToggleExpand = (id: string) => {
     setExpandedSourceId(prev => prev === id ? null : id);
@@ -467,7 +468,11 @@ export const WorkspaceDataSourcesSection = () => {
   };
 
   const handleManage = (id: string) => {
-    console.log("Manage files for:", id);
+    const docType = documentTypes.find((d) => d.id === id);
+    if (docType) {
+      setSelectedDocType(docType);
+      setManageSheetOpen(true);
+    }
   };
 
   const groupedSources = categoryOrder.reduce((acc, category) => {
@@ -476,58 +481,66 @@ export const WorkspaceDataSourcesSection = () => {
   }, {} as Record<DataSourceCategory, DataSource[]>);
 
   return (
-    <section className="space-y-8">
-      {/* Data Source Integrations */}
-      <div>
-        <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-          Data Source Integrations
-        </h2>
-        
-        <div className="space-y-6">
-          {categoryOrder.map((category) => (
-            <div key={category}>
-              <h3 className="text-sm font-medium text-foreground mb-3">
-                {categoryLabels[category]}
-              </h3>
-              <div className="grid gap-2">
-                {groupedSources[category].map((source) => (
-                  <DataSourceCard
-                    key={source.id}
-                    source={source}
-                    isExpanded={expandedSourceId === source.id}
-                    onToggleExpand={handleToggleExpand}
-                    onConnect={handleConnect}
-                    onDisconnect={handleDisconnect}
-                    onSync={handleSync}
-                    onClear={handleClear}
-                  />
-                ))}
+    <>
+      <section className="space-y-8">
+        {/* Data Source Integrations */}
+        <div>
+          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+            Data Source Integrations
+          </h2>
+          
+          <div className="space-y-6">
+            {categoryOrder.map((category) => (
+              <div key={category}>
+                <h3 className="text-sm font-medium text-foreground mb-3">
+                  {categoryLabels[category]}
+                </h3>
+                <div className="grid gap-2">
+                  {groupedSources[category].map((source) => (
+                    <DataSourceCard
+                      key={source.id}
+                      source={source}
+                      isExpanded={expandedSourceId === source.id}
+                      onToggleExpand={handleToggleExpand}
+                      onConnect={handleConnect}
+                      onDisconnect={handleDisconnect}
+                      onSync={handleSync}
+                      onClear={handleClear}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Document Uploads */}
-      <div>
-        <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-          Document Uploads
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Upload and manage documents directly. Supported formats include PDF, PowerPoint, and Excel files.
-        </p>
-        
-        <div className="grid gap-2">
-          {documentTypes.map((doc) => (
-            <DocumentTypeCard
-              key={doc.id}
-              doc={doc}
-              onUpload={handleUpload}
-              onManage={handleManage}
-            />
-          ))}
+        {/* Document Uploads */}
+        <div>
+          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+            Document Uploads
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Upload and manage documents directly. Supported formats include PDF, PowerPoint, and Excel files.
+          </p>
+          
+          <div className="grid gap-2">
+            {documentTypes.map((doc) => (
+              <DocumentTypeCard
+                key={doc.id}
+                doc={doc}
+                onUpload={handleUpload}
+                onManage={handleManage}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <DocumentManagementSheet
+        open={manageSheetOpen}
+        onOpenChange={setManageSheetOpen}
+        documentType={selectedDocType}
+      />
+    </>
   );
 };
