@@ -418,12 +418,25 @@ const Settings = () => {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
                 Settings
               </p>
-              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                {getPageTitle()}
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1.5">
-                {getPageSubtitle()}
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+                    {getPageTitle()}
+                  </h1>
+                  <p className="text-sm text-muted-foreground mt-1.5">
+                    {getPageSubtitle()}
+                  </p>
+                </div>
+                {(activeTab === "workspace-list-personal" || activeTab === "workspace-list-organization") && (
+                  <Button 
+                    onClick={() => handleOpenCreateDialog(activeTab === "workspace-list-personal" ? "personal" : "organization")} 
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4 mr-1.5" />
+                    New Workspace
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Content */}
