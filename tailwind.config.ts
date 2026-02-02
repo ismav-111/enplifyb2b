@@ -73,6 +73,20 @@ export default {
           "ai-bg": "hsl(var(--chat-ai-bg))",
           "ai-fg": "hsl(var(--chat-ai-fg))",
         },
+        workspace: {
+          personal: {
+            DEFAULT: "hsl(var(--workspace-personal))",
+            foreground: "hsl(var(--workspace-personal-foreground))",
+          },
+          shared: {
+            DEFAULT: "hsl(var(--workspace-shared))",
+            foreground: "hsl(var(--workspace-shared-foreground))",
+          },
+          org: {
+            DEFAULT: "hsl(var(--workspace-org))",
+            foreground: "hsl(var(--workspace-org-foreground))",
+          },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
