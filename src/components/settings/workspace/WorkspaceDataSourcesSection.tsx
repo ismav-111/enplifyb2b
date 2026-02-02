@@ -427,6 +427,19 @@ const DataSourceCard = ({
                   </TooltipTrigger>
                   <TooltipContent>Edit configuration</TooltipContent>
                 </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onClear(source.id)}
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Clear saved config</TooltipContent>
+                </Tooltip>
                 <Switch
                   checked={false}
                   onCheckedChange={() => onConnect(source.id)}
