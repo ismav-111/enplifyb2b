@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from "react";
-import { RefreshCw, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, SlidersHorizontal, Pencil, RotateCcw, Power, Check } from "lucide-react";
+import { RefreshCw, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, SlidersHorizontal, Pencil, XCircle, Power, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -398,7 +398,7 @@ const DataSourceCard = ({
                       onClick={() => onClear(source.id)}
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
                     >
-                      <RotateCcw className="w-4 h-4" />
+                      <XCircle className="w-4 h-4" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Clear synced data</TooltipContent>
