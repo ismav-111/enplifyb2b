@@ -35,20 +35,28 @@ export const ChatArea = ({
 
   return (
     <div className="flex flex-col h-full bg-background relative">
-      {/* Documents Icon with Badge */}
-      <button
-        onClick={onOpenDocuments}
-        className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-accent transition-colors group"
-      >
-        <div className="relative">
-          <FileText className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-          {documentCount > 0 && (
-            <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold px-1">
-              {documentCount}
-            </span>
-          )}
-        </div>
-      </button>
+      {/* Header with Profile and Documents */}
+      <div className="absolute top-0 right-0 z-10 flex items-center gap-2 p-4">
+        {/* Documents Icon with Badge */}
+        <button
+          onClick={onOpenDocuments}
+          className="p-2 rounded-lg hover:bg-accent transition-colors group"
+        >
+          <div className="relative">
+            <FileText className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+            {documentCount > 0 && (
+              <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold px-1">
+                {documentCount}
+              </span>
+            )}
+          </div>
+        </button>
+        
+        {/* User Profile Avatar */}
+        <button className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity">
+          JD
+        </button>
+      </div>
 
       {messages.length === 0 ? (
         <EmptyState onSendMessage={onSendMessage} isLoading={isLoading} />

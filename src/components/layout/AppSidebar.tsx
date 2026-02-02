@@ -1,19 +1,16 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   ChevronDown, 
   ChevronRight, 
   Settings, 
-  User, 
   LogOut,
   FolderOpen,
   Users,
   Building2,
   Plus,
-  ChevronUp,
   MoreHorizontal,
   Pencil,
   Trash2,
-  MessageSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Workspace } from "@/types/workspace";
@@ -214,65 +211,12 @@ const WorkspaceSection = ({
   );
 };
 
-const UserMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleNavigation = (path: string) => {
-    setIsOpen(false);
-    window.location.href = path;
-  };
-
+const LogoutButton = () => {
   return (
-    <div className="relative" ref={menuRef}>
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute bottom-full left-0 right-0 mb-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden">
-          <div className="py-1">
-            <button 
-              onClick={() => handleNavigation("/settings")}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-            >
-              <Settings className="w-4 h-4 text-muted-foreground" />
-              Settings
-            </button>
-            <div className="h-px bg-border my-1" />
-            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors">
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* User Profile Button */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
-      >
-        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-medium">
-          JD
-        </div>
-        <div className="flex-1 text-left min-w-0">
-          <p className="text-sm font-medium text-foreground truncate">John Doe</p>
-          <p className="text-xs text-muted-foreground truncate">john@company.com</p>
-        </div>
-        <ChevronUp className={cn(
-          "w-4 h-4 text-muted-foreground transition-transform",
-          !isOpen && "rotate-180"
-        )} />
-      </button>
-    </div>
+    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors">
+      <LogOut className="w-4 h-4" />
+      Logout
+    </button>
   );
 };
 
@@ -342,9 +286,9 @@ export const AppSidebar = ({
         />
       </nav>
 
-      {/* User Profile & Menu */}
+      {/* Logout Button */}
       <div className="border-t border-border p-2">
-        <UserMenu />
+        <LogoutButton />
       </div>
     </aside>
   );
