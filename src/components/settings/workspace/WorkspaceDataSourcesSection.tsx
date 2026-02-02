@@ -504,8 +504,8 @@ const DataSourceCard = ({
                     {isEditing ? "Cancel" : "Close"}
                   </Button>
                   
-                  {/* New configuration or editing */}
-                  {(!source.configured || isEditing) && (
+                  {/* Save button when editing or new config */}
+                  {isEditing && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -516,19 +516,17 @@ const DataSourceCard = ({
                     </Button>
                   )}
                   
-                  {/* Connect button for new config */}
-                  {!source.connected && (
+                  {/* Save & Connect only for new (unconfigured) sources */}
+                  {!source.configured && !source.connected && (
                     <Button
                       size="sm"
                       onClick={() => {
-                        if (!source.configured) {
-                          onSave(source.id, configValues);
-                        }
+                        onSave(source.id, configValues);
                         onConnect(source.id);
                       }}
                       className="h-8 px-4 text-xs"
                     >
-                      {source.configured ? "Connect" : "Save & Connect"}
+                      Save & Connect
                     </Button>
                   )}
                 </div>
