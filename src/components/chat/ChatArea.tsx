@@ -1,8 +1,15 @@
 import { useRef, useEffect } from "react";
-import { FileText } from "lucide-react";
+import { FileText, Settings, User, LogOut } from "lucide-react";
 import { Message, Source } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -33,6 +40,10 @@ export const ChatArea = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const handleNavigation = (path: string) => {
+    window.location.href = path;
+  };
+
   return (
     <div className="flex flex-col h-full bg-background relative">
       {/* Header with Profile and Documents */}
@@ -52,10 +63,39 @@ export const ChatArea = ({
           </div>
         </button>
         
-        {/* User Profile Avatar */}
-        <button className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity">
-          JD
-        </button>
+        {/* User Profile Avatar with Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2">
+              JD
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 bg-card border border-border shadow-lg z-50">
+            <div className="px-3 py-2 border-b border-border">
+              <p className="text-sm font-medium text-foreground">John Doe</p>
+              <p className="text-xs text-muted-foreground">john@company.com</p>
+            </div>
+            <DropdownMenuItem 
+              onClick={() => handleNavigation("/settings?tab=account")}
+              className="gap-2 cursor-pointer"
+            >
+              <User className="w-4 h-4" />
+              My Account
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => handleNavigation("/settings")}
+              className="gap-2 cursor-pointer"
+            >
+              <Settings className="w-4 h-4" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
+              <LogOut className="w-4 h-4" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {messages.length === 0 ? (
