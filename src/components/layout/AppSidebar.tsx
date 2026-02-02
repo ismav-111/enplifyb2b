@@ -76,14 +76,14 @@ const WorkspaceSection = ({
     <div className="mb-1">
       <button 
         onClick={() => setIsSectionExpanded(!isSectionExpanded)}
-        className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/header"
+        className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-accent/50 rounded-lg transition-colors group/header"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           {(() => {
             const Icon = sectionIcons[sectionType];
-            return <Icon className="w-4 h-4 text-muted-foreground" />;
+            return <Icon className="w-4 h-4 text-foreground/70" />;
           })()}
-          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-foreground/80 tracking-wide">
             {title}
           </h3>
         </div>
