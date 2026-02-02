@@ -404,13 +404,10 @@ const DataSourceCard = ({
                   <TooltipContent>Clear synced data</TooltipContent>
                 </Tooltip>
                 <div className="w-px h-5 bg-border mx-1" />
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Connected</span>
-                  <Switch
-                    checked={true}
-                    onCheckedChange={() => onDisconnect(source.id)}
-                  />
-                </div>
+                <Switch
+                  checked={true}
+                  onCheckedChange={() => onDisconnect(source.id)}
+                />
               </>
             )}
 
@@ -430,13 +427,11 @@ const DataSourceCard = ({
                   </TooltipTrigger>
                   <TooltipContent>Edit configuration</TooltipContent>
                 </Tooltip>
-                <div className="flex items-center gap-2 ml-1">
-                  <span className="text-xs text-muted-foreground">Disconnected</span>
-                  <Switch
-                    checked={false}
-                    onCheckedChange={() => onConnect(source.id)}
-                  />
-                </div>
+                <Switch
+                  checked={false}
+                  onCheckedChange={() => onConnect(source.id)}
+                  className="ml-1"
+                />
               </>
             )}
 
