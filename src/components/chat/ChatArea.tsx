@@ -45,13 +45,13 @@ export const ChatArea = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-background relative">
-      {/* Header with Profile and Documents */}
-      <div className="absolute top-0 right-0 z-10 flex items-center gap-2 p-4">
+    <div className="flex flex-col h-full bg-background">
+      {/* Fixed Header Bar - matches sidebar style */}
+      <header className="h-14 flex items-center justify-end px-4 border-b border-border shrink-0">
         {/* Documents Icon with Badge */}
         <button
           onClick={onOpenDocuments}
-          className="p-2 rounded-lg hover:bg-accent transition-colors group"
+          className="p-2 rounded-lg hover:bg-accent transition-colors group mr-2"
         >
           <div className="relative">
             <FileText className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
@@ -96,7 +96,7 @@ export const ChatArea = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </header>
 
       {messages.length === 0 ? (
         <EmptyState onSendMessage={onSendMessage} isLoading={isLoading} />
