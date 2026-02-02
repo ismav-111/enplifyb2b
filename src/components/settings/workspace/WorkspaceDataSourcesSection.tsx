@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -632,6 +633,7 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
   const [isDragging, setIsDragging] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<Set<FileTypeFilter>>(new Set(["all"]));
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -712,6 +714,34 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
   }, [uploadedFiles, searchQuery, activeFilters]);
 
   const activeFilterCount = activeFilters.has("all") ? 0 : activeFilters.size;
+
+  const toggleFileSelection = (fileId: string) => {
+    setSelectedFiles(prev => {
+      const next = new Set(prev);
+      if (next.has(fileId)) {
+        next.delete(fileId);
+      } else {
+        next.add(fileId);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedFiles.size === filteredFiles.length) {
+      setSelectedFiles(new Set());
+    } else {
+      setSelectedFiles(new Set(filteredFiles.map(f => f.id)));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    setUploadedFiles(prev => prev.filter(f => !selectedFiles.has(f.id)));
+    setSelectedFiles(new Set());
+  };
+
+  const isAllSelected = filteredFiles.length > 0 && selectedFiles.size === filteredFiles.length;
+  const hasSelection = selectedFiles.size > 0;
 
   return (
     <TooltipProvider>
@@ -831,14 +861,50 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
               </div>
             )}
 
-            {/* Uploaded Files - Compact List */}
+            {/* Uploaded Files - Compact List with Multi-select */}
             {filteredFiles.length > 0 && (
               <div className="space-y-1">
+                {/* Select All / Bulk Actions Bar */}
+                <div className="flex items-center justify-between py-1.5 px-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={toggleSelectAll}
+                      className="h-3.5 w-3.5"
+                    />
+                    <span className="text-[10px] text-muted-foreground">
+                      {hasSelection ? `${selectedFiles.size} selected` : "Select all"}
+                    </span>
+                  </label>
+                  {hasSelection && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleDeleteSelected}
+                      className="h-6 px-2 text-[10px] text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <X className="w-3 h-3 mr-1" />
+                      Delete
+                    </Button>
+                  )}
+                </div>
+                
+                {/* File List */}
                 {filteredFiles.map((file) => (
                   <div 
                     key={file.id}
-                    className="group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/40 transition-colors"
+                    className={cn(
+                      "group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/40 transition-colors cursor-pointer",
+                      selectedFiles.has(file.id) && "bg-primary/5"
+                    )}
+                    onClick={() => toggleFileSelection(file.id)}
                   >
+                    <Checkbox
+                      checked={selectedFiles.has(file.id)}
+                      onCheckedChange={() => toggleFileSelection(file.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-3.5 w-3.5 shrink-0"
+                    />
                     <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                     <span className="text-xs text-foreground truncate flex-1">{file.name}</span>
                     <span className="text-[10px] text-muted-foreground shrink-0">{file.size}</span>
@@ -846,6 +912,11 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
                       onClick={(e) => {
                         e.stopPropagation();
                         setUploadedFiles(prev => prev.filter(f => f.id !== file.id));
+                        setSelectedFiles(prev => {
+                          const next = new Set(prev);
+                          next.delete(file.id);
+                          return next;
+                        });
                       }}
                       className="p-0.5 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                     >
