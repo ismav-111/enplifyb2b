@@ -81,6 +81,9 @@ const EmptyState = ({ onSendMessage, isLoading }: { onSendMessage: (msg: string)
   return (
     <div className="flex flex-col items-center justify-center h-full px-6">
       <div className="w-full max-w-2xl">
+        <h1 className="text-2xl font-semibold text-foreground mb-6 text-center">
+          Hi Mahesh, Let's get your work done
+        </h1>
         <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
       </div>
     </div>
