@@ -243,14 +243,12 @@ const Settings = () => {
     const isListActive = activeTab === `workspace-list-${sectionKey}`;
 
     return (
-      <div className="mb-2">
+      <div className="mb-1">
         <button
           onClick={() => handleSectionHeaderClick(sectionKey)}
           className={cn(
-            "w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors group/header",
-            isListActive 
-              ? "bg-accent text-foreground" 
-              : "hover:bg-accent/50"
+            "w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/header",
+            isListActive && "bg-accent"
           )}
         >
           <div className="flex items-center gap-2">
@@ -305,17 +303,15 @@ const Settings = () => {
                   <div key={workspace.id}>
                     <div
                       className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors group cursor-pointer",
-                        isActive
-                          ? "bg-accent/50 text-foreground"
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                        "nav-item w-full justify-between group cursor-pointer",
+                        isActive && "bg-accent text-foreground"
                       )}
                       onClick={() => handleWorkspaceClick(workspace.id)}
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <span className="truncate">{workspace.name}</span>
+                        <span className="truncate text-sm">{workspace.name}</span>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-0.5">
                         <WorkspaceContextMenu
                           workspace={workspace}
                           onEdit={handleEditWorkspace}
@@ -323,28 +319,26 @@ const Settings = () => {
                           onOpenSettings={handleOpenWorkspaceSettings}
                         />
                         {isWorkspaceExpanded ? (
-                          <ChevronDown className="w-4 h-4 shrink-0" />
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
                         ) : (
-                          <ChevronRight className="w-4 h-4 shrink-0" />
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
                         )}
                       </div>
                     </div>
 
                     {isWorkspaceExpanded && (
-                      <div className="ml-4 mt-1 space-y-0.5 border-l border-border pl-3">
+                      <div className="ml-4 pl-3 border-l border-border space-y-0.5 mt-1">
                         {subItems.map((subItem) => (
                           <button
                             key={subItem.id}
                             onClick={() => handleSubTabClick(workspace.id, subItem.id)}
                             className={cn(
-                              "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs transition-colors",
-                              isActive && activeSubTab === subItem.id
-                                ? "bg-accent text-foreground font-medium"
-                                : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                              "chat-item w-full justify-start gap-2",
+                              isActive && activeSubTab === subItem.id && "chat-item-active"
                             )}
                           >
                             <subItem.icon className="w-3.5 h-3.5 shrink-0" />
-                            <span>{subItem.label}</span>
+                            <span className="text-sm">{subItem.label}</span>
                           </button>
                         ))}
                       </div>
@@ -364,49 +358,63 @@ const Settings = () => {
       {/* Sidebar - Fixed */}
       <aside className="w-64 border-r border-border h-screen bg-card flex flex-col sticky top-0">
         {/* Logo */}
-        <div className="h-14 px-5 flex items-center border-b border-border shrink-0">
+        <div className="flex items-center px-4 h-14 border-b border-border shrink-0">
           <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
         </div>
 
-        {/* Back to Dashboard */}
-        <div className="px-3 pt-4 pb-2 shrink-0">
+        {/* Settings Navigation */}
+        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
+          {/* Back to Dashboard */}
           <button
             onClick={() => navigate("/")}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
+            className="nav-item w-full justify-start gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
+            <span className="truncate text-sm">Back to Dashboard</span>
           </button>
-        </div>
 
-        {/* Settings Navigation */}
-        <div className="px-3 pt-4 flex-1 overflow-y-auto">
-          <nav className="space-y-1">
-            {/* Account */}
-            <button
-              onClick={() => {
-                setActiveTab("account");
-                setExpandedWorkspace(null);
-              }}
-              className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors",
-                activeTab === "account"
-                  ? "bg-accent text-foreground font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              )}
-            >
-              <User className="w-4 h-4 shrink-0" />
-              <span className="truncate">My Account</span>
-            </button>
+          {/* Separator */}
+          <div className="py-2">
+            <div className="h-px bg-border/60" />
+          </div>
 
-            {/* Workspace sections */}
-            <div className="pt-4">
-              {renderWorkspaceSection("My Workspaces", personalWorkspaces, "personal", true)}
-              {renderWorkspaceSection("Shared Workspaces", sharedWorkspaces, "shared", false)}
-              {renderWorkspaceSection("Org Workspaces", orgWorkspaces, "organization", true)}
-            </div>
-          </nav>
-        </div>
+          {/* Account */}
+          <button
+            onClick={() => {
+              setActiveTab("account");
+              setExpandedWorkspace(null);
+            }}
+            className={cn(
+              "nav-item w-full justify-start gap-2",
+              activeTab === "account" && "bg-accent text-foreground"
+            )}
+          >
+            <User className="w-4 h-4 shrink-0" />
+            <span className="truncate text-sm">My Account</span>
+          </button>
+
+          {/* Separator */}
+          <div className="py-2">
+            <div className="h-px bg-border/60" />
+          </div>
+
+          {/* Workspace sections */}
+          {renderWorkspaceSection("My Workspaces", personalWorkspaces, "personal", true)}
+          
+          {/* Separator */}
+          <div className="py-2">
+            <div className="h-px bg-border/60" />
+          </div>
+          
+          {renderWorkspaceSection("Shared Workspaces", sharedWorkspaces, "shared", false)}
+          
+          {/* Separator */}
+          <div className="py-2">
+            <div className="h-px bg-border/60" />
+          </div>
+          
+          {renderWorkspaceSection("Org Workspaces", orgWorkspaces, "organization", true)}
+        </nav>
       </aside>
 
       {/* Content Area */}
