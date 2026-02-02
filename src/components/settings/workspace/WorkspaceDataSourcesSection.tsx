@@ -1,9 +1,16 @@
-import { useState, useRef } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X } from "lucide-react";
+import { useState, useRef, useMemo } from "react";
+import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import {
   Collapsible,
@@ -457,13 +464,41 @@ interface UploadedFile {
   name: string;
   size: string;
   type: string;
+  extension: string;
   uploadedAt: string;
 }
+
+type FileTypeFilter = "all" | "pdf" | "doc" | "image" | "media" | "other";
+
+const fileTypeConfig: Record<FileTypeFilter, { label: string; extensions: string[] }> = {
+  all: { label: "All Files", extensions: [] },
+  pdf: { label: "PDF", extensions: [".pdf"] },
+  doc: { label: "Documents", extensions: [".docx", ".doc", ".txt", ".pptx"] },
+  image: { label: "Images", extensions: [".jpg", ".jpeg", ".png", ".webp"] },
+  media: { label: "Media", extensions: [".mp3", ".mp4", ".wav"] },
+  other: { label: "Other", extensions: [] },
+};
+
+const getFileExtension = (filename: string): string => {
+  const ext = filename.toLowerCase().match(/\.[^.]+$/);
+  return ext ? ext[0] : "";
+};
+
+const getFileTypeCategory = (extension: string): FileTypeFilter => {
+  for (const [type, config] of Object.entries(fileTypeConfig)) {
+    if (type !== "all" && type !== "other" && config.extensions.includes(extension)) {
+      return type as FileTypeFilter;
+    }
+  }
+  return "other";
+};
 
 const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState<Set<FileTypeFilter>>(new Set(["all"]));
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -489,13 +524,17 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
   };
 
   const handleFiles = (files: File[]) => {
-    const newFiles: UploadedFile[] = files.map((file, index) => ({
-      id: `file-${Date.now()}-${index}`,
-      name: file.name,
-      size: formatFileSize(file.size),
-      type: file.type,
-      uploadedAt: new Date().toLocaleDateString(),
-    }));
+    const newFiles: UploadedFile[] = files.map((file, index) => {
+      const extension = getFileExtension(file.name);
+      return {
+        id: `file-${Date.now()}-${index}`,
+        name: file.name,
+        size: formatFileSize(file.size),
+        type: file.type,
+        extension,
+        uploadedAt: new Date().toLocaleDateString(),
+      };
+    });
     setUploadedFiles(prev => [...prev, ...newFiles]);
   };
 
@@ -509,6 +548,38 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
     fileInputRef.current?.click();
   };
 
+  const toggleFilter = (filter: FileTypeFilter) => {
+    const newFilters = new Set(activeFilters);
+    if (filter === "all") {
+      newFilters.clear();
+      newFilters.add("all");
+    } else {
+      newFilters.delete("all");
+      if (newFilters.has(filter)) {
+        newFilters.delete(filter);
+        if (newFilters.size === 0) newFilters.add("all");
+      } else {
+        newFilters.add(filter);
+      }
+    }
+    setActiveFilters(newFilters);
+  };
+
+  const filteredFiles = useMemo(() => {
+    return uploadedFiles.filter(file => {
+      // Search filter
+      if (searchQuery && !file.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      // Type filter
+      if (activeFilters.has("all")) return true;
+      const fileCategory = getFileTypeCategory(file.extension);
+      return activeFilters.has(fileCategory);
+    });
+  }, [uploadedFiles, searchQuery, activeFilters]);
+
+  const activeFilterCount = activeFilters.has("all") ? 0 : activeFilters.size;
+
   return (
     <TooltipProvider>
       <div className="rounded-xl border border-border/50 bg-card shadow-sm">
@@ -521,6 +592,11 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
             <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               Workspace Files
             </h3>
+            {uploadedFiles.length > 0 && (
+              <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium">
+                {uploadedFiles.length}
+              </Badge>
+            )}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
@@ -557,8 +633,8 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
                   : "border-border/60 hover:border-primary/50 hover:bg-muted/30"
               )}
             >
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <CloudUpload className="w-5 h-5 text-primary" />
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <CloudUpload className="w-4 h-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground">
@@ -578,32 +654,84 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
               />
             </div>
 
-            {/* Uploaded Files - Compact List */}
+            {/* Search & Filter Bar - Only show when files exist */}
             {uploadedFiles.length > 0 && (
-              <div className="space-y-1.5">
-                {uploadedFiles.map((file) => (
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Search files..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-8 pl-8 text-xs bg-muted/30 border-border/50"
+                  />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className={cn(
+                        "h-8 px-2.5 text-xs gap-1.5 border-border/50",
+                        activeFilterCount > 0 && "border-primary/50 text-primary"
+                      )}
+                    >
+                      <Filter className="w-3.5 h-3.5" />
+                      {activeFilterCount > 0 && (
+                        <span className="text-[10px] font-medium">{activeFilterCount}</span>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    {Object.entries(fileTypeConfig).map(([key, config]) => (
+                      <DropdownMenuCheckboxItem
+                        key={key}
+                        checked={activeFilters.has(key as FileTypeFilter)}
+                        onCheckedChange={() => toggleFilter(key as FileTypeFilter)}
+                        className="text-xs"
+                      >
+                        {config.label}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+
+            {/* Uploaded Files - Compact List */}
+            {filteredFiles.length > 0 && (
+              <div className="space-y-1">
+                {filteredFiles.map((file) => (
                   <div 
                     key={file.id}
                     className="group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/40 transition-colors"
                   >
-                    <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <span className="text-sm text-foreground truncate flex-1">{file.name}</span>
-                    <span className="text-xs text-muted-foreground shrink-0">{file.size}</span>
+                    <FileText className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <span className="text-xs text-foreground truncate flex-1">{file.name}</span>
+                    <span className="text-[10px] text-muted-foreground shrink-0">{file.size}</span>
                     <button
-                      onClick={() => setUploadedFiles(prev => prev.filter(f => f.id !== file.id))}
-                      className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setUploadedFiles(prev => prev.filter(f => f.id !== file.id));
+                      }}
+                      className="p-0.5 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-3 h-3" />
                     </button>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Empty State */}
+            {/* Empty/No Results State */}
             {uploadedFiles.length === 0 && (
               <p className="text-xs text-muted-foreground text-center py-2">
                 No files uploaded yet
+              </p>
+            )}
+            {uploadedFiles.length > 0 && filteredFiles.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                No files match your search
               </p>
             )}
           </div>
