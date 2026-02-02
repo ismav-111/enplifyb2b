@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from "react";
-import { RefreshCw, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, SlidersHorizontal, Pencil, XCircle, Power, Check } from "lucide-react";
+import { RefreshCw, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, SlidersHorizontal, Pencil, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -398,25 +398,19 @@ const DataSourceCard = ({
                       onClick={() => onClear(source.id)}
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
                     >
-                      <XCircle className="w-4 h-4" />
+                      <X className="w-4 h-4" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Clear synced data</TooltipContent>
                 </Tooltip>
                 <div className="w-px h-5 bg-border mx-1" />
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onDisconnect(source.id)}
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    >
-                      <Power className="w-4 h-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Disconnect</TooltipContent>
-                </Tooltip>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Connected</span>
+                  <Switch
+                    checked={true}
+                    onCheckedChange={() => onDisconnect(source.id)}
+                  />
+                </div>
               </>
             )}
 
@@ -436,13 +430,13 @@ const DataSourceCard = ({
                   </TooltipTrigger>
                   <TooltipContent>Edit configuration</TooltipContent>
                 </Tooltip>
-                <Button
-                  size="sm"
-                  onClick={() => onConnect(source.id)}
-                  className="h-8 px-3 text-xs ml-1"
-                >
-                  Connect
-                </Button>
+                <div className="flex items-center gap-2 ml-1">
+                  <span className="text-xs text-muted-foreground">Disconnected</span>
+                  <Switch
+                    checked={false}
+                    onCheckedChange={() => onConnect(source.id)}
+                  />
+                </div>
               </>
             )}
 
@@ -516,17 +510,14 @@ const DataSourceCard = ({
                     </Button>
                   )}
                   
-                  {/* Save & Connect only for new (unconfigured) sources */}
+                  {/* Save button for new (unconfigured) sources */}
                   {!source.configured && !source.connected && (
                     <Button
                       size="sm"
-                      onClick={() => {
-                        onSave(source.id, configValues);
-                        onConnect(source.id);
-                      }}
+                      onClick={handleSave}
                       className="h-8 px-4 text-xs"
                     >
-                      Save & Connect
+                      Save
                     </Button>
                   )}
                 </div>
