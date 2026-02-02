@@ -3,7 +3,6 @@ import {
   ChevronDown, 
   ChevronRight, 
   Settings, 
-  LogOut,
   FolderOpen,
   Users,
   Building2,
@@ -211,14 +210,6 @@ const WorkspaceSection = ({
   );
 };
 
-const LogoutButton = () => {
-  return (
-    <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors">
-      <LogOut className="w-4 h-4" />
-      Logout
-    </button>
-  );
-};
 
 export const AppSidebar = ({
   workspaces,
@@ -285,11 +276,6 @@ export const AppSidebar = ({
           sectionType="organization"
         />
       </nav>
-
-      {/* Logout Button */}
-      <div className="border-t border-border p-2">
-        <LogoutButton />
-      </div>
     </aside>
   );
 };
