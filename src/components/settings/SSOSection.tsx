@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, ExternalLink } from "lucide-react";
+import { Check, Pencil, XCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,6 +23,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SSOProvider {
   id: string;
@@ -153,7 +159,7 @@ export const SSOSection = () => {
           {providers.map((provider) => (
             <div
               key={provider.id}
-              className="grid grid-cols-[1fr_auto] items-center px-5 py-4 gap-4"
+              className="group grid grid-cols-[1fr_auto] items-center px-5 py-4 gap-4"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -176,25 +182,42 @@ export const SSOSection = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs text-muted-foreground"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                  Configure
-                </Button>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-xs">Edit</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+                        <XCircle className="w-3.5 h-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-xs">Clear</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs text-muted-foreground hover:text-destructive"
-                    >
-                      Remove
-                    </Button>
-                  </AlertDialogTrigger>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <AlertDialogTrigger asChild>
+                          <button className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </AlertDialogTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="text-xs">Delete</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Remove SSO Provider</AlertDialogTitle>
