@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye } from "lucide-react";
+import { useState, useRef } from "react";
+import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -441,6 +441,199 @@ const DocumentTypeCard = ({ doc, onUpload, onManage }: DocumentTypeCardProps) =>
   </div>
 );
 
+// Workspace Files Section with Drag & Drop
+interface WorkspaceFilesSectionProps {
+  onManageFiles: (type: string) => void;
+}
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+  uploadedAt: string;
+}
+
+const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [selectedSource, setSelectedSource] = useState<"endocs" | "ensights">("endocs");
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    handleFiles(files);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    handleFiles(files);
+  };
+
+  const handleFiles = (files: File[]) => {
+    const newFiles: UploadedFile[] = files.map((file, index) => ({
+      id: `file-${Date.now()}-${index}`,
+      name: file.name,
+      size: formatFileSize(file.size),
+      type: file.type,
+      uploadedAt: new Date().toLocaleDateString(),
+    }));
+    setUploadedFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  const handleBrowseClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  return (
+    <div className="rounded-xl border border-border/50 bg-card shadow-sm">
+      {/* Header */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between px-5 py-4"
+      >
+        <h3 className="text-sm font-medium text-foreground">Workspace Files</h3>
+        {isExpanded ? (
+          <ChevronUp className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        )}
+      </button>
+
+      {isExpanded && (
+        <div className="px-5 pb-5 space-y-4">
+          {/* Radio Buttons */}
+          <div className="flex items-center gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="fileSource"
+                value="endocs"
+                checked={selectedSource === "endocs"}
+                onChange={() => setSelectedSource("endocs")}
+                className="w-4 h-4 text-primary border-border focus:ring-primary"
+              />
+              <span className="text-sm text-foreground">Endocs</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="fileSource"
+                value="ensights"
+                checked={selectedSource === "ensights"}
+                onChange={() => setSelectedSource("ensights")}
+                className="w-4 h-4 text-primary border-border focus:ring-primary"
+              />
+              <span className="text-sm text-foreground">Ensights</span>
+            </label>
+          </div>
+
+          {/* Drop Zone */}
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={cn(
+              "border-2 border-dashed rounded-lg py-8 px-4 text-center transition-colors",
+              isDragging 
+                ? "border-primary bg-primary/5" 
+                : "border-border/60 bg-muted/20"
+            )}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <CloudUpload className="w-6 h-6 text-primary" />
+              </div>
+              <p className="text-sm font-medium text-foreground">
+                Drag & drop files here
+              </p>
+              <p className="text-sm text-muted-foreground">
+                or{" "}
+                <button 
+                  onClick={handleBrowseClick}
+                  className="text-primary hover:underline font-medium"
+                >
+                  browse your files
+                </button>
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Allowed: Upload documents, images, or media files (PDF, DOCX, DOC, TXT, PPTX, JPG, PNG, WEBP, MP3, MP4, WAV)
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Max file size: 30 MB
+              </p>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+              accept=".pdf,.docx,.doc,.txt,.pptx,.jpg,.jpeg,.png,.webp,.mp3,.mp4,.wav"
+            />
+          </div>
+
+          {/* Uploaded Files Section */}
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium text-foreground">Uploaded Files</h4>
+            <div className={cn(
+              "border-2 border-dashed rounded-lg py-6 px-4",
+              "border-border/40"
+            )}>
+              {uploadedFiles.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center">
+                  No data source files uploaded yet.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {uploadedFiles.map((file) => (
+                    <div 
+                      key={file.id}
+                      className="flex items-center justify-between p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-sm text-foreground truncate">{file.name}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{file.size}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setUploadedFiles(prev => prev.filter(f => f.id !== file.id))}
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const WorkspaceDataSourcesSection = () => {
   const [dataSources, setDataSources] = useState<DataSource[]>(initialDataSources);
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>(initialDocumentTypes);
@@ -538,26 +731,16 @@ export const WorkspaceDataSourcesSection = () => {
           </div>
         </div>
 
-        {/* Document Uploads */}
-        <div>
-          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-            Document Uploads
-          </h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Upload and manage documents directly. Supported formats include PDF, PowerPoint, and Excel files.
-          </p>
-          
-          <div className="grid gap-2">
-            {documentTypes.map((doc) => (
-              <DocumentTypeCard
-                key={doc.id}
-                doc={doc}
-                onUpload={handleUpload}
-                onManage={handleManage}
-              />
-            ))}
-          </div>
-        </div>
+        {/* Workspace Files */}
+        <WorkspaceFilesSection 
+          onManageFiles={(type) => {
+            const docType = documentTypes.find((d) => d.id === type);
+            if (docType) {
+              setSelectedDocType(docType);
+              setManageSheetOpen(true);
+            }
+          }}
+        />
       </section>
 
       <DocumentManagementSheet
