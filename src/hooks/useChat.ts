@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Message, ProcessingStep, Source } from "@/types/workspace";
+import { Message, ProcessingStep, Source, Attachment } from "@/types/workspace";
 
 // Demo sources for showcase with varied source types
 const demoSources: Source[] = [
@@ -210,12 +210,13 @@ export const useChat = () => {
     );
   }, []);
 
-  const sendMessage = useCallback(async (content: string) => {
+  const sendMessage = useCallback(async (content: string, attachments?: Attachment[]) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content,
       type: 'text',
+      attachments,
       timestamp: new Date()
     };
     

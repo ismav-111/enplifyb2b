@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { FileText, Settings, User, LogOut } from "lucide-react";
-import { Message, Source } from "@/types/workspace";
+import { Message, Source, Attachment } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import {
@@ -13,7 +13,7 @@ import {
 
 interface ChatAreaProps {
   messages: Message[];
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, attachments?: Attachment[]) => void;
   isLoading: boolean;
   workspaceName?: string;
   sessionName?: string;
@@ -125,7 +125,7 @@ export const ChatArea = ({
   );
 };
 
-const EmptyState = ({ onSendMessage, isLoading }: { onSendMessage: (msg: string) => void; isLoading: boolean }) => {
+const EmptyState = ({ onSendMessage, isLoading }: { onSendMessage: (msg: string, attachments?: Attachment[]) => void; isLoading: boolean }) => {
   return (
     <div className="flex flex-col items-center justify-center h-full px-6">
       <div className="w-full max-w-2xl">
