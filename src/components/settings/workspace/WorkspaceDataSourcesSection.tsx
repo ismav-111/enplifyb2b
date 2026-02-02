@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, Filter } from "lucide-react";
+import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -676,7 +676,7 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
                         activeFilterCount > 0 && "border-primary/50 text-primary"
                       )}
                     >
-                      <Filter className="w-3.5 h-3.5" />
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
                       {activeFilterCount > 0 && (
                         <span className="text-[10px] font-medium">{activeFilterCount}</span>
                       )}
