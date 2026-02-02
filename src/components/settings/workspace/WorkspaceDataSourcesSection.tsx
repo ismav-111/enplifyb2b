@@ -456,7 +456,6 @@ interface UploadedFile {
 
 const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [selectedSource, setSelectedSource] = useState<"endocs" | "ensights">("endocs");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -509,9 +508,11 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-5 py-4"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-accent/30 rounded-t-xl transition-colors"
       >
-        <h3 className="text-sm font-medium text-foreground">Workspace Files</h3>
+        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+          Workspace Files
+        </h3>
         {isExpanded ? (
           <ChevronUp className="w-4 h-4 text-muted-foreground" />
         ) : (
@@ -520,67 +521,45 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
       </button>
 
       {isExpanded && (
-        <div className="px-5 pb-5 space-y-4">
-          {/* Radio Buttons */}
-          <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="fileSource"
-                value="endocs"
-                checked={selectedSource === "endocs"}
-                onChange={() => setSelectedSource("endocs")}
-                className="w-4 h-4 text-primary border-border focus:ring-primary"
-              />
-              <span className="text-sm text-foreground">Endocs</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="fileSource"
-                value="ensights"
-                checked={selectedSource === "ensights"}
-                onChange={() => setSelectedSource("ensights")}
-                className="w-4 h-4 text-primary border-border focus:ring-primary"
-              />
-              <span className="text-sm text-foreground">Ensights</span>
-            </label>
-          </div>
-
+        <div className="px-5 pb-5 space-y-5">
           {/* Drop Zone */}
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              "border-2 border-dashed rounded-lg py-8 px-4 text-center transition-colors",
+              "border border-dashed rounded-xl py-10 px-6 text-center transition-all",
               isDragging 
-                ? "border-primary bg-primary/5" 
-                : "border-border/60 bg-muted/20"
+                ? "border-primary bg-primary/5 shadow-sm" 
+                : "border-border bg-muted/10 hover:bg-muted/20"
             )}
           >
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <CloudUpload className="w-6 h-6 text-primary" />
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+                <CloudUpload className="w-7 h-7 text-primary" />
               </div>
-              <p className="text-sm font-medium text-foreground">
-                Drag & drop files here
-              </p>
-              <p className="text-sm text-muted-foreground">
-                or{" "}
-                <button 
-                  onClick={handleBrowseClick}
-                  className="text-primary hover:underline font-medium"
-                >
-                  browse your files
-                </button>
-              </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Allowed: Upload documents, images, or media files (PDF, DOCX, DOC, TXT, PPTX, JPG, PNG, WEBP, MP3, MP4, WAV)
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Max file size: 30 MB
-              </p>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  Drag & drop files here
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  or{" "}
+                  <button 
+                    onClick={handleBrowseClick}
+                    className="text-primary hover:underline font-medium"
+                  >
+                    browse your files
+                  </button>
+                </p>
+              </div>
+              <div className="space-y-1 mt-2">
+                <p className="text-xs text-muted-foreground">
+                  Allowed: Upload documents, images, or media files (PDF, DOCX, DOC, TXT, PPTX, JPG, PNG, WEBP, MP3, MP4, WAV)
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Max file size: 30 MB
+                </p>
+              </div>
             </div>
             <input
               ref={fileInputRef}
@@ -593,11 +572,13 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
           </div>
 
           {/* Uploaded Files Section */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-foreground">Uploaded Files</h4>
+          <div className="space-y-3">
+            <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              Uploaded Files
+            </h4>
             <div className={cn(
-              "border-2 border-dashed rounded-lg py-6 px-4",
-              "border-border/40"
+              "border border-dashed rounded-xl py-6 px-4 transition-colors",
+              "border-border/60 bg-muted/5"
             )}>
               {uploadedFiles.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center">
@@ -608,17 +589,22 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
                   {uploadedFiles.map((file) => (
                     <div 
                       key={file.id}
-                      className="flex items-center justify-between p-2 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors"
+                      className="group flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors"
                     >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-sm text-foreground truncate">{file.name}</span>
-                        <span className="text-xs text-muted-foreground shrink-0">{file.size}</span>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-md bg-muted/50 flex items-center justify-center shrink-0">
+                          <FolderOpen className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                          <p className="text-xs text-muted-foreground">{file.size}</p>
+                        </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => setUploadedFiles(prev => prev.filter(f => f.id !== file.id))}
-                        className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -699,18 +685,29 @@ export const WorkspaceDataSourcesSection = () => {
   return (
     <>
       <section className="space-y-8">
+        {/* Workspace Files - Top Section */}
+        <WorkspaceFilesSection 
+          onManageFiles={(type) => {
+            const docType = documentTypes.find((d) => d.id === type);
+            if (docType) {
+              setSelectedDocType(docType);
+              setManageSheetOpen(true);
+            }
+          }}
+        />
+
         {/* Data Source Integrations */}
         <div>
           <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-            Data Source Integrations
+            Integrations
           </h2>
           
           <div className="space-y-6">
             {categoryOrder.map((category) => (
               <div key={category}>
-                <h3 className="text-sm font-medium text-foreground mb-3">
+                <p className="text-xs font-medium text-muted-foreground mb-3">
                   {categoryLabels[category]}
-                </h3>
+                </p>
                 <div className="grid gap-2">
                   {groupedSources[category].map((source) => (
                     <DataSourceCard
@@ -730,17 +727,6 @@ export const WorkspaceDataSourcesSection = () => {
             ))}
           </div>
         </div>
-
-        {/* Workspace Files */}
-        <WorkspaceFilesSection 
-          onManageFiles={(type) => {
-            const docType = documentTypes.find((d) => d.id === type);
-            if (docType) {
-              setSelectedDocType(docType);
-              setManageSheetOpen(true);
-            }
-          }}
-        />
       </section>
 
       <DocumentManagementSheet
