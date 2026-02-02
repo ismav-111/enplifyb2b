@@ -35,28 +35,7 @@ const sectionIcons = {
   organization: Building2,
 };
 
-const sectionColors = {
-  personal: {
-    icon: "text-workspace-personal",
-    bg: "bg-workspace-personal/10",
-    activeBg: "bg-workspace-personal/15",
-    activeText: "text-workspace-personal",
-  },
-  shared: {
-    icon: "text-workspace-shared",
-    bg: "bg-workspace-shared/10",
-    activeBg: "bg-workspace-shared/15",
-    activeText: "text-workspace-shared",
-  },
-  organization: {
-    icon: "text-workspace-org",
-    bg: "bg-workspace-org/10",
-    activeBg: "bg-workspace-org/15",
-    activeText: "text-workspace-org",
-  },
-};
-
-const WorkspaceSection = ({
+const WorkspaceSection = ({ 
   title, 
   workspaces, 
   activeSessionId, 
@@ -89,26 +68,18 @@ const WorkspaceSection = ({
 
   if (workspaces.length === 0 && !onNewWorkspace) return null;
 
-  const colors = sectionColors[sectionType];
-
   return (
     <div className="mb-1">
       <button 
         onClick={() => setIsSectionExpanded(!isSectionExpanded)}
-        className={cn(
-          "w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors group/header",
-          isSectionExpanded ? colors.bg : "hover:bg-accent/50"
-        )}
+        className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/header"
       >
         <div className="flex items-center gap-2">
           {(() => {
             const Icon = sectionIcons[sectionType];
-            return <Icon className={cn("w-4 h-4", colors.icon)} />;
+            return <Icon className="w-4 h-4 text-muted-foreground" />;
           })()}
-          <h3 className={cn(
-            "text-[11px] font-semibold uppercase tracking-wider",
-            isSectionExpanded ? colors.activeText : "text-muted-foreground"
-          )}>
+          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
             {title}
           </h3>
         </div>
@@ -122,7 +93,7 @@ const WorkspaceSection = ({
               className="opacity-0 group-hover/header:opacity-100 p-1 hover:bg-accent rounded transition-all"
               title="New workspace"
             >
-              <Plus className={cn("w-3.5 h-3.5", colors.icon)} />
+              <Plus className="w-3.5 h-3.5 text-muted-foreground" />
             </span>
           )}
           {isSectionExpanded ? (
