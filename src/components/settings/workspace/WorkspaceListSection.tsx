@@ -86,12 +86,6 @@ export function WorkspaceListSection({
               <config.icon className="w-6 h-6 text-muted-foreground" />
             </div>
             <p className="text-sm text-muted-foreground">{config.emptyMessage}</p>
-            {config.canCreate && (
-              <Button onClick={onCreateWorkspace} variant="outline" size="sm" className="mt-4">
-                <Plus className="w-4 h-4 mr-1.5" />
-                Create Workspace
-              </Button>
-            )}
           </div>
         ) : (
           workspaces.map((workspace) => (
