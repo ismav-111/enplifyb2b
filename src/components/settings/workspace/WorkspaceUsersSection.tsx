@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, Trash2, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -45,23 +45,44 @@ const roleLabels: Record<string, string> = {
 export const WorkspaceUsersSection = () => {
   const [users, setUsers] = useState<WorkspaceUser[]>(mockUsers);
   const [showInvite, setShowInvite] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"owner" | "member">("member");
+  const [ownerEmails, setOwnerEmails] = useState("");
+  const [memberEmails, setMemberEmails] = useState("");
 
   const handleRemoveUser = (userId: string) => {
     setUsers(users.filter((u) => u.id !== userId));
   };
 
+  const parseEmails = (text: string): string[] => {
+    return text
+      .split(/[,\n]/)
+      .map((e) => e.trim())
+      .filter((e) => e && e.includes("@"));
+  };
+
   const handleInvite = () => {
-    if (!inviteEmail) return;
-    const newUser: WorkspaceUser = {
-      id: `user-${Date.now()}`,
-      name: inviteEmail.split("@")[0],
-      email: inviteEmail,
-      role: inviteRole,
-    };
-    setUsers([...users, newUser]);
-    setInviteEmail("");
+    const owners = parseEmails(ownerEmails);
+    const members = parseEmails(memberEmails);
+
+    if (owners.length === 0 && members.length === 0) return;
+
+    const newUsers: WorkspaceUser[] = [
+      ...owners.map((email) => ({
+        id: `user-${Date.now()}-${Math.random()}`,
+        name: email.split("@")[0],
+        email,
+        role: "owner" as const,
+      })),
+      ...members.map((email) => ({
+        id: `user-${Date.now()}-${Math.random()}`,
+        name: email.split("@")[0],
+        email,
+        role: "member" as const,
+      })),
+    ];
+
+    setUsers([...users, ...newUsers]);
+    setOwnerEmails("");
+    setMemberEmails("");
     setShowInvite(false);
   };
 
@@ -87,27 +108,43 @@ export const WorkspaceUsersSection = () => {
 
       <div className="border border-border/50 rounded-xl bg-card shadow-sm">
         {showInvite && (
-          <div className="px-5 py-4 border-b border-border/40 bg-muted/30">
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <Input
-                  placeholder="Email address"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  className="h-9 text-sm"
+          <div className="px-5 py-5 border-b border-border/40 bg-muted/30 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Owners
+                </label>
+                <Textarea
+                  placeholder="Enter email addresses (comma or line separated)"
+                  value={ownerEmails}
+                  onChange={(e) => setOwnerEmails(e.target.value)}
+                  className="min-h-[80px] text-sm resize-none"
                 />
+                <p className="text-[10px] text-muted-foreground">
+                  Full access to manage workspace settings and members
+                </p>
               </div>
-              <Select value={inviteRole} onValueChange={(v) => setInviteRole(v as "owner" | "member")}>
-                <SelectTrigger className="w-28 h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="owner">Owner</SelectItem>
-                  <SelectItem value="member">Member</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Members
+                </label>
+                <Textarea
+                  placeholder="Enter email addresses (comma or line separated)"
+                  value={memberEmails}
+                  onChange={(e) => setMemberEmails(e.target.value)}
+                  className="min-h-[80px] text-sm resize-none"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  Can view and interact with workspace content
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setShowInvite(false)}>
+                Cancel
+              </Button>
               <Button onClick={handleInvite} size="sm">
-                Invite
+                Invite Members
               </Button>
             </div>
           </div>
