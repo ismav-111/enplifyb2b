@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, Upload, Trash2, Filter, ArrowUpDown, LayoutGrid, LayoutList, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Search, Trash2, Filter, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Document, DocumentType } from "@/types/document";
 import { DocumentIcon } from "./DocumentIcon";
@@ -28,7 +28,6 @@ import { mockDocuments } from "@/data/mockDocuments";
 
 type SortOption = "name" | "date" | "size";
 type SortDirection = "asc" | "desc";
-type ViewMode = "list" | "grid";
 
 interface DocumentsDrawerProps {
   isOpen: boolean;
@@ -65,7 +64,6 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
   const [typeFilters, setTypeFilters] = useState<DocumentType[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const { toast } = useToast();
@@ -154,10 +152,6 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
     }
   };
 
-  const handleUpload = () => {
-    toast({ title: "Upload", description: "File upload coming soon." });
-  };
-
   const handleView = (doc: Document) => {
     toast({ title: "Preview", description: `Opening ${doc.name}...` });
   };
@@ -188,18 +182,12 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
               {processedDocuments.length} of {documents.length} files
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={handleUpload} size="sm" className="gap-1.5">
-              <Upload className="w-3.5 h-3.5" />
-              Upload
-            </Button>
-            <button
-              onClick={onClose}
-              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Search & Filters */}
@@ -304,32 +292,10 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
                 </Button>
               )}
             </div>
-
-            {/* View toggle */}
-            <div className="flex items-center border border-border rounded-md">
-              <button
-                onClick={() => setViewMode("list")}
-                className={cn(
-                  "p-1.5 transition-colors",
-                  viewMode === "list" ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <LayoutList className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => setViewMode("grid")}
-                className={cn(
-                  "p-1.5 transition-colors",
-                  viewMode === "grid" ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-              </button>
-            </div>
           </div>
         </div>
 
-        {/* Document List/Grid */}
+        {/* Document List */}
         <div className="flex-1 overflow-auto">
           {paginatedDocuments.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4">
@@ -338,7 +304,7 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
               </div>
               <p className="text-sm text-muted-foreground">No documents found</p>
             </div>
-          ) : viewMode === "list" ? (
+          ) : (
             <div>
               {/* List header */}
               <div className="flex items-center gap-3 px-4 py-2 border-b border-border bg-muted/30 sticky top-0">
@@ -406,41 +372,6 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            /* Grid view */
-            <div className="grid grid-cols-2 gap-3 p-4">
-              {paginatedDocuments.map((doc) => (
-                <div
-                  key={doc.id}
-                  className={cn(
-                    "group relative flex flex-col items-center p-3 rounded-lg border border-border hover:border-primary/50 hover:bg-accent/30 transition-all cursor-pointer",
-                    selectedIds.has(doc.id) && "border-primary bg-primary/5"
-                  )}
-                  onClick={() => handleView(doc)}
-                >
-                  <div
-                    className="absolute top-2 left-2"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Checkbox
-                      checked={selectedIds.has(doc.id)}
-                      onCheckedChange={(checked) => handleSelect(doc.id, checked as boolean)}
-                      className={cn(
-                        "data-[state=checked]:bg-primary transition-opacity",
-                        !selectedIds.has(doc.id) && "opacity-0 group-hover:opacity-100"
-                      )}
-                    />
-                  </div>
-                  <DocumentIcon type={doc.type} className="w-10 h-10 mb-2" />
-                  <p className="text-xs font-medium text-foreground text-center truncate w-full">
-                    {doc.name}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
-                    {formatFileSize(doc.size)}
-                  </p>
                 </div>
               ))}
             </div>

@@ -5,6 +5,7 @@ import { SourcesSidebar } from "@/components/chat/SourcesSidebar";
 import { DocumentsDrawer } from "@/components/documents/DocumentsDrawer";
 import { useChat } from "@/hooks/useChat";
 import { mockWorkspaces } from "@/data/mockWorkspaces";
+import { mockDocuments } from "@/data/mockDocuments";
 import { Source } from "@/types/workspace";
 
 const Index = () => {
@@ -58,7 +59,6 @@ const Index = () => {
         activeSessionId={activeSessionId}
         onSelectSession={handleSelectSession}
         onNewSession={handleNewSession}
-        onOpenDocuments={handleOpenDocuments}
       />
       <main className="flex-1 min-w-0">
         <ChatArea
@@ -70,6 +70,8 @@ const Index = () => {
           onViewSources={handleViewSources}
           onEditMessage={editMessage}
           onRegenerateResponse={regenerateResponse}
+          onOpenDocuments={handleOpenDocuments}
+          documentCount={mockDocuments.length}
         />
       </main>
       <SourcesSidebar 
