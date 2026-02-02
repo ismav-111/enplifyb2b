@@ -29,13 +29,10 @@ const subItems = [
   { id: "guardrails" as const, label: "Guard Rails", icon: Shield },
 ];
 
-const WorkspaceIcon = ({ type }: { type: string }) => {
-  switch (type) {
-    case 'personal': return <FolderOpen className="w-4 h-4" />;
-    case 'shared': return <Users className="w-4 h-4" />;
-    case 'organization': return <Building2 className="w-4 h-4" />;
-    default: return <FolderOpen className="w-4 h-4" />;
-  }
+const sectionIcons = {
+  personal: FolderOpen,
+  shared: Users,
+  organization: Building2,
 };
 
 const Settings = () => {
@@ -256,9 +253,15 @@ const Settings = () => {
               : "hover:bg-accent/50"
           )}
         >
-          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-            {title}
-          </h3>
+          <div className="flex items-center gap-2">
+            {(() => {
+              const Icon = sectionIcons[sectionKey];
+              return <Icon className="w-4 h-4 text-muted-foreground" />;
+            })()}
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              {title}
+            </h3>
+          </div>
           <div className="flex items-center gap-1">
             {showAddButton && (
               <span
@@ -309,8 +312,7 @@ const Settings = () => {
                       )}
                       onClick={() => handleWorkspaceClick(workspace.id)}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                        <WorkspaceIcon type={workspace.type} />
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
                         <span className="truncate">{workspace.name}</span>
                       </div>
                       <div className="flex items-center gap-1">

@@ -35,12 +35,10 @@ interface AppSidebarProps {
   onOpenDocuments: () => void;
 }
 
-const WorkspaceIcon = ({ type }: { type: Workspace['type'] }) => {
-  switch (type) {
-    case 'personal': return <FolderOpen className="w-4 h-4" />;
-    case 'shared': return <Users className="w-4 h-4" />;
-    case 'organization': return <Building2 className="w-4 h-4" />;
-  }
+const sectionIcons = {
+  personal: FolderOpen,
+  shared: Users,
+  organization: Building2,
 };
 
 const WorkspaceSection = ({ 
@@ -50,7 +48,8 @@ const WorkspaceSection = ({
   onSelectSession,
   onNewSession,
   onNewWorkspace,
-  defaultExpanded = true
+  defaultExpanded = true,
+  sectionType
 }: { 
   title: string;
   workspaces: Workspace[];
@@ -59,6 +58,7 @@ const WorkspaceSection = ({
   onNewSession: (workspaceId: string) => void;
   onNewWorkspace?: () => void;
   defaultExpanded?: boolean;
+  sectionType: 'personal' | 'shared' | 'organization';
 }) => {
   const [isSectionExpanded, setIsSectionExpanded] = useState(defaultExpanded);
   const [expandedWorkspaces, setExpandedWorkspaces] = useState<Set<string>>(new Set());
@@ -80,9 +80,15 @@ const WorkspaceSection = ({
         onClick={() => setIsSectionExpanded(!isSectionExpanded)}
         className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/header"
       >
-        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-          {title}
-        </h3>
+        <div className="flex items-center gap-2">
+          {(() => {
+            const Icon = sectionIcons[sectionType];
+            return <Icon className="w-4 h-4 text-muted-foreground" />;
+          })()}
+          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            {title}
+          </h3>
+        </div>
         <div className="flex items-center gap-1">
           {onNewWorkspace && (
             <span
@@ -111,9 +117,8 @@ const WorkspaceSection = ({
               <div className="nav-item w-full justify-between group">
                 <button
                   onClick={() => toggleWorkspace(workspace.id)}
-                  className="flex items-center gap-2.5 flex-1 min-w-0"
+                  className="flex items-center gap-2 flex-1 min-w-0"
                 >
-                  <WorkspaceIcon type={workspace.type} />
                   <span className="truncate text-sm">{workspace.name}</span>
                 </button>
                 <div className="flex items-center gap-0.5">
@@ -317,6 +322,7 @@ export const AppSidebar = ({
           onNewSession={onNewSession}
           onNewWorkspace={handleNewWorkspace}
           defaultExpanded={true}
+          sectionType="personal"
         />
         
         {/* Separator */}
@@ -331,6 +337,7 @@ export const AppSidebar = ({
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
           defaultExpanded={true}
+          sectionType="shared"
         />
         
         {/* Separator */}
@@ -345,6 +352,7 @@ export const AppSidebar = ({
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
           defaultExpanded={true}
+          sectionType="organization"
         />
       </nav>
 
