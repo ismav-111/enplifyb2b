@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Trash2, UserPlus, Info } from "lucide-react";
+import { Trash2, UserPlus, Info, Check, ChevronsUpDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -33,6 +32,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface WorkspaceUser {
   id: string;
@@ -56,6 +69,9 @@ const availableUsers = [
   { id: "u3", name: "Carol Davis", email: "carol@acme.com" },
   { id: "u4", name: "David Brown", email: "david@acme.com" },
   { id: "u5", name: "Eva Martinez", email: "eva@acme.com" },
+  { id: "u6", name: "Frank Miller", email: "frank@acme.com" },
+  { id: "u7", name: "Grace Lee", email: "grace@acme.com" },
+  { id: "u8", name: "Henry Taylor", email: "henry@acme.com" },
 ];
 
 const roleLabels: Record<string, string> = {
@@ -68,6 +84,8 @@ export const WorkspaceUsersSection = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedOwners, setSelectedOwners] = useState<string[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [ownerPopoverOpen, setOwnerPopoverOpen] = useState(false);
+  const [memberPopoverOpen, setMemberPopoverOpen] = useState(false);
 
   const handleRemoveUser = (userId: string) => {
     setUsers(users.filter((u) => u.id !== userId));
@@ -116,13 +134,32 @@ export const WorkspaceUsersSection = () => {
     setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
   };
 
-  // Filter out already added users
-  const getAvailableForSelection = () => {
-    const existingEmails = users.map((u) => u.email);
-    return availableUsers.filter((u) => !existingEmails.includes(u.email));
+  const toggleOwnerSelection = (userId: string) => {
+    setSelectedOwners((prev) =>
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+    );
   };
 
-  const filteredAvailable = getAvailableForSelection();
+  const toggleMemberSelection = (userId: string) => {
+    setSelectedMembers((prev) =>
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+    );
+  };
+
+  // Filter out already added users and those selected in the other role
+  const getAvailableForOwners = () => {
+    const existingEmails = users.map((u) => u.email);
+    return availableUsers.filter(
+      (u) => !existingEmails.includes(u.email) && !selectedMembers.includes(u.id)
+    );
+  };
+
+  const getAvailableForMembers = () => {
+    const existingEmails = users.map((u) => u.email);
+    return availableUsers.filter(
+      (u) => !existingEmails.includes(u.email) && !selectedOwners.includes(u.id)
+    );
+  };
 
   return (
     <section>
@@ -163,35 +200,56 @@ export const WorkspaceUsersSection = () => {
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <Select
-                value={selectedOwners[0] || ""}
-                onValueChange={(value) => {
-                  if (value && !selectedOwners.includes(value)) {
-                    setSelectedOwners([...selectedOwners, value]);
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full h-11">
-                  <SelectValue placeholder="Search and select owners" />
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredAvailable
-                    .filter((u) => !selectedOwners.includes(u.id) && !selectedMembers.includes(u.id))
-                    .map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{user.name}</span>
-                          <span className="text-muted-foreground text-xs">({user.email})</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  {filteredAvailable.filter((u) => !selectedOwners.includes(u.id) && !selectedMembers.includes(u.id)).length === 0 && (
-                    <div className="px-2 py-4 text-sm text-muted-foreground text-center">
-                      No users available
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
+              <Popover open={ownerPopoverOpen} onOpenChange={setOwnerPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={ownerPopoverOpen}
+                    className="w-full h-11 justify-between font-normal"
+                  >
+                    <span className="text-muted-foreground">
+                      {selectedOwners.length > 0
+                        ? `${selectedOwners.length} owner${selectedOwners.length > 1 ? "s" : ""} selected`
+                        : "Search and select owners"}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[452px] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search users..." />
+                    <CommandList>
+                      <CommandEmpty>No users found.</CommandEmpty>
+                      <CommandGroup>
+                        {getAvailableForOwners().map((user) => (
+                          <CommandItem
+                            key={user.id}
+                            value={`${user.name} ${user.email}`}
+                            onSelect={() => toggleOwnerSelection(user.id)}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedOwners.includes(user.id) ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            <Avatar className="w-6 h-6 mr-2">
+                              <AvatarFallback className="text-[10px] bg-muted">
+                                {user.name.split(" ").map((n) => n[0]).join("").toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                              <span className="text-sm">{user.name}</span>
+                              <span className="text-xs text-muted-foreground">{user.email}</span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               {selectedOwners.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {selectedOwners.map((id) => {
@@ -203,7 +261,7 @@ export const WorkspaceUsersSection = () => {
                       >
                         {user.name}
                         <button
-                          onClick={() => setSelectedOwners(selectedOwners.filter((o) => o !== id))}
+                          onClick={() => toggleOwnerSelection(id)}
                           className="ml-1 hover:text-destructive"
                         >
                           ×
@@ -230,35 +288,56 @@ export const WorkspaceUsersSection = () => {
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <Select
-                value={selectedMembers[0] || ""}
-                onValueChange={(value) => {
-                  if (value && !selectedMembers.includes(value)) {
-                    setSelectedMembers([...selectedMembers, value]);
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full h-11">
-                  <SelectValue placeholder="Search and select members" />
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredAvailable
-                    .filter((u) => !selectedOwners.includes(u.id) && !selectedMembers.includes(u.id))
-                    .map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{user.name}</span>
-                          <span className="text-muted-foreground text-xs">({user.email})</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  {filteredAvailable.filter((u) => !selectedOwners.includes(u.id) && !selectedMembers.includes(u.id)).length === 0 && (
-                    <div className="px-2 py-4 text-sm text-muted-foreground text-center">
-                      No users available
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
+              <Popover open={memberPopoverOpen} onOpenChange={setMemberPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={memberPopoverOpen}
+                    className="w-full h-11 justify-between font-normal"
+                  >
+                    <span className="text-muted-foreground">
+                      {selectedMembers.length > 0
+                        ? `${selectedMembers.length} member${selectedMembers.length > 1 ? "s" : ""} selected`
+                        : "Search and select members"}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[452px] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search users..." />
+                    <CommandList>
+                      <CommandEmpty>No users found.</CommandEmpty>
+                      <CommandGroup>
+                        {getAvailableForMembers().map((user) => (
+                          <CommandItem
+                            key={user.id}
+                            value={`${user.name} ${user.email}`}
+                            onSelect={() => toggleMemberSelection(user.id)}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedMembers.includes(user.id) ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            <Avatar className="w-6 h-6 mr-2">
+                              <AvatarFallback className="text-[10px] bg-muted">
+                                {user.name.split(" ").map((n) => n[0]).join("").toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col">
+                              <span className="text-sm">{user.name}</span>
+                              <span className="text-xs text-muted-foreground">{user.email}</span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               {selectedMembers.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {selectedMembers.map((id) => {
@@ -270,7 +349,7 @@ export const WorkspaceUsersSection = () => {
                       >
                         {user.name}
                         <button
-                          onClick={() => setSelectedMembers(selectedMembers.filter((m) => m !== id))}
+                          onClick={() => toggleMemberSelection(id)}
                           className="ml-1 hover:text-destructive"
                         >
                           ×
@@ -288,7 +367,7 @@ export const WorkspaceUsersSection = () => {
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleAddUsers}
               disabled={selectedOwners.length === 0 && selectedMembers.length === 0}
             >
