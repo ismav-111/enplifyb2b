@@ -27,14 +27,14 @@ import {
 import { DocumentManagementSheet } from "./DocumentManagementSheet";
 
 // Brand logos
-import sharepointLogo from "@/assets/logos/sharepoint.svg";
-import onedriveLogo from "@/assets/logos/onedrive.svg";
+import sharepointLogo from "@/assets/logos/sharepoint.png";
+import onedriveLogo from "@/assets/logos/onedrive.png";
 import googleDriveLogo from "@/assets/logos/google-drive.svg";
-import salesforceLogo from "@/assets/logos/salesforce.svg";
-import zohoLogo from "@/assets/logos/zoho.svg";
-import servicenowLogo from "@/assets/logos/servicenow.svg";
-import snowflakeLogo from "@/assets/logos/snowflake.svg";
-import sqlDatabaseLogo from "@/assets/logos/sql-database.svg";
+import salesforceLogo from "@/assets/logos/salesforce.png";
+import zohoLogo from "@/assets/logos/zoho.png";
+import servicenowLogo from "@/assets/logos/servicenow.png";
+import snowflakeLogo from "@/assets/logos/snowflake.png";
+import sqlDatabaseLogo from "@/assets/logos/sql-database.png";
 import youtubeLogo from "@/assets/logos/youtube.svg";
 import pdfLogo from "@/assets/logos/pdf.svg";
 import powerpointLogo from "@/assets/logos/powerpoint.svg";
