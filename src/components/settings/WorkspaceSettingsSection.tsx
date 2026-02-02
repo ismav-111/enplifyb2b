@@ -7,7 +7,7 @@ import { WorkspaceDangerZone } from "./workspace/WorkspaceDangerZone";
 
 interface WorkspaceSettingsProps {
   type: "organization" | "my" | "shared";
-  subTab: "general" | "configuration" | "guardrails";
+  subTab: "general" | "members" | "configuration" | "guardrails";
 }
 
 const workspaceDefaults = {
@@ -47,8 +47,15 @@ export const WorkspaceSettingsSection = ({ type, subTab }: WorkspaceSettingsProp
           createdAt={defaults.createdAt}
           createdBy={defaults.createdBy}
         />
-        <WorkspaceUsersSection />
         <WorkspaceDangerZone workspaceType={type} />
+      </div>
+    );
+  }
+
+  if (subTab === "members") {
+    return (
+      <div className="space-y-12">
+        <WorkspaceUsersSection />
       </div>
     );
   }

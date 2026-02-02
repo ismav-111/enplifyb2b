@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus } from "lucide-react";
+import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AccountSection } from "@/components/settings/AccountSection";
 import { SSOSection } from "@/components/settings/SSOSection";
@@ -19,11 +19,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
-type WorkspaceSubTab = "general" | "configuration" | "guardrails";
+type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails";
 type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
   { id: "general" as const, label: "General", icon: Settings2 },
+  { id: "members" as const, label: "Members", icon: UserCog },
   { id: "configuration" as const, label: "Configuration", icon: Database },
   { id: "guardrails" as const, label: "Guard Rails", icon: Shield },
 ];
@@ -223,7 +224,9 @@ const Settings = () => {
     
     switch (activeSubTab) {
       case "general":
-        return "Manage workspace details and team members";
+        return "Manage workspace details and settings";
+      case "members":
+        return "Manage workspace members and access";
       case "configuration":
         return "Configure data sources and integrations";
       case "guardrails":

@@ -27,27 +27,26 @@ interface WorkspaceUser {
   name: string;
   email: string;
   avatar?: string;
-  role: "admin" | "editor" | "viewer";
+  role: "owner" | "member";
   isCurrentUser?: boolean;
 }
 
 const mockUsers: WorkspaceUser[] = [
-  { id: "1", name: "John Smith", email: "john@acme.com", role: "admin", isCurrentUser: true },
-  { id: "2", name: "Sarah Connor", email: "sarah@acme.com", role: "editor" },
-  { id: "3", name: "Mike Wilson", email: "mike@acme.com", role: "viewer" },
+  { id: "1", name: "John Smith", email: "john@acme.com", role: "owner", isCurrentUser: true },
+  { id: "2", name: "Sarah Connor", email: "sarah@acme.com", role: "member" },
+  { id: "3", name: "Mike Wilson", email: "mike@acme.com", role: "member" },
 ];
 
 const roleLabels: Record<string, string> = {
-  admin: "Admin",
-  editor: "Editor",
-  viewer: "Viewer",
+  owner: "Owner",
+  member: "Member",
 };
 
 export const WorkspaceUsersSection = () => {
   const [users, setUsers] = useState<WorkspaceUser[]>(mockUsers);
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"admin" | "editor" | "viewer">("viewer");
+  const [inviteRole, setInviteRole] = useState<"owner" | "member">("member");
 
   const handleRemoveUser = (userId: string) => {
     setUsers(users.filter((u) => u.id !== userId));
@@ -66,7 +65,7 @@ export const WorkspaceUsersSection = () => {
     setShowInvite(false);
   };
 
-  const handleRoleChange = (userId: string, newRole: "admin" | "editor" | "viewer") => {
+  const handleRoleChange = (userId: string, newRole: "owner" | "member") => {
     setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
   };
 
@@ -74,7 +73,7 @@ export const WorkspaceUsersSection = () => {
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-          Users
+          Members
         </h2>
         <Button
           variant="ghost"
@@ -98,14 +97,13 @@ export const WorkspaceUsersSection = () => {
                   className="h-9 text-sm"
                 />
               </div>
-              <Select value={inviteRole} onValueChange={(v) => setInviteRole(v as any)}>
+              <Select value={inviteRole} onValueChange={(v) => setInviteRole(v as "owner" | "member")}>
                 <SelectTrigger className="w-28 h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="editor">Editor</SelectItem>
-                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="owner">Owner</SelectItem>
+                  <SelectItem value="member">Member</SelectItem>
                 </SelectContent>
               </Select>
               <Button onClick={handleInvite} size="sm">
@@ -153,15 +151,14 @@ export const WorkspaceUsersSection = () => {
                 ) : (
                   <Select
                     value={user.role}
-                    onValueChange={(v) => handleRoleChange(user.id, v as any)}
+                    onValueChange={(v) => handleRoleChange(user.id, v as "owner" | "member")}
                   >
                     <SelectTrigger className="w-24 h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="editor">Editor</SelectItem>
-                      <SelectItem value="viewer">Viewer</SelectItem>
+                      <SelectItem value="owner">Owner</SelectItem>
+                      <SelectItem value="member">Member</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
