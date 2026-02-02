@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, SlidersHorizontal } from "lucide-react";
+import { RefreshCw, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X, Search, SlidersHorizontal, Pencil, RotateCcw, Power, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -53,11 +53,13 @@ interface DataSource {
   name: string;
   category: DataSourceCategory;
   icon: string | null;
-  connected: boolean;
+  configured: boolean; // credentials saved
+  connected: boolean;  // actively syncing
   description: string;
   lastSynced?: string;
   stats?: string;
   configFields: ConfigField[];
+  savedConfig?: Record<string, string>; // stored config values
 }
 
 interface DocumentType {
@@ -90,6 +92,7 @@ const initialDataSources: DataSource[] = [
     name: "SharePoint", 
     category: "cloud_storage", 
     icon: sharepointLogo, 
+    configured: false,
     connected: false, 
     description: "Microsoft SharePoint integration",
     configFields: [
@@ -103,9 +106,11 @@ const initialDataSources: DataSource[] = [
     name: "OneDrive", 
     category: "cloud_storage", 
     icon: onedriveLogo, 
+    configured: true,
     connected: true, 
     description: "Microsoft OneDrive files", 
     lastSynced: "2 hours ago",
+    savedConfig: { accountEmail: "user@company.com", accessToken: "••••••" },
     configFields: [
       { id: "accountEmail", label: "Account Email", type: "text", placeholder: "user@company.com" },
       { id: "accessToken", label: "Access Token", type: "password", placeholder: "Enter access token" },
@@ -116,8 +121,10 @@ const initialDataSources: DataSource[] = [
     name: "Google Drive", 
     category: "cloud_storage", 
     icon: googleDriveLogo, 
+    configured: true,
     connected: false, 
     description: "Google Drive documents",
+    savedConfig: { serviceAccount: "service@project.iam.gserviceaccount.com" },
     configFields: [
       { id: "serviceAccount", label: "Service Account Email", type: "text", placeholder: "service@project.iam.gserviceaccount.com" },
       { id: "privateKey", label: "Private Key", type: "password", placeholder: "Paste private key" },
@@ -131,9 +138,11 @@ const initialDataSources: DataSource[] = [
     name: "Salesforce", 
     category: "crm_business", 
     icon: salesforceLogo, 
+    configured: true,
     connected: true, 
     description: "Salesforce CRM data", 
     lastSynced: "1 hour ago",
+    savedConfig: { instanceUrl: "https://mycompany.salesforce.com" },
     configFields: [
       { id: "instanceUrl", label: "Instance URL", type: "url", placeholder: "https://yourcompany.salesforce.com" },
       { id: "username", label: "Username", type: "text", placeholder: "Enter username" },
@@ -145,6 +154,7 @@ const initialDataSources: DataSource[] = [
     name: "Zoho", 
     category: "crm_business", 
     icon: zohoLogo, 
+    configured: false,
     connected: false, 
     description: "Zoho CRM integration",
     configFields: [
@@ -158,6 +168,7 @@ const initialDataSources: DataSource[] = [
     name: "ServiceNow", 
     category: "crm_business", 
     icon: servicenowLogo, 
+    configured: false,
     connected: false, 
     description: "ServiceNow ITSM",
     configFields: [
@@ -173,6 +184,7 @@ const initialDataSources: DataSource[] = [
     name: "Snowflake", 
     category: "data_analytics", 
     icon: snowflakeLogo, 
+    configured: false,
     connected: false, 
     description: "Snowflake data warehouse",
     configFields: [
@@ -188,6 +200,7 @@ const initialDataSources: DataSource[] = [
     name: "SQL Database", 
     category: "data_analytics", 
     icon: sqlDatabaseLogo, 
+    configured: false,
     connected: false, 
     description: "SQL database connection",
     configFields: [
@@ -205,6 +218,7 @@ const initialDataSources: DataSource[] = [
     name: "YouTube", 
     category: "content", 
     icon: youtubeLogo, 
+    configured: false,
     connected: false, 
     description: "YouTube video content",
     stats: "0 videos",
@@ -219,10 +233,12 @@ const initialDataSources: DataSource[] = [
     name: "Website", 
     category: "content", 
     icon: null, 
+    configured: true,
     connected: true, 
     description: "Web page crawling", 
     lastSynced: "30 minutes ago",
     stats: "156 pages crawled",
+    savedConfig: { url: "https://example.com", depth: "2" },
     configFields: [
       { id: "url", label: "Website URL", type: "url", placeholder: "https://example.com" },
       { id: "depth", label: "Crawl Depth", type: "text", placeholder: "2" },
@@ -240,32 +256,69 @@ const initialDocumentTypes: DocumentType[] = [
 interface DataSourceCardProps {
   source: DataSource;
   isExpanded: boolean;
+  isEditing: boolean;
   onToggleExpand: (id: string) => void;
+  onSave: (id: string, config: Record<string, string>) => void;
   onConnect: (id: string) => void;
   onDisconnect: (id: string) => void;
   onSync: (id: string) => void;
   onClear: (id: string) => void;
-  onView: (id: string) => void;
+  onEdit: (id: string) => void;
 }
 
 const DataSourceCard = ({ 
   source, 
   isExpanded, 
+  isEditing,
   onToggleExpand, 
+  onSave,
   onConnect, 
   onDisconnect,
   onSync, 
   onClear,
-  onView 
+  onEdit
 }: DataSourceCardProps) => {
-  const [configValues, setConfigValues] = useState<Record<string, string>>({});
+  const [configValues, setConfigValues] = useState<Record<string, string>>(
+    source.savedConfig || {}
+  );
 
   const handleConfigChange = (fieldId: string, value: string) => {
     setConfigValues(prev => ({ ...prev, [fieldId]: value }));
   };
 
-  const handleSaveAndSync = () => {
-    onConnect(source.id);
+  const handleSave = () => {
+    onSave(source.id, configValues);
+  };
+
+  const getStatusText = () => {
+    if (source.connected) {
+      return source.stats 
+        ? `${source.stats} · Last synced ${source.lastSynced}` 
+        : `Last synced ${source.lastSynced}`;
+    }
+    if (source.configured) {
+      return "Configured · Ready to connect";
+    }
+    return source.description;
+  };
+
+  const getStatusBadge = () => {
+    if (source.connected) {
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary">
+          <Check className="w-3 h-3" />
+          Connected
+        </span>
+      );
+    }
+    if (source.configured) {
+      return (
+        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+          Saved
+        </span>
+      );
+    }
+    return null;
   };
 
   return (
@@ -275,9 +328,11 @@ const DataSourceCard = ({
           "rounded-lg border transition-colors",
           source.connected
             ? "border-primary/30 bg-primary/5"
+            : source.configured
+            ? "border-muted-foreground/30 bg-muted/30"
             : isExpanded
             ? "border-primary/50 bg-card"
-            : "border-border bg-card"
+            : "border-border bg-card hover:border-border/80"
         )}
       >
         {/* Header */}
@@ -294,57 +349,114 @@ const DataSourceCard = ({
                 <Globe className="w-5 h-5 text-muted-foreground" />
               )}
             </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">{source.name}</p>
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-foreground">{source.name}</p>
+                {getStatusBadge()}
+              </div>
               <p className="text-xs text-muted-foreground">
-                {source.connected 
-                  ? (source.stats ? `${source.stats} · Last synced ${source.lastSynced}` : `Last synced ${source.lastSynced}`)
-                  : source.description
-                }
+                {getStatusText()}
               </p>
             </div>
           </div>
           
           <div className="flex items-center gap-1">
+            {/* Connected state actions */}
             {source.connected && (
               <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onView(source.id)}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                >
-                  <Eye className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onSync(source.id)}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onClear(source.id)}
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEdit(source.id)}
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit configuration</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onSync(source.id)}
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Sync now</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onClear(source.id)}
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Clear synced data</TooltipContent>
+                </Tooltip>
                 <div className="w-px h-5 bg-border mx-1" />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDisconnect(source.id)}
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    >
+                      <Power className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Disconnect</TooltipContent>
+                </Tooltip>
               </>
             )}
-            <Switch
-              checked={source.connected}
-              onCheckedChange={() => {
-                if (source.connected) {
-                  onDisconnect(source.id);
-                } else {
-                  onToggleExpand(source.id);
-                }
-              }}
-            />
+
+            {/* Configured but not connected */}
+            {source.configured && !source.connected && (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEdit(source.id)}
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit configuration</TooltipContent>
+                </Tooltip>
+                <Button
+                  size="sm"
+                  onClick={() => onConnect(source.id)}
+                  className="h-8 px-3 text-xs ml-1"
+                >
+                  Connect
+                </Button>
+              </>
+            )}
+
+            {/* Not configured */}
+            {!source.configured && !source.connected && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onToggleExpand(source.id)}
+                className="h-8 px-3 text-xs"
+              >
+                Configure
+              </Button>
+            )}
           </div>
         </div>
 
@@ -363,8 +475,8 @@ const DataSourceCard = ({
                       <Label htmlFor={`${source.id}-${field.id}`} className="text-xs">
                         {field.label}
                       </Label>
-                      {source.connected ? (
-                        <p className="text-sm text-foreground py-1.5">
+                      {!isEditing && source.configured ? (
+                        <p className="text-sm text-foreground py-1.5 bg-muted/30 px-3 rounded-md">
                           {field.type === "password" ? "••••••••••••" : configValues[field.id] || "—"}
                         </p>
                       ) : (
@@ -381,25 +493,45 @@ const DataSourceCard = ({
                   ))}
                 </div>
 
-                {!source.connected && (
-                  <div className="flex justify-end gap-2 pt-2">
+                {/* Action buttons based on state */}
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onToggleExpand(source.id)}
+                    className="h-8 px-3 text-xs"
+                  >
+                    {isEditing ? "Cancel" : "Close"}
+                  </Button>
+                  
+                  {/* New configuration or editing */}
+                  {(!source.configured || isEditing) && (
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      onClick={() => onToggleExpand(source.id)}
-                      className="h-8 px-3 text-xs"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={handleSaveAndSync}
+                      onClick={handleSave}
                       className="h-8 px-4 text-xs"
                     >
-                      Save & Sync
+                      Save
                     </Button>
-                  </div>
-                )}
+                  )}
+                  
+                  {/* Connect button for new config */}
+                  {!source.connected && (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        if (!source.configured) {
+                          onSave(source.id, configValues);
+                        }
+                        onConnect(source.id);
+                      }}
+                      className="h-8 px-4 text-xs"
+                    >
+                      {source.configured ? "Connect" : "Save & Connect"}
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -745,20 +877,33 @@ export const WorkspaceDataSourcesSection = () => {
   const [dataSources, setDataSources] = useState<DataSource[]>(initialDataSources);
   const [documentTypes, setDocumentTypes] = useState<DocumentType[]>(initialDocumentTypes);
   const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
+  const [editingSourceId, setEditingSourceId] = useState<string | null>(null);
   const [manageSheetOpen, setManageSheetOpen] = useState(false);
   const [selectedDocType, setSelectedDocType] = useState<DocumentType | null>(null);
 
   const handleToggleExpand = (id: string) => {
     setExpandedSourceId(prev => prev === id ? null : id);
+    setEditingSourceId(null);
+  };
+
+  const handleSave = (id: string, config: Record<string, string>) => {
+    setDataSources(
+      dataSources.map((ds) =>
+        ds.id === id ? { ...ds, configured: true, savedConfig: config } : ds
+      )
+    );
+    setEditingSourceId(null);
+    setExpandedSourceId(null);
   };
 
   const handleConnect = (id: string) => {
     setDataSources(
       dataSources.map((ds) =>
-        ds.id === id ? { ...ds, connected: true, lastSynced: "Just now" } : ds
+        ds.id === id ? { ...ds, configured: true, connected: true, lastSynced: "Just now" } : ds
       )
     );
     setExpandedSourceId(null);
+    setEditingSourceId(null);
   };
 
   const handleDisconnect = (id: string) => {
@@ -778,12 +923,17 @@ export const WorkspaceDataSourcesSection = () => {
   };
 
   const handleClear = (id: string) => {
-    console.log("Clear data for:", id);
+    setDataSources(
+      dataSources.map((ds) =>
+        ds.id === id ? { ...ds, stats: undefined } : ds
+      )
+    );
+    console.log("Cleared synced data for:", id);
   };
 
-  const handleView = (id: string) => {
-    // Toggle expand to show configuration for viewing
-    setExpandedSourceId(prev => prev === id ? null : id);
+  const handleEdit = (id: string) => {
+    setExpandedSourceId(id);
+    setEditingSourceId(id);
   };
 
   const handleUpload = (id: string) => {
@@ -835,12 +985,14 @@ export const WorkspaceDataSourcesSection = () => {
                       key={source.id}
                       source={source}
                       isExpanded={expandedSourceId === source.id}
+                      isEditing={editingSourceId === source.id}
                       onToggleExpand={handleToggleExpand}
+                      onSave={handleSave}
                       onConnect={handleConnect}
                       onDisconnect={handleDisconnect}
                       onSync={handleSync}
                       onClear={handleClear}
-                      onView={handleView}
+                      onEdit={handleEdit}
                     />
                   ))}
                 </div>
