@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { X, Search, Trash2, Filter, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Search, Trash2, SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Document, DocumentType } from "@/types/document";
 import { DocumentIcon } from "./DocumentIcon";
@@ -191,107 +191,104 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
         </div>
 
         {/* Search & Filters */}
-        <div className="px-4 py-3 border-b border-border space-y-3 shrink-0">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search documents..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="pl-9 h-9 bg-muted/50"
-            />
-          </div>
+        <div className="px-4 py-3 border-b border-border shrink-0">
+          <div className="flex items-center gap-2">
+            {/* Search */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search documents..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="pl-9 h-9 bg-muted/50"
+              />
+            </div>
 
-          {/* Toolbar */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {/* Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn("gap-1.5 h-8", hasActiveFilters && "border-primary text-primary")}
-                  >
-                    <Filter className="w-3.5 h-3.5" />
-                    Filter
+            {/* Filter */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn("h-9 w-9 shrink-0", hasActiveFilters && "border-primary text-primary")}
+                >
+                  <div className="relative">
+                    <SlidersHorizontal className="w-4 h-4" />
                     {hasActiveFilters && (
-                      <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-primary text-primary-foreground rounded">
+                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 text-[9px] bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                         {typeFilters.length}
                       </span>
                     )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-44">
-                  <DropdownMenuLabel className="text-xs">File Type</DropdownMenuLabel>
-                  {documentTypes.map((type) => (
-                    <DropdownMenuCheckboxItem
-                      key={type.value}
-                      checked={typeFilters.includes(type.value)}
-                      onCheckedChange={() => handleTypeToggle(type.value)}
-                    >
-                      {type.label}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                  {hasActiveFilters && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setTypeFilters([])}>
-                        <X className="w-3.5 h-3.5 mr-2" />
-                        Clear filters
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Sort */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-1.5 h-8">
-                    <ArrowUpDown className="w-3.5 h-3.5" />
-                    Sort
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-40">
-                  {[
-                    { value: "name" as SortOption, label: "Name" },
-                    { value: "date" as SortOption, label: "Date" },
-                    { value: "size" as SortOption, label: "Size" },
-                  ].map((opt) => (
-                    <DropdownMenuItem
-                      key={opt.value}
-                      onClick={() => handleSortSelect(opt.value)}
-                      className={cn(sortBy === opt.value && "bg-accent")}
-                    >
-                      <span className="flex-1">{opt.label}</span>
-                      {sortBy === opt.value && (
-                        <span className="text-xs text-muted-foreground">
-                          {sortDirection === "asc" ? "↑" : "↓"}
-                        </span>
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Bulk delete */}
-              {selectedIds.size > 0 && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="gap-1.5 h-8"
-                  onClick={handleDeleteSelected}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  Delete ({selectedIds.size})
+                  </div>
                 </Button>
-              )}
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuLabel className="text-xs">File Type</DropdownMenuLabel>
+                {documentTypes.map((type) => (
+                  <DropdownMenuCheckboxItem
+                    key={type.value}
+                    checked={typeFilters.includes(type.value)}
+                    onCheckedChange={() => handleTypeToggle(type.value)}
+                  >
+                    {type.label}
+                  </DropdownMenuCheckboxItem>
+                ))}
+                {hasActiveFilters && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setTypeFilters([])}>
+                      <X className="w-3.5 h-3.5 mr-2" />
+                      Clear filters
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Sort */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="h-9 w-9 shrink-0">
+                  <ArrowUpDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                {[
+                  { value: "name" as SortOption, label: "Name" },
+                  { value: "date" as SortOption, label: "Date" },
+                  { value: "size" as SortOption, label: "Size" },
+                ].map((opt) => (
+                  <DropdownMenuItem
+                    key={opt.value}
+                    onClick={() => handleSortSelect(opt.value)}
+                    className={cn(sortBy === opt.value && "bg-accent")}
+                  >
+                    <span className="flex-1">{opt.label}</span>
+                    {sortBy === opt.value && (
+                      <span className="text-xs text-muted-foreground">
+                        {sortDirection === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Bulk delete */}
+            {selectedIds.size > 0 && (
+              <Button
+                variant="destructive"
+                size="icon"
+                className="h-9 w-9 shrink-0"
+                onClick={handleDeleteSelected}
+                title={`Delete ${selectedIds.size} selected`}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -316,9 +313,6 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
                 <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex-1">
                   Name
                 </span>
-                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider w-20 hidden sm:block">
-                  Date
-                </span>
               </div>
               {/* List rows */}
               {paginatedDocuments.map((doc) => (
@@ -340,11 +334,10 @@ export const DocumentsDrawer = ({ isOpen, onClose }: DocumentsDrawerProps) => {
                   <DocumentIcon type={doc.type} className="w-8 h-8 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{formatFileSize(doc.size)}</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {formatFileSize(doc.size)} · {formatDate(doc.uploadedAt)}
+                    </p>
                   </div>
-                  <span className="text-xs text-muted-foreground w-20 hidden sm:block">
-                    {formatDate(doc.uploadedAt)}
-                  </span>
                   <div onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
