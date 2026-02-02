@@ -36,6 +36,9 @@ interface SSOProvider {
   type: string;
   domain: string;
   status: "active" | "pending";
+  clientId: string;
+  clientSecret: string;
+  tenantId: string;
 }
 
 export const SSOSection = () => {
@@ -46,27 +49,57 @@ export const SSOSection = () => {
       type: "SAML 2.0",
       domain: "acmecorp.com",
       status: "active",
+      clientId: "c406756b-0009-4aff-b697-0f10ca57fcd9",
+      clientSecret: "",
+      tenantId: "0eadb77e-42dc-47f8-bbe3-ec2395e0712c",
     },
   ]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingProvider, setEditingProvider] = useState<SSOProvider | null>(null);
   const [newProvider, setNewProvider] = useState({
     name: "",
     domain: "",
-    entityId: "",
-    ssoUrl: "",
+    clientId: "",
+    clientSecret: "",
+    tenantId: "",
   });
 
   const handleAddProvider = () => {
     const provider: SSOProvider = {
       id: Date.now().toString(),
-      name: newProvider.name,
+      name: newProvider.name || "Azure AD",
       type: "SAML 2.0",
       domain: newProvider.domain,
       status: "pending",
+      clientId: newProvider.clientId,
+      clientSecret: newProvider.clientSecret,
+      tenantId: newProvider.tenantId,
     };
     setProviders([...providers, provider]);
-    setNewProvider({ name: "", domain: "", entityId: "", ssoUrl: "" });
-    setIsDialogOpen(false);
+    setNewProvider({ name: "", domain: "", clientId: "", clientSecret: "", tenantId: "" });
+    setIsAddDialogOpen(false);
+  };
+
+  const handleEditProvider = (provider: SSOProvider) => {
+    setEditingProvider({ ...provider });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingProvider) {
+      setProviders(providers.map(p => 
+        p.id === editingProvider.id ? editingProvider : p
+      ));
+      setIsEditDialogOpen(false);
+      setEditingProvider(null);
+    }
+  };
+
+  const handleClearProvider = (id: string) => {
+    setProviders(providers.map(p => 
+      p.id === id ? { ...p, clientId: "", clientSecret: "", tenantId: "", status: "pending" as const } : p
+    ));
   };
 
   const handleRemoveProvider = (id: string) => {
@@ -79,7 +112,7 @@ export const SSOSection = () => {
         <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           SSO Configuration
         </h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <button className="text-xs text-primary hover:text-primary/80 font-medium transition-colors">
               + Add Provider
@@ -89,12 +122,14 @@ export const SSOSection = () => {
             <DialogHeader>
               <DialogTitle>Add SSO Provider</DialogTitle>
               <DialogDescription>
-                Configure a SAML 2.0 identity provider.
+                Configure Azure AD identity provider.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="provider-name" className="text-xs">Provider Name</Label>
+                <Label htmlFor="provider-name" className="text-xs">
+                  Provider Name
+                </Label>
                 <Input
                   id="provider-name"
                   placeholder="e.g., Microsoft Azure AD"
@@ -106,7 +141,9 @@ export const SSOSection = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="domain" className="text-xs">Domain</Label>
+                <Label htmlFor="domain" className="text-xs">
+                  Domain
+                </Label>
                 <Input
                   id="domain"
                   placeholder="e.g., yourcompany.com"
@@ -118,32 +155,51 @@ export const SSOSection = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="entity-id" className="text-xs">Entity ID</Label>
+                <Label htmlFor="client-id" className="text-xs">
+                  Azure Client ID <span className="text-destructive">*</span>
+                </Label>
                 <Input
-                  id="entity-id"
-                  placeholder="https://sts.windows.net/..."
-                  value={newProvider.entityId}
+                  id="client-id"
+                  placeholder="c406756b-0009-4aff-b697-0f10ca57fcd9"
+                  value={newProvider.clientId}
                   onChange={(e) =>
-                    setNewProvider({ ...newProvider, entityId: e.target.value })
+                    setNewProvider({ ...newProvider, clientId: e.target.value })
                   }
                   className="h-9"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="sso-url" className="text-xs">SSO URL</Label>
+                <Label htmlFor="client-secret" className="text-xs">
+                  Azure Client Secret <span className="text-destructive">*</span>
+                </Label>
                 <Input
-                  id="sso-url"
-                  placeholder="https://login.microsoftonline.com/..."
-                  value={newProvider.ssoUrl}
+                  id="client-secret"
+                  type="password"
+                  placeholder="Enter Azure Client Secret"
+                  value={newProvider.clientSecret}
                   onChange={(e) =>
-                    setNewProvider({ ...newProvider, ssoUrl: e.target.value })
+                    setNewProvider({ ...newProvider, clientSecret: e.target.value })
+                  }
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tenant-id" className="text-xs">
+                  Azure Tenant ID <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="tenant-id"
+                  placeholder="0eadb77e-42dc-47f8-bbe3-ec2395e0712c"
+                  value={newProvider.tenantId}
+                  onChange={(e) =>
+                    setNewProvider({ ...newProvider, tenantId: e.target.value })
                   }
                   className="h-9"
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
+              <Button variant="ghost" onClick={() => setIsAddDialogOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleAddProvider} size="sm">
@@ -153,6 +209,73 @@ export const SSOSection = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit SSO Provider</DialogTitle>
+            <DialogDescription>
+              Update Azure AD configuration.
+            </DialogDescription>
+          </DialogHeader>
+          {editingProvider && (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-client-id" className="text-xs">
+                  Azure Client ID <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="edit-client-id"
+                  placeholder="c406756b-0009-4aff-b697-0f10ca57fcd9"
+                  value={editingProvider.clientId}
+                  onChange={(e) =>
+                    setEditingProvider({ ...editingProvider, clientId: e.target.value })
+                  }
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-client-secret" className="text-xs">
+                  Azure Client Secret <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="edit-client-secret"
+                  type="password"
+                  placeholder="Enter Azure Client Secret"
+                  value={editingProvider.clientSecret}
+                  onChange={(e) =>
+                    setEditingProvider({ ...editingProvider, clientSecret: e.target.value })
+                  }
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-tenant-id" className="text-xs">
+                  Azure Tenant ID <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="edit-tenant-id"
+                  placeholder="0eadb77e-42dc-47f8-bbe3-ec2395e0712c"
+                  value={editingProvider.tenantId}
+                  onChange={(e) =>
+                    setEditingProvider({ ...editingProvider, tenantId: e.target.value })
+                  }
+                  className="h-9"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit} size="sm">
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {providers.length > 0 ? (
         <div className="border border-border rounded-lg bg-card divide-y divide-border">
@@ -186,7 +309,10 @@ export const SSOSection = () => {
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+                      <button 
+                        onClick={() => handleEditProvider(provider)}
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                      >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                     </TooltipTrigger>
@@ -197,7 +323,10 @@ export const SSOSection = () => {
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+                      <button 
+                        onClick={() => handleClearProvider(provider.id)}
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                      >
                         <XCircle className="w-3.5 h-3.5" />
                       </button>
                     </TooltipTrigger>
