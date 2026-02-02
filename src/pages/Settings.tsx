@@ -24,7 +24,7 @@ type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared
 
 const subItems = [
   { id: "general" as const, label: "General", icon: Settings2 },
-  { id: "members" as const, label: "Members", icon: UserCog },
+  { id: "members" as const, label: "People", icon: UserCog },
   { id: "configuration" as const, label: "Configuration", icon: Database },
   { id: "guardrails" as const, label: "Guard Rails", icon: Shield },
 ];
@@ -226,7 +226,7 @@ const Settings = () => {
       case "general":
         return "Manage workspace details and settings";
       case "members":
-        return "Manage workspace members and access";
+        return "Manage people and access permissions";
       case "configuration":
         return "Configure data sources and integrations";
       case "guardrails":

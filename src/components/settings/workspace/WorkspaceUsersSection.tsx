@@ -165,7 +165,7 @@ export const WorkspaceUsersSection = () => {
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-          Members
+          People
         </h2>
         <Button
           variant="ghost"
