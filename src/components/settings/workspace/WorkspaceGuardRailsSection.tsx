@@ -96,7 +96,7 @@ export const WorkspaceGuardRailsSection = () => {
   return (
     <section>
       <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-        Guard Rails
+        Guardrails
       </h2>
       
       <div className="border border-border/50 rounded-xl bg-card shadow-sm">
