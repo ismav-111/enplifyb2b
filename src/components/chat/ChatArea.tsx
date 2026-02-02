@@ -1,7 +1,10 @@
 import { useRef, useEffect } from "react";
+import { FileText } from "lucide-react";
 import { Message, Source } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -12,6 +15,8 @@ interface ChatAreaProps {
   onViewSources?: (sources: Source[]) => void;
   onEditMessage?: (messageId: string, newContent: string) => void;
   onRegenerateResponse?: (messageId: string) => void;
+  onOpenDocuments?: () => void;
+  documentCount?: number;
 }
 
 export const ChatArea = ({ 
@@ -21,6 +26,8 @@ export const ChatArea = ({
   onViewSources,
   onEditMessage,
   onRegenerateResponse,
+  onOpenDocuments,
+  documentCount = 0,
 }: ChatAreaProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -30,6 +37,24 @@ export const ChatArea = ({
 
   return (
     <div className="flex flex-col h-full bg-background">
+      {/* Header with Documents Button */}
+      <div className="flex items-center justify-end px-4 py-2 border-b border-border shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onOpenDocuments}
+          className="gap-2 text-muted-foreground hover:text-foreground"
+        >
+          <FileText className="w-4 h-4" />
+          <span className="text-sm">Documents</span>
+          {documentCount > 0 && (
+            <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium">
+              {documentCount}
+            </Badge>
+          )}
+        </Button>
+      </div>
+
       {messages.length === 0 ? (
         <EmptyState onSendMessage={onSendMessage} isLoading={isLoading} />
       ) : (

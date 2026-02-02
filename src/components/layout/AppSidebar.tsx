@@ -13,7 +13,6 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
-  FileText,
   MessageSquare
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,7 +31,6 @@ interface AppSidebarProps {
   activeSessionId: string | null;
   onSelectSession: (workspaceId: string, sessionId: string) => void;
   onNewSession: (workspaceId: string) => void;
-  onOpenDocuments: () => void;
 }
 
 const sectionIcons = {
@@ -283,7 +281,6 @@ export const AppSidebar = ({
   activeSessionId,
   onSelectSession,
   onNewSession,
-  onOpenDocuments,
 }: AppSidebarProps) => {
   const personalWorkspaces = workspaces.filter(w => w.type === 'personal');
   const sharedWorkspaces = workspaces.filter(w => w.type === 'shared');
@@ -299,17 +296,6 @@ export const AppSidebar = ({
       {/* Logo */}
       <div className="flex items-center px-4 h-14 border-b border-border">
         <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
-      </div>
-
-      {/* Documents Button */}
-      <div className="px-2 pt-3 pb-2 border-b border-border">
-        <button
-          onClick={onOpenDocuments}
-          className="nav-item w-full"
-        >
-          <FileText className="w-4 h-4" />
-          <span className="text-sm">Documents</span>
-        </button>
       </div>
 
       {/* Workspaces */}
