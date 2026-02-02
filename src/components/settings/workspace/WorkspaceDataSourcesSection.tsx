@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload } from "lucide-react";
+import { RefreshCw, Trash2, Globe, Upload, FolderOpen, Eye, ChevronUp, ChevronDown, CloudUpload, Info, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { DocumentManagementSheet } from "./DocumentManagementSheet";
 
 // Brand logos
@@ -504,119 +510,106 @@ const WorkspaceFilesSection = ({ onManageFiles }: WorkspaceFilesSectionProps) =>
   };
 
   return (
-    <div className="rounded-xl border border-border/50 bg-card shadow-sm">
-      {/* Header */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-accent/30 rounded-t-xl transition-colors"
-      >
-        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-          Workspace Files
-        </h3>
-        {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-muted-foreground" />
-        ) : (
-          <ChevronDown className="w-4 h-4 text-muted-foreground" />
-        )}
-      </button>
-
-      {isExpanded && (
-        <div className="px-5 pb-5 space-y-5">
-          {/* Drop Zone */}
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={cn(
-              "border border-dashed rounded-xl py-10 px-6 text-center transition-all",
-              isDragging 
-                ? "border-primary bg-primary/5 shadow-sm" 
-                : "border-border bg-muted/10 hover:bg-muted/20"
-            )}
-          >
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
-                <CloudUpload className="w-7 h-7 text-primary" />
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-foreground">
-                  Drag & drop files here
+    <TooltipProvider>
+      <div className="rounded-xl border border-border/50 bg-card shadow-sm">
+        {/* Header */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-accent/30 rounded-t-xl transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              Workspace Files
+            </h3>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-xs">
+                <p className="text-xs">
+                  <span className="font-medium">Supported:</span> PDF, DOCX, DOC, TXT, PPTX, JPG, PNG, WEBP, MP3, MP4, WAV
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  or{" "}
-                  <button 
-                    onClick={handleBrowseClick}
-                    className="text-primary hover:underline font-medium"
-                  >
-                    browse your files
-                  </button>
+                <p className="text-xs mt-1">
+                  <span className="font-medium">Max size:</span> 30 MB per file
                 </p>
-              </div>
-              <div className="space-y-1 mt-2">
-                <p className="text-xs text-muted-foreground">
-                  Allowed: Upload documents, images, or media files (PDF, DOCX, DOC, TXT, PPTX, JPG, PNG, WEBP, MP3, MP4, WAV)
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Max file size: 30 MB
-                </p>
-              </div>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
-              accept=".pdf,.docx,.doc,.txt,.pptx,.jpg,.jpeg,.png,.webp,.mp3,.mp4,.wav"
-            />
+              </TooltipContent>
+            </Tooltip>
           </div>
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          )}
+        </button>
 
-          {/* Uploaded Files Section */}
-          <div className="space-y-3">
-            <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Uploaded Files
-            </h4>
-            <div className={cn(
-              "border border-dashed rounded-xl py-6 px-4 transition-colors",
-              "border-border/60 bg-muted/5"
-            )}>
-              {uploadedFiles.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center">
-                  No data source files uploaded yet.
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {uploadedFiles.map((file) => (
-                    <div 
-                      key={file.id}
-                      className="group flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card hover:bg-accent/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-8 h-8 rounded-md bg-muted/50 flex items-center justify-center shrink-0">
-                          <FolderOpen className="w-4 h-4 text-muted-foreground" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">{file.size}</p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setUploadedFiles(prev => prev.filter(f => f.id !== file.id))}
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+        {isExpanded && (
+          <div className="px-4 pb-4 space-y-3">
+            {/* Compact Drop Zone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={handleBrowseClick}
+              className={cn(
+                "flex items-center gap-3 p-3 border border-dashed rounded-lg cursor-pointer transition-all",
+                isDragging 
+                  ? "border-primary bg-primary/5" 
+                  : "border-border/60 hover:border-primary/50 hover:bg-muted/30"
               )}
+            >
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <CloudUpload className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground">
+                  Drop files or <span className="text-primary">browse</span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Documents, images & media up to 30 MB
+                </p>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                onChange={handleFileSelect}
+                className="hidden"
+                accept=".pdf,.docx,.doc,.txt,.pptx,.jpg,.jpeg,.png,.webp,.mp3,.mp4,.wav"
+              />
             </div>
+
+            {/* Uploaded Files - Compact List */}
+            {uploadedFiles.length > 0 && (
+              <div className="space-y-1.5">
+                {uploadedFiles.map((file) => (
+                  <div 
+                    key={file.id}
+                    className="group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-muted/40 transition-colors"
+                  >
+                    <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <span className="text-sm text-foreground truncate flex-1">{file.name}</span>
+                    <span className="text-xs text-muted-foreground shrink-0">{file.size}</span>
+                    <button
+                      onClick={() => setUploadedFiles(prev => prev.filter(f => f.id !== file.id))}
+                      className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Empty State */}
+            {uploadedFiles.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                No files uploaded yet
+              </p>
+            )}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </TooltipProvider>
   );
 };
 
