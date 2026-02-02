@@ -38,6 +38,14 @@ export interface ThinkingState {
   thinkingContent?: string;
 }
 
+export interface Attachment {
+  id: string;
+  name: string;
+  type: 'image' | 'pdf' | 'document' | 'spreadsheet' | 'other';
+  size?: number;
+  url?: string;
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -48,6 +56,7 @@ export interface Message {
   processingSteps?: ProcessingStep[];
   thinkingContent?: string;
   sources?: Source[];
+  attachments?: Attachment[];
   timestamp: Date;
   tableData?: {
     headers: string[];

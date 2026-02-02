@@ -1,10 +1,10 @@
-import { Message, Source } from "@/types/workspace";
+import { Message, Source, Attachment } from "@/types/workspace";
 import { cn } from "@/lib/utils";
 import { MessageTable } from "./MessageTable";
 import { MessageChart } from "./MessageChart";
 import { ThinkingPanel } from "./ThinkingPanel";
 import { SourcesList } from "./SourcesList";
-import { Copy, Pencil, Check, RefreshCw, X } from "lucide-react";
+import { Copy, Pencil, Check, RefreshCw, X, FileText, Image, File } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,49 @@ interface ChatMessageProps {
   onEditMessage?: (messageId: string, newContent: string) => void;
   onRegenerateResponse?: (messageId: string) => void;
 }
+
+const AttachmentIcon = ({ type }: { type: Attachment['type'] }) => {
+  switch (type) {
+    case 'image':
+      return <Image className="w-4 h-4" />;
+    case 'pdf':
+    case 'document':
+      return <FileText className="w-4 h-4" />;
+    default:
+      return <File className="w-4 h-4" />;
+  }
+};
+
+const AttachmentPreview = ({ attachments }: { attachments: Attachment[] }) => {
+  if (!attachments || attachments.length === 0) return null;
+  
+  return (
+    <div className="flex flex-wrap gap-2 mb-2">
+      {attachments.map((attachment) => (
+        <div
+          key={attachment.id}
+          className="flex items-center gap-2 px-3 py-2 bg-accent/50 rounded-lg border border-border/50"
+        >
+          <AttachmentIcon type={attachment.type} />
+          <span className="text-sm text-foreground truncate max-w-[150px]">
+            {attachment.name}
+          </span>
+          {attachment.size && (
+            <span className="text-xs text-muted-foreground">
+              {formatFileSize(attachment.size)}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+};
 
 export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerateResponse }: ChatMessageProps) => {
   const isUser = message.role === 'user';
@@ -139,6 +182,11 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
             </div>
           ) : (
             <div className="text-[15px] leading-relaxed text-foreground">
+              {/* Show attachments for user messages */}
+              {isUser && message.attachments && message.attachments.length > 0 && (
+                <AttachmentPreview attachments={message.attachments} />
+              )}
+              
               {message.type === 'text' && (
                 <p className="whitespace-pre-wrap">
                   {message.content}
@@ -201,20 +249,20 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
                 </div>
               </>
             ) : (
-              // System message footer: sources → actions → timestamp
+              // System message footer: sources → actions → timestamp (always visible)
               <>
                 {!message.isStreaming && !message.isProcessing && message.sources && message.sources.length > 0 && (
                   <SourcesList sources={message.sources} onViewSources={handleViewSources} />
                 )}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={handleCopy}
-                    className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
-                    title="Copy message"
-                  >
-                    {copied ? <Check className="w-[18px] h-[18px]" /> : <Copy className="w-[18px] h-[18px]" />}
-                  </button>
-                  {!message.isStreaming && !message.isProcessing && (
+                {!message.isStreaming && !message.isProcessing && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={handleCopy}
+                      className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                      title="Copy message"
+                    >
+                      {copied ? <Check className="w-[18px] h-[18px]" /> : <Copy className="w-[18px] h-[18px]" />}
+                    </button>
                     <button
                       onClick={handleRegenerate}
                       className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
@@ -222,8 +270,8 @@ export const ChatMessage = ({ message, onViewSources, onEditMessage, onRegenerat
                     >
                       <RefreshCw className="w-[18px] h-[18px]" />
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
                 <span className="text-xs text-muted-foreground">
                   {formatTimestamp(message.timestamp)}
                 </span>
