@@ -63,16 +63,7 @@ export function WorkspaceListSection({
   const config = typeConfig[type];
 
   return (
-    <div className="space-y-6">
-      {/* Create Button */}
-      {config.canCreate && (
-        <div className="flex justify-end">
-          <Button onClick={onCreateWorkspace} size="sm">
-            <Plus className="w-4 h-4 mr-1.5" />
-            New Workspace
-          </Button>
-        </div>
-      )}
+    <div className="space-y-4">
 
       {/* Workspace List */}
       <div className="space-y-2">
