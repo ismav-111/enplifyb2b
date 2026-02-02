@@ -64,19 +64,15 @@ export function WorkspaceListSection({
 
   return (
     <div className="space-y-6">
-      {/* Header with Create Button */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">{config.title}</h2>
-          <p className="text-sm text-muted-foreground mt-1">{config.description}</p>
-        </div>
-        {config.canCreate && (
+      {/* Create Button */}
+      {config.canCreate && (
+        <div className="flex justify-end">
           <Button onClick={onCreateWorkspace} size="sm">
             <Plus className="w-4 h-4 mr-1.5" />
             New Workspace
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Workspace List */}
       <div className="space-y-2">
