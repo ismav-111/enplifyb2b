@@ -3,8 +3,6 @@ import { FileText } from "lucide-react";
 import { Message, Source } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface ChatAreaProps {
   messages: Message[];
@@ -36,24 +34,21 @@ export const ChatArea = ({
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Header with Documents Button */}
-      <div className="flex items-center justify-end px-4 py-2 border-b border-border shrink-0">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onOpenDocuments}
-          className="gap-2 text-muted-foreground hover:text-foreground"
-        >
-          <FileText className="w-4 h-4" />
-          <span className="text-sm">Documents</span>
+    <div className="flex flex-col h-full bg-background relative">
+      {/* Documents Icon with Badge */}
+      <button
+        onClick={onOpenDocuments}
+        className="absolute top-4 right-4 z-10 p-2 rounded-lg hover:bg-accent transition-colors group"
+      >
+        <div className="relative">
+          <FileText className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           {documentCount > 0 && (
-            <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium">
+            <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold px-1">
               {documentCount}
-            </Badge>
+            </span>
           )}
-        </Button>
-      </div>
+        </div>
+      </button>
 
       {messages.length === 0 ? (
         <EmptyState onSendMessage={onSendMessage} isLoading={isLoading} />
