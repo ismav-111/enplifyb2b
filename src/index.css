@@ -45,12 +45,12 @@
     --sidebar-border: 0 0% 92%;
     --sidebar-accent: 0 0% 96%;
 
-    /* Workspace category colors */
-    --workspace-personal: 217 91% 60%;
+    /* Workspace category colors - Bold & Vibrant */
+    --workspace-personal: 221 83% 53%;
     --workspace-personal-foreground: 0 0% 100%;
-    --workspace-shared: 168 76% 42%;
+    --workspace-shared: 142 71% 45%;
     --workspace-shared-foreground: 0 0% 100%;
-    --workspace-org: 262 83% 58%;
+    --workspace-org: 25 95% 53%;
     --workspace-org-foreground: 0 0% 100%;
   }
 
@@ -83,12 +83,12 @@
     --input: 224 18% 13%;
     --ring: 230 75% 60%;
 
-    /* Workspace category colors - dark mode */
-    --workspace-personal: 217 91% 65%;
+    /* Workspace category colors - dark mode - Bold & Vibrant */
+    --workspace-personal: 221 83% 58%;
     --workspace-personal-foreground: 0 0% 100%;
-    --workspace-shared: 168 76% 48%;
+    --workspace-shared: 142 71% 50%;
     --workspace-shared-foreground: 0 0% 100%;
-    --workspace-org: 262 83% 65%;
+    --workspace-org: 25 95% 58%;
     --workspace-org-foreground: 0 0% 100%;
   }
 }
