@@ -5,11 +5,18 @@ export interface ChatSession {
   lastMessage?: string;
 }
 
+export interface WorkspaceIcon {
+  type: 'letter' | 'lucide';
+  lucideIcon?: string; // Lucide icon name like 'Folder', 'Briefcase', etc.
+  color: string; // Tailwind color class like 'bg-blue-500'
+}
+
 export interface Workspace {
   id: string;
   name: string;
   type: 'personal' | 'shared' | 'organization';
   sessions: ChatSession[];
+  icon?: WorkspaceIcon;
 }
 
 export type SourceType = 'website' | 'pdf' | 'ppt' | 'salesforce' | 'zoho' | 'servicenow' | 'excel' | 'doc';

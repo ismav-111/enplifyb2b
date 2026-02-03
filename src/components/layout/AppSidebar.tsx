@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Workspace } from "@/types/workspace";
+import { WorkspaceAvatar } from "@/components/workspace/WorkspaceAvatar";
 import enplifyLogo from "@/assets/enplify-logo.png";
 import {
   DropdownMenu,
@@ -21,6 +22,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface AppSidebarProps {
   workspaces: Workspace[];
@@ -42,6 +45,11 @@ const WorkspaceSection = ({
   onSelectSession,
   onNewSession,
   onNewWorkspace,
+  onRenameWorkspace,
+  onDeleteWorkspace,
+  onWorkspaceSettings,
+  onRenameSession,
+  onDeleteSession,
   defaultExpanded = true,
   sectionType
 }: { 
@@ -51,6 +59,11 @@ const WorkspaceSection = ({
   onSelectSession: (workspaceId: string, sessionId: string) => void;
   onNewSession: (workspaceId: string) => void;
   onNewWorkspace?: () => void;
+  onRenameWorkspace: (workspaceId: string, name: string) => void;
+  onDeleteWorkspace: (workspaceId: string) => void;
+  onWorkspaceSettings: (workspaceId: string) => void;
+  onRenameSession: (sessionId: string, name: string) => void;
+  onDeleteSession: (sessionId: string) => void;
   defaultExpanded?: boolean;
   sectionType: 'personal' | 'shared' | 'organization';
 }) => {
@@ -90,7 +103,7 @@ const WorkspaceSection = ({
                 e.stopPropagation();
                 onNewWorkspace();
               }}
-              className="opacity-0 group-hover/header:opacity-100 p-1 hover:bg-accent rounded transition-all"
+              className="opacity-0 group-hover/header:opacity-100 p-1 hover:bg-accent rounded transition-all cursor-pointer"
               title="New workspace"
             >
               <Plus className="w-3.5 h-3.5 text-muted-foreground" />
@@ -113,6 +126,7 @@ const WorkspaceSection = ({
                   onClick={() => toggleWorkspace(workspace.id)}
                   className="flex items-center gap-2 flex-1 min-w-0"
                 >
+                  <WorkspaceAvatar name={workspace.name} icon={workspace.icon} size="sm" />
                   <span className="truncate text-sm">{workspace.name}</span>
                 </button>
                 <div className="flex items-center gap-0.5">
@@ -136,16 +150,25 @@ const WorkspaceSection = ({
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuItem className="gap-2 text-sm">
+                      <DropdownMenuItem 
+                        className="gap-2 text-sm"
+                        onClick={() => onRenameWorkspace(workspace.id, workspace.name)}
+                      >
                         <Pencil className="w-3.5 h-3.5" />
                         Rename
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 text-sm">
+                      <DropdownMenuItem 
+                        className="gap-2 text-sm"
+                        onClick={() => onWorkspaceSettings(workspace.id)}
+                      >
                         <Settings className="w-3.5 h-3.5" />
                         Settings
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="gap-2 text-sm text-destructive focus:text-destructive">
+                      <DropdownMenuItem 
+                        className="gap-2 text-sm text-destructive focus:text-destructive"
+                        onClick={() => onDeleteWorkspace(workspace.id)}
+                      >
                         <Trash2 className="w-3.5 h-3.5" />
                         Delete
                       </DropdownMenuItem>
@@ -187,12 +210,18 @@ const WorkspaceSection = ({
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem className="gap-2 text-sm">
+                          <DropdownMenuItem 
+                            className="gap-2 text-sm"
+                            onClick={() => onRenameSession(session.id, session.name)}
+                          >
                             <Pencil className="w-3.5 h-3.5" />
                             Rename
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="gap-2 text-sm text-destructive focus:text-destructive">
+                          <DropdownMenuItem 
+                            className="gap-2 text-sm text-destructive focus:text-destructive"
+                            onClick={() => onDeleteSession(session.id)}
+                          >
                             <Trash2 className="w-3.5 h-3.5" />
                             Delete
                           </DropdownMenuItem>
@@ -217,13 +246,37 @@ export const AppSidebar = ({
   onSelectSession,
   onNewSession,
 }: AppSidebarProps) => {
+  const navigate = useNavigate();
   const personalWorkspaces = workspaces.filter(w => w.type === 'personal');
   const sharedWorkspaces = workspaces.filter(w => w.type === 'shared');
   const orgWorkspaces = workspaces.filter(w => w.type === 'organization');
 
   const handleNewWorkspace = () => {
-    // TODO: Implement new workspace creation
-    console.log('Create new workspace');
+    toast.info("Create workspace feature coming soon");
+  };
+
+  const handleRenameWorkspace = (workspaceId: string, currentName: string) => {
+    toast.info(`Rename workspace: ${currentName}`);
+  };
+
+  const handleDeleteWorkspace = (workspaceId: string) => {
+    toast.error("Delete workspace feature coming soon");
+  };
+
+  const handleWorkspaceSettings = (workspaceId: string) => {
+    const workspace = workspaces.find(w => w.id === workspaceId);
+    if (workspace) {
+      const settingsType = workspace.type === 'personal' ? 'my' : workspace.type === 'shared' ? 'shared' : 'organization';
+      navigate(`/settings?tab=${settingsType}&subTab=general`);
+    }
+  };
+
+  const handleRenameSession = (sessionId: string, currentName: string) => {
+    toast.info(`Rename chat: ${currentName}`);
+  };
+
+  const handleDeleteSession = (sessionId: string) => {
+    toast.error("Delete chat feature coming soon");
   };
 
   return (
@@ -242,6 +295,11 @@ export const AppSidebar = ({
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
           onNewWorkspace={handleNewWorkspace}
+          onRenameWorkspace={handleRenameWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspace}
+          onWorkspaceSettings={handleWorkspaceSettings}
+          onRenameSession={handleRenameSession}
+          onDeleteSession={handleDeleteSession}
           defaultExpanded={true}
           sectionType="personal"
         />
@@ -257,6 +315,11 @@ export const AppSidebar = ({
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
+          onRenameWorkspace={handleRenameWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspace}
+          onWorkspaceSettings={handleWorkspaceSettings}
+          onRenameSession={handleRenameSession}
+          onDeleteSession={handleDeleteSession}
           defaultExpanded={true}
           sectionType="shared"
         />
@@ -272,6 +335,11 @@ export const AppSidebar = ({
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
+          onRenameWorkspace={handleRenameWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspace}
+          onWorkspaceSettings={handleWorkspaceSettings}
+          onRenameSession={handleRenameSession}
+          onDeleteSession={handleDeleteSession}
           defaultExpanded={true}
           sectionType="organization"
         />
