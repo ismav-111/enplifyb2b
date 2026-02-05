@@ -37,7 +37,7 @@ export function WorkspaceContextMenu({
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onClick={() => onOpenSettings(workspace)}>
           <Settings2 className="w-4 h-4 mr-2" />
-          Open Settings
+          Settings
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onEdit(workspace)}>
           <Pencil className="w-4 h-4 mr-2" />

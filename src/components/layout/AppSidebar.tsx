@@ -306,10 +306,6 @@ const WorkspaceSection = ({
                         <Pencil className="w-3.5 h-3.5" />
                         Rename
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 text-sm" onClick={() => onOpenWorkspaceSettings(workspace)}>
-                        <Settings className="w-3.5 h-3.5" />
-                        Settings
-                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         className="gap-2 text-sm text-destructive focus:text-destructive"

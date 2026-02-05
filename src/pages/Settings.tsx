@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AccountSection } from "@/components/settings/AccountSection";
 import { SSOSection } from "@/components/settings/SSOSection";
 import { AdministratorsSection } from "@/components/settings/AdministratorsSection";
@@ -37,6 +37,7 @@ const sectionIcons = {
 
 const Settings = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [workspaces, setWorkspaces] = useState<Workspace[]>(mockWorkspaces);
   const [activeTab, setActiveTab] = useState<ActiveView>("account");
   const [activeSubTab, setActiveSubTab] = useState<WorkspaceSubTab>("general");
@@ -50,6 +51,19 @@ const Settings = () => {
   const [editingWorkspace, setEditingWorkspace] = useState<Workspace | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingWorkspace, setDeletingWorkspace] = useState<Workspace | null>(null);
+
+  // Handle URL query param for workspace navigation
+  useEffect(() => {
+    const workspaceId = searchParams.get("workspace");
+    if (workspaceId) {
+      const workspace = workspaces.find(w => w.id === workspaceId);
+      if (workspace) {
+        setActiveTab(workspaceId);
+        setExpandedWorkspace(workspaceId);
+        setActiveSubTab("general");
+      }
+    }
+  }, [searchParams, workspaces]);
 
   const personalWorkspaces = workspaces.filter(w => w.type === 'personal');
   const sharedWorkspaces = workspaces.filter(w => w.type === 'shared');
