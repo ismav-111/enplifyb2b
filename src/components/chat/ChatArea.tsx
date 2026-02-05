@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { FileText, Settings, User, LogOut } from "lucide-react";
+import { FileText, Settings, LogOut } from "lucide-react";
 import { Message, Source, Attachment } from "@/types/workspace";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -75,13 +75,6 @@ export const ChatArea = ({
               <p className="text-sm font-medium text-foreground">John Doe</p>
               <p className="text-xs text-muted-foreground">john@company.com</p>
             </div>
-            <DropdownMenuItem 
-              onClick={() => handleNavigation("/settings?tab=account")}
-              className="gap-2 cursor-pointer"
-            >
-              <User className="w-4 h-4" />
-              My Account
-            </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => handleNavigation("/settings")}
               className="gap-2 cursor-pointer"
