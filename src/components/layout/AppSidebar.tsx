@@ -227,14 +227,14 @@ export const AppSidebar = ({
   };
 
   return (
-    <aside className="flex flex-col h-screen w-64 bg-card border-r border-border">
+    <aside className="flex flex-col h-screen w-64 bg-sidebar border-r border-sidebar-border">
       {/* Logo */}
-      <div className="flex items-center px-4 h-14 border-b border-border">
+      <div className="flex items-center px-4 h-14 border-b border-sidebar-border">
         <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
       </div>
 
       {/* Workspaces */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1 text-sidebar-foreground">
         <WorkspaceSection
           title="My Workspaces"
           workspaces={personalWorkspaces}
