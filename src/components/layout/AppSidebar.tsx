@@ -43,6 +43,7 @@ interface AppSidebarProps {
   onNewWorkspace: (type: "personal" | "shared" | "organization") => void;
   onEditWorkspace: (workspace: Workspace) => void;
   onDeleteWorkspace: (workspace: Workspace) => void;
+  onOpenWorkspaceSettings: (workspace: Workspace) => void;
   onRenameSession: (workspaceId: string, sessionId: string, newName: string) => void;
   onDeleteSession: (workspaceId: string, sessionId: string) => void;
 }
@@ -199,6 +200,7 @@ const WorkspaceSection = ({
   onNewWorkspace,
   onEditWorkspace,
   onDeleteWorkspace,
+  onOpenWorkspaceSettings,
   onRenameSession,
   onDeleteSession,
   defaultExpanded = true,
@@ -212,6 +214,7 @@ const WorkspaceSection = ({
   onNewWorkspace?: () => void;
   onEditWorkspace: (workspace: Workspace) => void;
   onDeleteWorkspace: (workspace: Workspace) => void;
+  onOpenWorkspaceSettings: (workspace: Workspace) => void;
   onRenameSession: (workspaceId: string, sessionId: string, newName: string) => void;
   onDeleteSession: (workspaceId: string, sessionId: string) => void;
   defaultExpanded?: boolean;
@@ -303,6 +306,10 @@ const WorkspaceSection = ({
                         <Pencil className="w-3.5 h-3.5" />
                         Rename
                       </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 text-sm" onClick={() => onOpenWorkspaceSettings(workspace)}>
+                        <Settings className="w-3.5 h-3.5" />
+                        Settings
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         className="gap-2 text-sm text-destructive focus:text-destructive"
@@ -355,6 +362,7 @@ export const AppSidebar = ({
   onNewWorkspace,
   onEditWorkspace,
   onDeleteWorkspace,
+  onOpenWorkspaceSettings,
   onRenameSession,
   onDeleteSession,
 }: AppSidebarProps) => {
@@ -380,6 +388,7 @@ export const AppSidebar = ({
           onNewWorkspace={() => onNewWorkspace("personal")}
           onEditWorkspace={onEditWorkspace}
           onDeleteWorkspace={onDeleteWorkspace}
+          onOpenWorkspaceSettings={onOpenWorkspaceSettings}
           onRenameSession={onRenameSession}
           onDeleteSession={onDeleteSession}
           defaultExpanded={true}
@@ -400,6 +409,7 @@ export const AppSidebar = ({
           onNewWorkspace={() => onNewWorkspace("shared")}
           onEditWorkspace={onEditWorkspace}
           onDeleteWorkspace={onDeleteWorkspace}
+          onOpenWorkspaceSettings={onOpenWorkspaceSettings}
           onRenameSession={onRenameSession}
           onDeleteSession={onDeleteSession}
           defaultExpanded={true}
@@ -420,6 +430,7 @@ export const AppSidebar = ({
           onNewWorkspace={() => onNewWorkspace("organization")}
           onEditWorkspace={onEditWorkspace}
           onDeleteWorkspace={onDeleteWorkspace}
+          onOpenWorkspaceSettings={onOpenWorkspaceSettings}
           onRenameSession={onRenameSession}
           onDeleteSession={onDeleteSession}
           defaultExpanded={true}
