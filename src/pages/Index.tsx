@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { ChatArea } from "@/components/chat/ChatArea";
 import { SourcesSidebar } from "@/components/chat/SourcesSidebar";
@@ -13,6 +14,7 @@ import { DeleteWorkspaceDialog } from "@/components/settings/workspace/DeleteWor
 import { toast } from "sonner";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [activeSessionId, setActiveSessionId] = useState<string | null>("session-1");
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>("personal-1");
   const [workspaces, setWorkspaces] = useState<Workspace[]>(mockWorkspaces);
@@ -102,6 +104,10 @@ const Index = () => {
     toast.success("Workspace deleted");
   };
 
+  const handleOpenWorkspaceSettings = (workspace: Workspace) => {
+    navigate(`/settings?workspace=${workspace.id}`);
+  };
+
   // Session CRUD handlers
   const handleRenameSession = (workspaceId: string, sessionId: string, newName: string) => {
     setWorkspaces(prev => prev.map(w => 
@@ -149,6 +155,7 @@ const Index = () => {
         onNewWorkspace={handleNewWorkspace}
         onEditWorkspace={handleEditWorkspace}
         onDeleteWorkspace={handleDeleteWorkspaceClick}
+        onOpenWorkspaceSettings={handleOpenWorkspaceSettings}
         onRenameSession={handleRenameSession}
         onDeleteSession={handleDeleteSession}
       />
