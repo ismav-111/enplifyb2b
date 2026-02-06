@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ChevronDown, 
   ChevronRight, 
@@ -42,6 +43,7 @@ const WorkspaceSection = ({
   onSelectSession,
   onNewSession,
   onNewWorkspace,
+  onOpenSettings,
   defaultExpanded = true,
   sectionType
 }: { 
@@ -51,6 +53,7 @@ const WorkspaceSection = ({
   onSelectSession: (workspaceId: string, sessionId: string) => void;
   onNewSession: (workspaceId: string) => void;
   onNewWorkspace?: () => void;
+  onOpenSettings: (workspaceId: string) => void;
   defaultExpanded?: boolean;
   sectionType: 'personal' | 'shared' | 'organization';
 }) => {
@@ -140,7 +143,10 @@ const WorkspaceSection = ({
                         <Pencil className="w-3.5 h-3.5" />
                         Rename
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 text-sm">
+                      <DropdownMenuItem 
+                        className="gap-2 text-sm"
+                        onClick={() => onOpenSettings(workspace.id)}
+                      >
                         <Settings className="w-3.5 h-3.5" />
                         Settings
                       </DropdownMenuItem>
@@ -217,6 +223,7 @@ export const AppSidebar = ({
   onSelectSession,
   onNewSession,
 }: AppSidebarProps) => {
+  const navigate = useNavigate();
   const personalWorkspaces = workspaces.filter(w => w.type === 'personal');
   const sharedWorkspaces = workspaces.filter(w => w.type === 'shared');
   const orgWorkspaces = workspaces.filter(w => w.type === 'organization');
@@ -224,6 +231,10 @@ export const AppSidebar = ({
   const handleNewWorkspace = () => {
     // TODO: Implement new workspace creation
     console.log('Create new workspace');
+  };
+
+  const handleOpenSettings = (workspaceId: string) => {
+    navigate(`/settings?workspace=${workspaceId}`);
   };
 
   return (
@@ -242,6 +253,7 @@ export const AppSidebar = ({
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
           onNewWorkspace={handleNewWorkspace}
+          onOpenSettings={handleOpenSettings}
           defaultExpanded={true}
           sectionType="personal"
         />
@@ -257,6 +269,7 @@ export const AppSidebar = ({
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
+          onOpenSettings={handleOpenSettings}
           defaultExpanded={true}
           sectionType="shared"
         />
@@ -272,6 +285,7 @@ export const AppSidebar = ({
           activeSessionId={activeSessionId}
           onSelectSession={onSelectSession}
           onNewSession={onNewSession}
+          onOpenSettings={handleOpenSettings}
           defaultExpanded={true}
           sectionType="organization"
         />
