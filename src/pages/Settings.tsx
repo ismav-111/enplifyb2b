@@ -419,37 +419,35 @@ const Settings = () => {
 
       {/* Content Area */}
       <main className="flex-1 overflow-auto">
-        <div className="flex justify-center">
-          <div className="w-full max-w-2xl px-8 py-12">
-            {/* Page Title */}
-            <div className="mb-10">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-                Settings
-              </p>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                    {getPageTitle()}
-                  </h1>
-                  <p className="text-sm text-muted-foreground mt-1.5">
-                    {getPageSubtitle()}
-                  </p>
-                </div>
-                {(activeTab === "workspace-list-personal" || activeTab === "workspace-list-organization") && (
-                  <Button 
-                    onClick={() => handleOpenCreateDialog(activeTab === "workspace-list-personal" ? "personal" : "organization")} 
-                    size="sm"
-                  >
-                    <Plus className="w-4 h-4 mr-1.5" />
-                    New Workspace
-                  </Button>
-                )}
+        <div className="w-full max-w-5xl mx-auto px-8 py-12">
+          {/* Page Title */}
+          <div className="mb-10">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+              Settings
+            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+                  {getPageTitle()}
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1.5">
+                  {getPageSubtitle()}
+                </p>
               </div>
+              {(activeTab === "workspace-list-personal" || activeTab === "workspace-list-organization") && (
+                <Button 
+                  onClick={() => handleOpenCreateDialog(activeTab === "workspace-list-personal" ? "personal" : "organization")} 
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  New Workspace
+                </Button>
+              )}
             </div>
-
-            {/* Content */}
-            {renderContent()}
           </div>
+
+          {/* Content */}
+          {renderContent()}
         </div>
       </main>
 
