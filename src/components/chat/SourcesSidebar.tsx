@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Source, SourceType } from "@/types/workspace";
-import { X, Globe, ExternalLink } from "lucide-react";
+import { X, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Import actual brand logos
@@ -23,7 +23,7 @@ interface SourcesSidebarProps {
   onClose: () => void;
 }
 
-// Source type configurations with colors, icons, and logos
+// Source type configurations
 const sourceTypeConfig: Record<SourceType, { label: string; logo?: string }> = {
   salesforce: { label: "Salesforce", logo: salesforceLogo },
   zoho: { label: "Zoho", logo: zohoLogo },
@@ -85,10 +85,19 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
     index === self.findIndex(s => s.url === source.url)
   );
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const selectedSource = uniqueSources[selectedIndex];
-  const selectedSourceType = selectedSource ? detectSourceType(selectedSource.url, selectedSource.sourceType) : 'website';
-  const selectedConfig = sourceTypeConfig[selectedSourceType];
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const sourceRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+
+  // Scroll to selected source
+  useEffect(() => {
+    if (selectedIndex !== null && sourceRefs.current[selectedIndex]) {
+      sourceRefs.current[selectedIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [selectedIndex]);
+
+  const handleStackClick = (index: number) => {
+    setSelectedIndex(index);
+  };
 
   return (
     <>
@@ -103,7 +112,7 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed right-0 top-0 h-full w-96 bg-background border-l border-border z-50",
+          "fixed right-0 top-0 h-full w-80 bg-background border-l border-border z-50",
           "transform transition-transform duration-300 ease-in-out",
           "lg:relative lg:z-0",
           isOpen ? "translate-x-0" : "translate-x-full lg:hidden"
@@ -111,20 +120,10 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="text-base font-semibold text-foreground">Sources ({uniqueSources.length})</h2>
-          <button
-            onClick={onClose}
-            className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Content - Stack on left, Details on right */}
-        <div className="flex h-[calc(100%-57px)]">
-          {/* Source Stack - Left Side */}
-          <div className="w-16 border-r border-border bg-muted/30 py-3 overflow-y-auto">
-            <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-3">
+            <h2 className="text-base font-semibold text-foreground">Sources</h2>
+            {/* Stacked icons */}
+            <div className="flex items-center -space-x-1">
               {uniqueSources.map((source, index) => {
                 const sourceType = detectSourceType(source.url, source.sourceType);
                 const isSelected = index === selectedIndex;
@@ -132,99 +131,77 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
                 return (
                   <button
                     key={index}
-                    onClick={() => setSelectedIndex(index)}
+                    onClick={() => handleStackClick(index)}
                     className={cn(
-                      "w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200",
-                      "border-2 bg-card shadow-sm",
-                      isSelected 
-                        ? "border-primary ring-2 ring-primary/20 scale-105" 
-                        : "border-transparent hover:border-border hover:bg-muted/50"
+                      "w-6 h-6 rounded-md border-2 border-background flex items-center justify-center bg-card shadow-sm transition-all",
+                      isSelected && "ring-2 ring-primary ring-offset-1"
                     )}
+                    style={{ zIndex: uniqueSources.length - index }}
                   >
-                    <SourceIcon sourceType={sourceType} className="w-6 h-6" />
+                    <SourceIcon sourceType={sourceType} className="w-4 h-4" />
                   </button>
                 );
               })}
             </div>
           </div>
+          <button
+            onClick={onClose}
+            className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-          {/* Source Details - Right Side */}
-          <div className="flex-1 overflow-y-auto p-5">
-            {selectedSource && (
-              <div className="space-y-5">
-                {/* Source Header */}
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center shadow-sm">
-                    <SourceIcon sourceType={selectedSourceType} className="w-7 h-7" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-foreground">
-                      {selectedConfig.label}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                      {getDomain(selectedSource.url)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="h-px bg-border" />
-
-                {/* Title */}
-                <div>
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Document Title
-                  </p>
-                  <h4 className="text-sm font-medium text-foreground leading-relaxed">
-                    {selectedSource.title}
-                  </h4>
-                </div>
-
-                {/* Snippet */}
-                {selectedSource.snippet && (
-                  <div>
-                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                      Content Preview
-                    </p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {selectedSource.snippet}
-                    </p>
-                  </div>
-                )}
-
-                {/* URL */}
-                <div>
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Source URL
-                  </p>
-                  <a
-                    href={selectedSource.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
-                  >
-                    <span className="truncate max-w-[220px]">{selectedSource.url}</span>
-                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                  </a>
-                </div>
-
-                {/* Open Button */}
+        {/* Sources list */}
+        <div className="overflow-y-auto h-[calc(100%-57px)]">
+          <div className="p-3 space-y-2">
+            {uniqueSources.map((source, index) => {
+              const sourceType = detectSourceType(source.url, source.sourceType);
+              const config = sourceTypeConfig[sourceType];
+              const isSelected = index === selectedIndex;
+              
+              return (
                 <a
-                  href={selectedSource.url}
+                  key={index}
+                  ref={el => sourceRefs.current[index] = el}
+                  href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+                  className={cn(
+                    "block p-4 rounded-lg border bg-card hover:bg-muted/50 transition-all duration-200 cursor-pointer group",
+                    isSelected ? "border-primary ring-1 ring-primary/20" : "border-border/50 hover:border-border"
+                  )}
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  Open Source
+                  {/* Source Icon + Label */}
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 bg-muted/50 border border-border/50">
+                      <SourceIcon sourceType={sourceType} className="w-4 h-4" />
+                    </div>
+                    
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-medium text-foreground">
+                        {config.label}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground truncate max-w-[180px]">
+                        {getDomain(source.url)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-sm font-medium text-foreground leading-snug mt-3 group-hover:text-primary transition-colors">
+                    {source.title}
+                  </h3>
+                  
+                  {/* Snippet */}
+                  {source.snippet && (
+                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed line-clamp-2">
+                      {source.snippet}
+                    </p>
+                  )}
                 </a>
-
-                {/* Source Index */}
-                <p className="text-center text-xs text-muted-foreground">
-                  Source {selectedIndex + 1} of {uniqueSources.length}
-                </p>
-              </div>
-            )}
+              );
+            })}
           </div>
         </div>
       </aside>
