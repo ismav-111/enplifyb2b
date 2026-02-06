@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog } from "lucide-react";
+import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog, LogOut } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AccountSection } from "@/components/settings/AccountSection";
 import { SSOSection } from "@/components/settings/SSOSection";
@@ -360,13 +360,26 @@ const Settings = () => {
     );
   };
 
+  const handleLogout = () => {
+    toast.success("Logged out successfully");
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar - Fixed */}
       <aside className="w-64 border-r border-border h-screen bg-card flex flex-col sticky top-0">
-        {/* Logo */}
-        <div className="flex items-center px-4 h-14 border-b border-border shrink-0">
+        {/* Logo & Logout */}
+        <div className="flex items-center justify-between px-4 h-14 border-b border-border shrink-0">
           <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="w-4 h-4" />
+          </Button>
         </div>
 
         {/* Settings Navigation */}
