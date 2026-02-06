@@ -27,21 +27,21 @@ interface SourcesListProps {
   onViewSources: (sources: Source[]) => void;
 }
 
-// Source type configurations with colors and logos
-const sourceTypeConfig: Record<SourceType, { label: string; bgColor: string; logo?: string }> = {
-  salesforce: { label: "Salesforce", bgColor: "bg-[#00A1E0]", logo: salesforceLogo },
-  zoho: { label: "Zoho", bgColor: "bg-[#E42527]", logo: zohoLogo },
-  servicenow: { label: "ServiceNow", bgColor: "bg-[#81B5A1]", logo: servicenowLogo },
-  pdf: { label: "PDF", bgColor: "bg-[#E34F26]", logo: pdfLogo },
-  powerpoint: { label: "PowerPoint", bgColor: "bg-[#D24726]", logo: powerpointLogo },
-  excel: { label: "Excel", bgColor: "bg-[#217346]", logo: excelLogo },
-  "google-drive": { label: "Google Drive", bgColor: "bg-white", logo: googleDriveLogo },
-  onedrive: { label: "OneDrive", bgColor: "bg-[#0078D4]", logo: onedriveLogo },
-  sharepoint: { label: "SharePoint", bgColor: "bg-[#038387]", logo: sharepointLogo },
-  snowflake: { label: "Snowflake", bgColor: "bg-[#29B5E8]", logo: snowflakeLogo },
-  "sql-database": { label: "SQL Database", bgColor: "bg-[#CC2927]", logo: sqlDatabaseLogo },
-  youtube: { label: "YouTube", bgColor: "bg-[#FF0000]", logo: youtubeLogo },
-  website: { label: "Website", bgColor: "bg-primary" },
+// Source type configurations with logos
+const sourceTypeConfig: Record<SourceType, { label: string; logo?: string }> = {
+  salesforce: { label: "Salesforce", logo: salesforceLogo },
+  zoho: { label: "Zoho", logo: zohoLogo },
+  servicenow: { label: "ServiceNow", logo: servicenowLogo },
+  pdf: { label: "PDF", logo: pdfLogo },
+  powerpoint: { label: "PowerPoint", logo: powerpointLogo },
+  excel: { label: "Excel", logo: excelLogo },
+  "google-drive": { label: "Google Drive", logo: googleDriveLogo },
+  onedrive: { label: "OneDrive", logo: onedriveLogo },
+  sharepoint: { label: "SharePoint", logo: sharepointLogo },
+  snowflake: { label: "Snowflake", logo: snowflakeLogo },
+  "sql-database": { label: "SQL Database", logo: sqlDatabaseLogo },
+  youtube: { label: "YouTube", logo: youtubeLogo },
+  website: { label: "Website" },
 };
 
 // Get icon component based on source type
@@ -82,9 +82,9 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
   return (
     <button 
       onClick={() => onViewSources(sources)}
-      className="flex items-center gap-1.5 hover:opacity-80 transition-opacity cursor-pointer ml-2"
+      className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer ml-2"
     >
-      {/* Stacked source icons - smaller and tighter */}
+      {/* Stacked source icons */}
       <div className="flex items-center -space-x-1.5">
         {displaySources.map((source, index) => {
           const sourceType = detectSourceType(source.url, source.sourceType);
@@ -96,13 +96,12 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
                 <TooltipTrigger asChild>
                   <div
                     className={cn(
-                      "w-5 h-5 rounded-full border-[1.5px] border-background flex items-center justify-center overflow-hidden",
-                      "shadow-sm hover:z-10 transition-transform",
-                      config.bgColor
+                      "w-6 h-6 rounded-md border-2 border-background flex items-center justify-center overflow-hidden",
+                      "shadow-sm hover:z-10 transition-transform bg-card"
                     )}
                     style={{ zIndex: displayCount - index }}
                   >
-                    <SourceIcon sourceType={sourceType} className="w-3 h-3" />
+                    <SourceIcon sourceType={sourceType} className="w-4 h-4" />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[200px]">
@@ -115,10 +114,10 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
         })}
         {hasMore && (
           <div
-            className="w-5 h-5 rounded-full border-[1.5px] border-background bg-muted flex items-center justify-center shadow-sm"
+            className="w-6 h-6 rounded-md border-2 border-background bg-muted flex items-center justify-center shadow-sm"
             style={{ zIndex: 0 }}
           >
-            <span className="text-[8px] font-medium text-muted-foreground">
+            <span className="text-[9px] font-semibold text-muted-foreground">
               +{sources.length - 5}
             </span>
           </div>
@@ -126,7 +125,7 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
       </div>
 
       {/* Sources label */}
-      <span className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+      <span className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
         {sources.length} {sources.length === 1 ? 'source' : 'sources'}
       </span>
     </button>
