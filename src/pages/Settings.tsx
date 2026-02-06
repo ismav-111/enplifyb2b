@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AccountSection } from "@/components/settings/AccountSection";
 import { SSOSection } from "@/components/settings/SSOSection";
 import { AdministratorsSection } from "@/components/settings/AdministratorsSection";
@@ -11,7 +11,6 @@ import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceL
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
 import { EditWorkspaceDialog } from "@/components/settings/workspace/EditWorkspaceDialog";
 import { DeleteWorkspaceDialog } from "@/components/settings/workspace/DeleteWorkspaceDialog";
-import { WorkspaceContextMenu } from "@/components/settings/workspace/WorkspaceContextMenu";
 import { cn } from "@/lib/utils";
 import { mockWorkspaces } from "@/data/mockWorkspaces";
 import { Workspace } from "@/types/workspace";
@@ -37,11 +36,25 @@ const sectionIcons = {
 
 const Settings = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [workspaces, setWorkspaces] = useState<Workspace[]>(mockWorkspaces);
   const [activeTab, setActiveTab] = useState<ActiveView>("account");
   const [activeSubTab, setActiveSubTab] = useState<WorkspaceSubTab>("general");
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["personal", "shared", "organization"]));
   const [expandedWorkspace, setExpandedWorkspace] = useState<string | null>(null);
+
+  // Handle workspace param from URL
+  useEffect(() => {
+    const workspaceId = searchParams.get("workspace");
+    if (workspaceId) {
+      const workspace = workspaces.find(w => w.id === workspaceId);
+      if (workspace) {
+        setActiveTab(workspaceId);
+        setExpandedWorkspace(workspaceId);
+        setActiveSubTab("general");
+      }
+    }
+  }, [searchParams, workspaces]);
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -311,13 +324,7 @@ const Settings = () => {
                       <div className="flex items-center gap-2 min-w-0 flex-1">
                         <span className="truncate text-sm">{workspace.name}</span>
                       </div>
-                      <div className="flex items-center gap-0.5">
-                        <WorkspaceContextMenu
-                          workspace={workspace}
-                          onEdit={handleEditWorkspace}
-                          onDelete={handleDeleteWorkspaceClick}
-                          onOpenSettings={handleOpenWorkspaceSettings}
-                        />
+                      <div className="flex items-center">
                         {isWorkspaceExpanded ? (
                           <ChevronDown className="w-4 h-4 text-muted-foreground" />
                         ) : (
