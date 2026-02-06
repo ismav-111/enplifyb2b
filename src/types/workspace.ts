@@ -12,7 +12,7 @@ export interface Workspace {
   sessions: ChatSession[];
 }
 
-export type SourceType = 'website' | 'pdf' | 'ppt' | 'salesforce' | 'zoho' | 'servicenow' | 'excel' | 'doc';
+export type SourceType = 'website' | 'pdf' | 'powerpoint' | 'salesforce' | 'zoho' | 'servicenow' | 'excel' | 'google-drive' | 'onedrive' | 'sharepoint' | 'snowflake' | 'sql-database' | 'youtube';
 
 export interface Source {
   title: string;
