@@ -369,17 +369,9 @@ const Settings = () => {
     <div className="min-h-screen bg-background flex">
       {/* Sidebar - Fixed */}
       <aside className="w-64 border-r border-border h-screen bg-card flex flex-col sticky top-0">
-        {/* Logo & Logout */}
-        <div className="flex items-center justify-between px-4 h-14 border-b border-border shrink-0">
+        {/* Logo */}
+        <div className="flex items-center px-4 h-14 border-b border-border shrink-0">
           <img src={enplifyLogo} alt="Enplify.ai" className="h-5" />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleLogout}
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4" />
-          </Button>
         </div>
 
         {/* Settings Navigation */}
@@ -438,8 +430,22 @@ const Settings = () => {
       </aside>
 
       {/* Content Area */}
-      <main className="flex-1 overflow-auto">
-        <div className="w-full max-w-5xl mx-auto px-8 py-12">
+      <main className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="h-14 border-b border-border bg-card flex items-center justify-end px-6 shrink-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </Button>
+        </header>
+        
+        <div className="flex-1 overflow-auto">
+          <div className="w-full max-w-5xl mx-auto px-8 py-12">
           {/* Page Title */}
           <div className="mb-10">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
@@ -468,6 +474,7 @@ const Settings = () => {
 
           {/* Content */}
           {renderContent()}
+        </div>
         </div>
       </main>
 
