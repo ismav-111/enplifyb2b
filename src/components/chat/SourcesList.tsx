@@ -85,7 +85,7 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
       className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer ml-2"
     >
       {/* Stacked source icons */}
-      <div className="flex items-center -space-x-1.5">
+      <div className="flex items-center -space-x-1">
         {displaySources.map((source, index) => {
           const sourceType = detectSourceType(source.url, source.sourceType);
           const config = sourceTypeConfig[sourceType];
@@ -96,12 +96,12 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
                 <TooltipTrigger asChild>
                   <div
                     className={cn(
-                      "w-6 h-6 rounded-md border-2 border-background flex items-center justify-center overflow-hidden",
-                      "shadow-sm hover:z-10 transition-transform bg-card"
+                      "w-7 h-7 rounded-full border-2 border-background flex items-center justify-center overflow-hidden",
+                      "shadow-md hover:z-10 transition-transform bg-card"
                     )}
                     style={{ zIndex: displayCount - index }}
                   >
-                    <SourceIcon sourceType={sourceType} className="w-4 h-4" />
+                    <SourceIcon sourceType={sourceType} className="w-3.5 h-3.5" />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[200px]">
@@ -114,7 +114,7 @@ export const SourcesList = ({ sources, onViewSources }: SourcesListProps) => {
         })}
         {hasMore && (
           <div
-            className="w-6 h-6 rounded-md border-2 border-background bg-muted flex items-center justify-center shadow-sm"
+            className="w-7 h-7 rounded-full border-2 border-background bg-muted flex items-center justify-center shadow-md"
             style={{ zIndex: 0 }}
           >
             <span className="text-[9px] font-semibold text-muted-foreground">

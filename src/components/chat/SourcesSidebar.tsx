@@ -133,13 +133,13 @@ export const SourcesSidebar = ({ sources, isOpen, onClose }: SourcesSidebarProps
                   key={index}
                   onClick={() => setSelectedIndex(index)}
                   className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center bg-card border transition-all",
+                    "w-9 h-9 rounded-full flex items-center justify-center bg-card transition-all",
                     isSelected 
-                      ? "border-primary shadow-sm" 
-                      : "border-border/50 hover:border-border opacity-60 hover:opacity-100"
+                      ? "ring-2 ring-primary shadow-md" 
+                      : "shadow-sm hover:shadow-md opacity-70 hover:opacity-100"
                   )}
                 >
-                  <SourceIcon sourceType={sourceType} className="w-5 h-5" />
+                  <SourceIcon sourceType={sourceType} className="w-4 h-4" />
                 </button>
               );
             })}
