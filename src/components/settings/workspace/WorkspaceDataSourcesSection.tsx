@@ -298,7 +298,7 @@ const DataSourceCard = ({
         : `Last synced ${source.lastSynced}`;
     }
     if (source.configured) {
-      return "Configured · Ready to connect";
+      return "Credentials saved · Sync to connect";
     }
     return source.description;
   };
@@ -414,7 +414,7 @@ const DataSourceCard = ({
               </>
             )}
 
-            {/* Configured but not connected */}
+            {/* Configured but not connected - show Sync Now */}
             {source.configured && !source.connected && (
               <>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -445,11 +445,14 @@ const DataSourceCard = ({
                     <TooltipContent>Clear saved config</TooltipContent>
                   </Tooltip>
                 </div>
-                <Switch
-                  checked={false}
-                  onCheckedChange={() => onConnect(source.id)}
-                  className="ml-1"
-                />
+                <Button
+                  size="sm"
+                  onClick={() => onSync(source.id)}
+                  className="h-8 px-3 text-xs gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Sync Now
+                </Button>
               </>
             )}
 
@@ -511,7 +514,7 @@ const DataSourceCard = ({
                     {isEditing ? "Cancel" : "Close"}
                   </Button>
                   
-                  {/* Save button when editing or new config */}
+                  {/* Save button when editing */}
                   {isEditing && (
                     <Button
                       variant="outline"
@@ -519,18 +522,18 @@ const DataSourceCard = ({
                       onClick={handleSave}
                       className="h-8 px-4 text-xs"
                     >
-                      Save
+                      Save Credentials
                     </Button>
                   )}
                   
-                  {/* Save button for new (unconfigured) sources */}
+                  {/* Save & Sync button for new (unconfigured) sources */}
                   {!source.configured && !source.connected && (
                     <Button
                       size="sm"
                       onClick={handleSave}
                       className="h-8 px-4 text-xs"
                     >
-                      Save
+                      Save Credentials
                     </Button>
                   )}
                 </div>
@@ -989,7 +992,7 @@ export const WorkspaceDataSourcesSection = () => {
   const handleSync = (id: string) => {
     setDataSources(
       dataSources.map((ds) =>
-        ds.id === id ? { ...ds, lastSynced: "Just now" } : ds
+        ds.id === id ? { ...ds, connected: true, lastSynced: "Just now" } : ds
       )
     );
   };
