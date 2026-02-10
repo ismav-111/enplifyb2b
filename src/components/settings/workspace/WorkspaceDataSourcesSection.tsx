@@ -298,7 +298,9 @@ const DataSourceCard = ({
         : `Last synced ${source.lastSynced}`;
     }
     if (source.configured) {
-      return "Credentials saved · Sync to connect";
+      return source.lastSynced 
+        ? `Disconnected · Last synced ${source.lastSynced}` 
+        : "Credentials saved · Sync to connect";
     }
     return source.description;
   };
@@ -414,7 +416,7 @@ const DataSourceCard = ({
               </>
             )}
 
-            {/* Configured but not connected - show Sync Now */}
+            {/* Configured but not connected */}
             {source.configured && !source.connected && (
               <>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -436,6 +438,19 @@ const DataSourceCard = ({
                       <Button
                         variant="ghost"
                         size="icon"
+                        onClick={() => onSync(source.id)}
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Sync now</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => onClear(source.id)}
                         className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       >
@@ -444,15 +459,12 @@ const DataSourceCard = ({
                     </TooltipTrigger>
                     <TooltipContent>Clear saved config</TooltipContent>
                   </Tooltip>
+                  <div className="w-px h-5 bg-border mx-1" />
                 </div>
-                <Button
-                  size="sm"
-                  onClick={() => onSync(source.id)}
-                  className="h-8 px-3 text-xs gap-1.5"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Sync Now
-                </Button>
+                <Switch
+                  checked={false}
+                  onCheckedChange={() => onConnect(source.id)}
+                />
               </>
             )}
 
@@ -984,7 +996,7 @@ export const WorkspaceDataSourcesSection = () => {
   const handleDisconnect = (id: string) => {
     setDataSources(
       dataSources.map((ds) =>
-        ds.id === id ? { ...ds, connected: false, lastSynced: undefined } : ds
+        ds.id === id ? { ...ds, connected: false } : ds
       )
     );
   };
