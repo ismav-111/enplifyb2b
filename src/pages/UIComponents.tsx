@@ -65,19 +65,29 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ColorSwatch = ({ name, cssVar, description }: { name: string; cssVar: string; description?: string }) => (
-  <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 hover:border-border transition-colors">
-    <div 
-      className="w-12 h-12 rounded-lg shadow-sm border border-border/30"
-      style={{ backgroundColor: `hsl(var(${cssVar}))` }}
-    />
-    <div className="flex-1">
-      <p className="text-sm font-medium text-foreground">{name}</p>
-      <code className="text-xs text-muted-foreground">{cssVar}</code>
-      {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+const ColorSwatch = ({ name, cssVar, description }: { name: string; cssVar: string; description?: string }) => {
+  const hslValue = typeof window !== "undefined"
+    ? getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim()
+    : "";
+  const hslDisplay = hslValue ? `hsl(${hslValue})` : "";
+
+  return (
+    <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 hover:border-border transition-colors">
+      <div
+        className="w-12 h-12 rounded-lg shadow-sm border border-border/30 shrink-0"
+        style={{ backgroundColor: `hsl(var(${cssVar}))` }}
+      />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground">{name}</p>
+        <code className="text-xs text-muted-foreground block">{cssVar}</code>
+        {hslDisplay && (
+          <code className="text-xs text-muted-foreground/70 block font-mono">{hslDisplay}</code>
+        )}
+        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Section = ({ title, children, id }: { title: string; children: React.ReactNode; id?: string }) => (
   <section id={id} className="space-y-6">
