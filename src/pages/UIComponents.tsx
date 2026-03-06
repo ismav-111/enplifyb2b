@@ -65,19 +65,29 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ColorSwatch = ({ name, cssVar, description }: { name: string; cssVar: string; description?: string }) => (
-  <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 hover:border-border transition-colors">
-    <div 
-      className="w-12 h-12 rounded-lg shadow-sm border border-border/30"
-      style={{ backgroundColor: `hsl(var(${cssVar}))` }}
-    />
-    <div className="flex-1">
-      <p className="text-sm font-medium text-foreground">{name}</p>
-      <code className="text-xs text-muted-foreground">{cssVar}</code>
-      {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+const ColorSwatch = ({ name, cssVar, description }: { name: string; cssVar: string; description?: string }) => {
+  const hslValue = typeof window !== "undefined"
+    ? getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim()
+    : "";
+  const hslDisplay = hslValue ? `hsl(${hslValue})` : "";
+
+  return (
+    <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 hover:border-border transition-colors">
+      <div
+        className="w-12 h-12 rounded-lg shadow-sm border border-border/30 shrink-0"
+        style={{ backgroundColor: `hsl(var(${cssVar}))` }}
+      />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground">{name}</p>
+        <code className="text-xs text-muted-foreground block">{cssVar}</code>
+        {hslDisplay && (
+          <code className="text-xs text-muted-foreground/70 block font-mono">{hslDisplay}</code>
+        )}
+        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Section = ({ title, children, id }: { title: string; children: React.ReactNode; id?: string }) => (
   <section id={id} className="space-y-6">
@@ -233,41 +243,33 @@ const UIComponents = () => {
             </SubSection>
 
             <SubSection title="Text Scale">
-              <div className="space-y-4 p-4 border border-border rounded-lg">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">text-xs (12px)</p>
-                  <p className="text-xs text-foreground">The quick brown fox jumps over the lazy dog</p>
+              <div className="border border-border rounded-lg overflow-hidden">
+                <div className="grid grid-cols-[160px_1fr] text-xs font-medium text-muted-foreground bg-muted px-4 py-2 border-b border-border">
+                  <span>Class · px · rem</span>
+                  <span>Sample</span>
                 </div>
-                <Separator />
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">text-sm (14px)</p>
-                  <p className="text-sm text-foreground">The quick brown fox jumps over the lazy dog</p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">text-base (16px)</p>
-                  <p className="text-base text-foreground">The quick brown fox jumps over the lazy dog</p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">text-lg (18px)</p>
-                  <p className="text-lg text-foreground">The quick brown fox jumps over the lazy dog</p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">text-xl (20px)</p>
-                  <p className="text-xl text-foreground">The quick brown fox jumps over the lazy dog</p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">text-2xl (24px)</p>
-                  <p className="text-2xl text-foreground">The quick brown fox jumps over the lazy dog</p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">text-3xl (30px)</p>
-                  <p className="text-3xl text-foreground">The quick brown fox jumps</p>
-                </div>
+                {[
+                  { cls: "text-xs",   px: "12px",  rem: "0.75rem",  label: "Caption / micro labels" },
+                  { cls: "text-sm",   px: "14px",  rem: "0.875rem", label: "Body / UI default" },
+                  { cls: "text-base", px: "16px",  rem: "1rem",     label: "Base reading size" },
+                  { cls: "text-lg",   px: "18px",  rem: "1.125rem", label: "Subheadings" },
+                  { cls: "text-xl",   px: "20px",  rem: "1.25rem",  label: "Section titles" },
+                  { cls: "text-2xl",  px: "24px",  rem: "1.5rem",   label: "Page headings" },
+                  { cls: "text-3xl",  px: "30px",  rem: "1.875rem", label: "Hero / display" },
+                  { cls: "text-4xl",  px: "36px",  rem: "2.25rem",  label: "Large display" },
+                ].map(({ cls, px, rem, label }, i, arr) => (
+                  <div key={cls}>
+                    <div className="grid grid-cols-[160px_1fr] items-center gap-4 px-4 py-3">
+                      <div>
+                        <code className="text-xs font-mono text-primary block">{cls}</code>
+                        <span className="text-[11px] text-muted-foreground">{px} · {rem}</span>
+                        <span className="text-[10px] text-muted-foreground/60 block">{label}</span>
+                      </div>
+                      <p className={`${cls} text-foreground leading-tight`}>The quick brown fox</p>
+                    </div>
+                    {i < arr.length - 1 && <Separator />}
+                  </div>
+                ))}
               </div>
             </SubSection>
 
