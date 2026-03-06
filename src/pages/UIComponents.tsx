@@ -65,25 +65,45 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const hslToRgb = (h: number, s: number, l: number): [number, number, number] => {
+  s /= 100; l /= 100;
+  const k = (n: number) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
+};
+
+const toHex = (r: number, g: number, b: number) =>
+  "#" + [r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("").toUpperCase();
+
 const ColorSwatch = ({ name, cssVar, description }: { name: string; cssVar: string; description?: string }) => {
-  const hslValue = typeof window !== "undefined"
+  const raw = typeof window !== "undefined"
     ? getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim()
     : "";
-  const hslDisplay = hslValue ? `hsl(${hslValue})` : "";
+
+  // Parse "H S% L%" or "H S L" formats
+  const parts = raw.split(/[\s,]+/).map((p) => parseFloat(p));
+  const [h = 0, s = 0, l = 0] = parts;
+  const [r, g, b] = hslToRgb(h, s, l);
+  const hex = raw ? toHex(r, g, b) : "";
+  const hslDisplay = raw ? `hsl(${h}, ${s}%, ${l}%)` : "";
+  const rgbDisplay = raw ? `rgb(${r}, ${g}, ${b})` : "";
 
   return (
-    <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 hover:border-border transition-colors">
+    <div className="flex items-start gap-4 p-3 rounded-lg border border-border/50 hover:border-border transition-colors">
       <div
-        className="w-12 h-12 rounded-lg shadow-sm border border-border/30 shrink-0"
+        className="w-12 h-12 rounded-lg shadow-sm border border-border/30 shrink-0 mt-0.5"
         style={{ backgroundColor: `hsl(var(${cssVar}))` }}
       />
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 space-y-0.5">
         <p className="text-sm font-medium text-foreground">{name}</p>
-        <code className="text-xs text-muted-foreground block">{cssVar}</code>
-        {hslDisplay && (
-          <code className="text-xs text-muted-foreground/70 block font-mono">{hslDisplay}</code>
-        )}
-        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+        {description && <p className="text-[11px] text-muted-foreground/70">{description}</p>}
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 pt-0.5">
+          <code className="text-[11px] font-mono text-muted-foreground">{cssVar}</code>
+          {hex && <code className="text-[11px] font-mono text-muted-foreground">{hex}</code>}
+          {hslDisplay && <code className="text-[11px] font-mono text-muted-foreground">{hslDisplay}</code>}
+          {rgbDisplay && <code className="text-[11px] font-mono text-muted-foreground">{rgbDisplay}</code>}
+        </div>
       </div>
     </div>
   );
