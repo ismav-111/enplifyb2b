@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog, LogOut } from "lucide-react";
+import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog, LogOut, ScrollText } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AccountSection } from "@/components/settings/AccountSection";
 import { SSOSection } from "@/components/settings/SSOSection";
@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
-type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails";
+type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails" | "logs";
 type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
@@ -26,6 +26,7 @@ const subItems = [
   { id: "members" as const, label: "People", icon: UserCog },
   { id: "configuration" as const, label: "Configuration", icon: Database },
   { id: "guardrails" as const, label: "Guardrails", icon: Shield },
+  { id: "logs" as const, label: "Logs", icon: ScrollText },
 ];
 
 const sectionIcons = {
@@ -241,6 +242,8 @@ const Settings = () => {
         return "Configure data sources and integrations";
       case "guardrails":
         return "Set up safety controls and custom instructions";
+      case "logs":
+        return "Monitor activity, syncs, and events in this workspace";
       default:
         return "";
     }
