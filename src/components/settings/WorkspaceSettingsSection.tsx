@@ -4,10 +4,11 @@ import { WorkspaceUsersSection } from "./workspace/WorkspaceUsersSection";
 import { WorkspaceDataSourcesSection } from "./workspace/WorkspaceDataSourcesSection";
 import { WorkspaceGuardRailsSection } from "./workspace/WorkspaceGuardRailsSection";
 import { WorkspaceDangerZone } from "./workspace/WorkspaceDangerZone";
+import { WorkspaceLogsSection } from "./workspace/WorkspaceLogsSection";
 
 interface WorkspaceSettingsProps {
   type: "organization" | "my" | "shared";
-  subTab: "general" | "members" | "configuration" | "guardrails";
+  subTab: "general" | "members" | "configuration" | "guardrails" | "logs";
 }
 
 const workspaceDefaults = {

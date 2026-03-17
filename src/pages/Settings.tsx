@@ -26,6 +26,7 @@ const subItems = [
   { id: "members" as const, label: "People", icon: UserCog },
   { id: "configuration" as const, label: "Configuration", icon: Database },
   { id: "guardrails" as const, label: "Guardrails", icon: Shield },
+  { id: "logs" as const, label: "Logs", icon: ScrollText },
 ];
 
 const sectionIcons = {
