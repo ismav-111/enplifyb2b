@@ -229,10 +229,12 @@ const Settings = () => {
 
   const getPageTitle = () => {
     if (activeTab === "account") return "My Account";
+    if (activeTab === "account-guardrails") return "Guardrails";
+    if (activeTab === "account-logs") return "Activity Logs";
     if (activeTab === "workspace-list-personal") return "My Workspaces";
     if (activeTab === "workspace-list-shared") return "Shared Workspaces";
     if (activeTab === "workspace-list-organization") return "Org Workspaces";
-    
+
     const workspace = getActiveWorkspace();
     if (!workspace) return "";
     const subItem = subItems.find(s => s.id === activeSubTab);
@@ -241,23 +243,19 @@ const Settings = () => {
 
   const getPageSubtitle = () => {
     if (activeTab === "account") return "Manage your account settings and preferences";
+    if (activeTab === "account-guardrails") return "Account-wide safety, compliance, and content rules applied across all workspaces";
+    if (activeTab === "account-logs") return "Monitor your personal activity across all workspaces";
     if (activeTab === "workspace-list-personal") return "Manage your personal workspaces";
     if (activeTab === "workspace-list-shared") return "View workspaces shared with you";
     if (activeTab === "workspace-list-organization") return "Manage organization-wide workspaces";
-    
+
     switch (activeSubTab) {
-      case "general":
-        return "Manage workspace details and settings";
-      case "members":
-        return "Manage people and access permissions";
-      case "configuration":
-        return "Configure data sources and integrations";
-      case "guardrails":
-        return "Set up safety controls and custom instructions";
-      case "logs":
-        return "Monitor activity, syncs, and events in this workspace";
-      default:
-        return "";
+      case "general":       return "Manage workspace details and settings";
+      case "members":       return "Manage people and access permissions";
+      case "configuration": return "Configure data sources and integrations";
+      case "guardrails":    return "Set up safety controls and custom instructions";
+      case "logs":          return "Monitor activity, syncs, and events in this workspace";
+      default:              return "";
     }
   };
 
