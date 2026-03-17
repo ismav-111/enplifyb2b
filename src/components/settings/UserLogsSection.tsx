@@ -2,12 +2,11 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   Search, Download, Pause, Play, Radio, X, ChevronDown, ChevronRight,
   Info, CheckCircle2, AlertTriangle, XCircle, Filter, Calendar as CalendarIcon,
-  Copy, Check, User, Building2, Globe, Layers, Clock, ArrowRight, Tag,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -15,9 +14,10 @@ import { format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import {
   LogEntry, LogLevel, LogCategory,
-  formatEventType, deriveCategory, deriveLevel,
+  formatEventType, deriveCategory,
   categoryLabels, ALL_CATEGORIES,
 } from "@/types/logs";
+import { LogDetailDrawer } from "@/components/logs/LogDetailDrawer";
 
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
@@ -176,128 +176,6 @@ const levelConfig: Record<LogLevel, { icon: React.ElementType; label: string; ro
 const formatTs  = (iso: string) => { try { return format(new Date(iso), "MMM d, yyyy HH:mm:ss"); } catch { return iso; } };
 const formatShort = (iso: string) => { try { return format(new Date(iso), "HH:mm:ss"); } catch { return iso; } };
 
-// ─── CopyButton ───────────────────────────────────────────────────────────────
-
-const CopyButton = ({ text }: { text: string }) => {
-  const [copied, setCopied] = useState(false);
-  const copy = () => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); };
-  return (
-    <button onClick={copy} className="p-1 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground">
-      {copied ? <Check className="w-3.5 h-3.5 text-success" /> : <Copy className="w-3.5 h-3.5" />}
-    </button>
-  );
-};
-
-// ─── Detail Drawer ────────────────────────────────────────────────────────────
-
-interface DrawerProps { log: LogEntry | null; open: boolean; onClose: () => void; }
-
-const LogDetailDrawer = ({ log, open, onClose }: DrawerProps) => {
-  if (!log) return null;
-  const { icon: LevelIcon, badge, label } = levelConfig[log.level];
-  const category = deriveCategory(log.event_type);
-
-  return (
-    <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent side="right" className="w-[480px] sm:w-[540px] flex flex-col gap-0 p-0 overflow-hidden">
-        <SheetHeader className="px-6 pt-6 pb-4 border-b border-border shrink-0">
-          <div className="flex items-start gap-3">
-            <LevelIcon className="w-5 h-5 mt-0.5 shrink-0 text-muted-foreground" />
-            <div className="min-w-0 flex-1">
-              <SheetTitle className="text-base font-semibold leading-snug">{formatEventType(log.event_type)}</SheetTitle>
-              <div className="flex items-center gap-2 mt-1 flex-wrap">
-                <p className="text-xs text-muted-foreground font-mono">{log._id}</p>
-              </div>
-            </div>
-            <Badge variant="outline" className={cn("text-xs shrink-0", badge)}>{label}</Badge>
-          </div>
-        </SheetHeader>
-
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-
-          {/* Timestamp + category */}
-          <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Event</p>
-            <div className="space-y-2.5">
-              <div className="flex items-start gap-2 text-sm">
-                <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground" />
-                <span className="text-muted-foreground w-24 shrink-0">Occurred at</span>
-                <span className="text-foreground font-mono">{formatTs(log.occurred_at)}</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm">
-                <Tag className="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground" />
-                <span className="text-muted-foreground w-24 shrink-0">Category</span>
-                <span className="text-foreground">{categoryLabels[category]}</span>
-              </div>
-              {log.workspace_name && (
-                <div className="flex items-start gap-2 text-sm">
-                  <Layers className="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground" />
-                  <span className="text-muted-foreground w-24 shrink-0">Workspace</span>
-                  <div>
-                    <span className="text-foreground">{log.workspace_name}</span>
-                    {log.workspace_id && <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{log.workspace_id}</p>}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Actor */}
-          <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Actor</p>
-            <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">{log.actor.user_name}</span>
-              </div>
-              <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs pl-6">
-                <span className="text-muted-foreground">User ID</span>
-                <span className="font-mono text-foreground">{log.actor.user_id}</span>
-                <span className="text-muted-foreground">Tenant</span>
-                <span className="text-foreground">{log.actor.tenant_name}</span>
-                <span className="text-muted-foreground">Tenant ID</span>
-                <span className="font-mono text-foreground">{log.actor.tenant_id}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Tenant */}
-          <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Tenant</p>
-            <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-1.5">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">{log.tenant.tenant_name}</span>
-              </div>
-              <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs pl-6">
-                <span className="text-muted-foreground">Tenant ID</span>
-                <span className="font-mono text-foreground">{log.tenant.tenant_id}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Details */}
-          {Object.keys(log.details).length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Details</p>
-                <CopyButton text={JSON.stringify(log.details, null, 2)} />
-              </div>
-              <div className="rounded-lg border border-border bg-muted/30 divide-y divide-border/50">
-                {Object.entries(log.details).map(([k, v]) => (
-                  <div key={k} className="flex items-center justify-between px-3 py-2 text-xs gap-3">
-                    <span className="text-muted-foreground font-medium shrink-0">{k.replace(/_/g, " ")}</span>
-                    <span className="font-mono text-foreground text-right break-all">{String(v)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-};
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
