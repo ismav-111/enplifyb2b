@@ -8,6 +8,8 @@ import { ApiKeysSection } from "@/components/settings/ApiKeysSection";
 import { DangerZoneSection } from "@/components/settings/DangerZoneSection";
 import { WorkspaceSettingsSection } from "@/components/settings/WorkspaceSettingsSection";
 import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceListSection";
+import { WorkspaceGuardRailsSection } from "@/components/settings/workspace/WorkspaceGuardRailsSection";
+import { WorkspaceLogsSection } from "@/components/settings/workspace/WorkspaceLogsSection";
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
 import { EditWorkspaceDialog } from "@/components/settings/workspace/EditWorkspaceDialog";
 import { DeleteWorkspaceDialog } from "@/components/settings/workspace/DeleteWorkspaceDialog";
@@ -19,7 +21,7 @@ import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
 type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails" | "logs";
-type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
+type ActiveView = "account" | "account-guardrails" | "account-logs" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
   { id: "general" as const, label: "General", icon: Settings2 },
