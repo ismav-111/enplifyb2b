@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
 type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails" | "logs";
-type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
+type ActiveView = "account" | "account-guardrails" | "account-logs" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
   { id: "general" as const, label: "General", icon: Settings2 },
