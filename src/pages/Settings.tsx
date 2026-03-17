@@ -6,8 +6,6 @@ import { SSOSection } from "@/components/settings/SSOSection";
 import { AdministratorsSection } from "@/components/settings/AdministratorsSection";
 import { ApiKeysSection } from "@/components/settings/ApiKeysSection";
 import { DangerZoneSection } from "@/components/settings/DangerZoneSection";
-import { AccountGuardRailsSection } from "@/components/settings/AccountGuardRailsSection";
-import { UserLogsSection } from "@/components/settings/UserLogsSection";
 import { WorkspaceSettingsSection } from "@/components/settings/WorkspaceSettingsSection";
 import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceListSection";
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
@@ -21,7 +19,7 @@ import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
 type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails" | "logs";
-type ActiveView = "account" | "account-guardrails" | "account-logs" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
+type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
   { id: "general" as const, label: "General", icon: Settings2 },
@@ -169,16 +167,6 @@ const Settings = () => {
       );
     }
 
-    // Account-level guardrails
-    if (activeTab === "account-guardrails") {
-      return <AccountGuardRailsSection />;
-    }
-
-    // Account-level logs
-    if (activeTab === "account-logs") {
-      return <UserLogsSection />;
-    }
-
     // Workspace list views
     if (activeTab === "workspace-list-personal") {
       return (
@@ -229,12 +217,10 @@ const Settings = () => {
 
   const getPageTitle = () => {
     if (activeTab === "account") return "My Account";
-    if (activeTab === "account-guardrails") return "Guardrails";
-    if (activeTab === "account-logs") return "Activity Logs";
     if (activeTab === "workspace-list-personal") return "My Workspaces";
     if (activeTab === "workspace-list-shared") return "Shared Workspaces";
     if (activeTab === "workspace-list-organization") return "Org Workspaces";
-
+    
     const workspace = getActiveWorkspace();
     if (!workspace) return "";
     const subItem = subItems.find(s => s.id === activeSubTab);
@@ -243,19 +229,23 @@ const Settings = () => {
 
   const getPageSubtitle = () => {
     if (activeTab === "account") return "Manage your account settings and preferences";
-    if (activeTab === "account-guardrails") return "Account-wide safety, compliance, and content rules applied across all workspaces";
-    if (activeTab === "account-logs") return "Monitor your personal activity across all workspaces";
     if (activeTab === "workspace-list-personal") return "Manage your personal workspaces";
     if (activeTab === "workspace-list-shared") return "View workspaces shared with you";
     if (activeTab === "workspace-list-organization") return "Manage organization-wide workspaces";
-
+    
     switch (activeSubTab) {
-      case "general":       return "Manage workspace details and settings";
-      case "members":       return "Manage people and access permissions";
-      case "configuration": return "Configure data sources and integrations";
-      case "guardrails":    return "Set up safety controls and custom instructions";
-      case "logs":          return "Monitor activity, syncs, and events in this workspace";
-      default:              return "";
+      case "general":
+        return "Manage workspace details and settings";
+      case "members":
+        return "Manage people and access permissions";
+      case "configuration":
+        return "Configure data sources and integrations";
+      case "guardrails":
+        return "Set up safety controls and custom instructions";
+      case "logs":
+        return "Monitor activity, syncs, and events in this workspace";
+      default:
+        return "";
     }
   };
 
@@ -416,36 +406,6 @@ const Settings = () => {
           >
             <User className="w-4 h-4 shrink-0" />
             <span className="truncate text-sm">My Account</span>
-          </button>
-
-          {/* Guardrails */}
-          <button
-            onClick={() => {
-              setActiveTab("account-guardrails");
-              setExpandedWorkspace(null);
-            }}
-            className={cn(
-              "nav-item w-full justify-start gap-2",
-              activeTab === "account-guardrails" && "bg-accent text-foreground"
-            )}
-          >
-            <Shield className="w-4 h-4 shrink-0" />
-            <span className="truncate text-sm">Guardrails</span>
-          </button>
-
-          {/* Logs */}
-          <button
-            onClick={() => {
-              setActiveTab("account-logs");
-              setExpandedWorkspace(null);
-            }}
-            className={cn(
-              "nav-item w-full justify-start gap-2",
-              activeTab === "account-logs" && "bg-accent text-foreground"
-            )}
-          >
-            <ScrollText className="w-4 h-4 shrink-0" />
-            <span className="truncate text-sm">Logs</span>
           </button>
 
           {/* Separator */}
