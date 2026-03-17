@@ -242,6 +242,8 @@ const Settings = () => {
         return "Configure data sources and integrations";
       case "guardrails":
         return "Set up safety controls and custom instructions";
+      case "logs":
+        return "Monitor activity, syncs, and events in this workspace";
       default:
         return "";
     }
