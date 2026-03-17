@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
-type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails";
+type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails" | "logs";
 type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
