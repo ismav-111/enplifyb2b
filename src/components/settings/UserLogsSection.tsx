@@ -2,12 +2,11 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   Search, Download, Pause, Play, Radio, X, ChevronDown, ChevronRight,
   Info, CheckCircle2, AlertTriangle, XCircle, Filter, Calendar as CalendarIcon,
-  Copy, Check, User, Building2, Globe, Layers, Clock, ArrowRight, Tag,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -15,9 +14,10 @@ import { format, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import {
   LogEntry, LogLevel, LogCategory,
-  formatEventType, deriveCategory, deriveLevel,
+  formatEventType, deriveCategory,
   categoryLabels, ALL_CATEGORIES,
 } from "@/types/logs";
+import { LogDetailDrawer } from "@/components/logs/LogDetailDrawer";
 
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
