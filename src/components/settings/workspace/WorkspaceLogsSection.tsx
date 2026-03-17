@@ -757,7 +757,7 @@ const LogDetailDrawer = ({
                   </h3>
                   <CopyButton text={JSON.stringify(log.raw, null, 2)} />
                 </div>
-                <div className="bg-zinc-950 border border-border rounded-lg p-4 overflow-x-auto">
+                <div className="bg-[hsl(240,10%,4%)] border border-border rounded-lg p-4 overflow-x-auto">
                   <JsonHighlight data={log.raw} />
                 </div>
               </div>
