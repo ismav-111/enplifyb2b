@@ -43,7 +43,6 @@ const Settings = () => {
   const [workspaces, setWorkspaces] = useState<Workspace[]>(mockWorkspaces);
   const [activeTab, setActiveTab] = useState<ActiveView>("account");
   const [activeSubTab, setActiveSubTab] = useState<WorkspaceSubTab>("general");
-  const [accountExpanded, setAccountExpanded] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["personal", "shared", "organization"]));
   const [expandedWorkspace, setExpandedWorkspace] = useState<string | null>(null);
 
