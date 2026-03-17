@@ -164,10 +164,19 @@ const Settings = () => {
           <SSOSection />
           <AdministratorsSection />
           <ApiKeysSection />
-          <UserLogsSection />
           <DangerZoneSection />
         </div>
       );
+    }
+
+    // Account-level guardrails
+    if (activeTab === "account-guardrails") {
+      return <AccountGuardRailsSection />;
+    }
+
+    // Account-level logs
+    if (activeTab === "account-logs") {
+      return <UserLogsSection />;
     }
 
     // Workspace list views
