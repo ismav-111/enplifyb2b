@@ -163,6 +163,7 @@ const Settings = () => {
           <SSOSection />
           <AdministratorsSection />
           <ApiKeysSection />
+          <UserLogsSection />
           <DangerZoneSection />
         </div>
       );
