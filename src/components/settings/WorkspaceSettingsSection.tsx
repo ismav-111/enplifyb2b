@@ -77,5 +77,13 @@ export const WorkspaceSettingsSection = ({ type, subTab }: WorkspaceSettingsProp
     );
   }
 
+  if (subTab === "logs") {
+    return (
+      <div className="space-y-12">
+        <WorkspaceLogsSection />
+      </div>
+    );
+  }
+
   return null;
 };
