@@ -418,6 +418,36 @@ const Settings = () => {
             <span className="truncate text-sm">My Account</span>
           </button>
 
+          {/* Guardrails */}
+          <button
+            onClick={() => {
+              setActiveTab("account-guardrails");
+              setExpandedWorkspace(null);
+            }}
+            className={cn(
+              "nav-item w-full justify-start gap-2",
+              activeTab === "account-guardrails" && "bg-accent text-foreground"
+            )}
+          >
+            <Shield className="w-4 h-4 shrink-0" />
+            <span className="truncate text-sm">Guardrails</span>
+          </button>
+
+          {/* Logs */}
+          <button
+            onClick={() => {
+              setActiveTab("account-logs");
+              setExpandedWorkspace(null);
+            }}
+            className={cn(
+              "nav-item w-full justify-start gap-2",
+              activeTab === "account-logs" && "bg-accent text-foreground"
+            )}
+          >
+            <ScrollText className="w-4 h-4 shrink-0" />
+            <span className="truncate text-sm">Logs</span>
+          </button>
+
           {/* Separator */}
           <div className="py-2">
             <div className="h-px bg-border/60" />
