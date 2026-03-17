@@ -8,6 +8,8 @@ import { ApiKeysSection } from "@/components/settings/ApiKeysSection";
 import { DangerZoneSection } from "@/components/settings/DangerZoneSection";
 import { WorkspaceSettingsSection } from "@/components/settings/WorkspaceSettingsSection";
 import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceListSection";
+import { WorkspaceGuardRailsSection } from "@/components/settings/workspace/WorkspaceGuardRailsSection";
+import { WorkspaceLogsSection } from "@/components/settings/workspace/WorkspaceLogsSection";
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
 import { EditWorkspaceDialog } from "@/components/settings/workspace/EditWorkspaceDialog";
 import { DeleteWorkspaceDialog } from "@/components/settings/workspace/DeleteWorkspaceDialog";
@@ -19,7 +21,7 @@ import { toast } from "sonner";
 import enplifyLogo from "@/assets/enplify-logo.png";
 
 type WorkspaceSubTab = "general" | "members" | "configuration" | "guardrails" | "logs";
-type ActiveView = "account" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
+type ActiveView = "account" | "account-guardrails" | "account-logs" | "workspace-list-personal" | "workspace-list-shared" | "workspace-list-organization" | string;
 
 const subItems = [
   { id: "general" as const, label: "General", icon: Settings2 },
@@ -41,6 +43,7 @@ const Settings = () => {
   const [workspaces, setWorkspaces] = useState<Workspace[]>(mockWorkspaces);
   const [activeTab, setActiveTab] = useState<ActiveView>("account");
   const [activeSubTab, setActiveSubTab] = useState<WorkspaceSubTab>("general");
+  const [accountExpanded, setAccountExpanded] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["personal", "shared", "organization"]));
   const [expandedWorkspace, setExpandedWorkspace] = useState<string | null>(null);
 
@@ -167,6 +170,14 @@ const Settings = () => {
       );
     }
 
+    if (activeTab === "account-guardrails") {
+      return <WorkspaceGuardRailsSection />;
+    }
+
+    if (activeTab === "account-logs") {
+      return <WorkspaceLogsSection />;
+    }
+
     // Workspace list views
     if (activeTab === "workspace-list-personal") {
       return (
@@ -217,6 +228,8 @@ const Settings = () => {
 
   const getPageTitle = () => {
     if (activeTab === "account") return "My Account";
+    if (activeTab === "account-guardrails") return "Account Guardrails";
+    if (activeTab === "account-logs") return "Account Logs";
     if (activeTab === "workspace-list-personal") return "My Workspaces";
     if (activeTab === "workspace-list-shared") return "Shared Workspaces";
     if (activeTab === "workspace-list-organization") return "Org Workspaces";
@@ -229,6 +242,8 @@ const Settings = () => {
 
   const getPageSubtitle = () => {
     if (activeTab === "account") return "Manage your account settings and preferences";
+    if (activeTab === "account-guardrails") return "Configure safety controls and compliance rules at the account level";
+    if (activeTab === "account-logs") return "Monitor all account-wide activity, events, and audit trails";
     if (activeTab === "workspace-list-personal") return "Manage your personal workspaces";
     if (activeTab === "workspace-list-shared") return "View workspaces shared with you";
     if (activeTab === "workspace-list-organization") return "Manage organization-wide workspaces";
@@ -393,19 +408,59 @@ const Settings = () => {
             <div className="h-px bg-border/60" />
           </div>
 
-          {/* Account */}
+          {/* Account group */}
+          <div className="mb-1">
+            <button
+              onClick={() => {
+                setActiveTab("account");
+                setExpandedWorkspace(null);
+                setAccountExpanded(true);
+              }}
+              className={cn(
+                "w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/acct",
+                activeTab === "account" && "bg-accent text-foreground"
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="text-sm font-medium">My Account</span>
+              </div>
+              <span
+                onClick={(e) => { e.stopPropagation(); setAccountExpanded(p => !p); }}
+                className="p-1 hover:bg-accent rounded transition-all"
+              >
+                {accountExpanded
+                  ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+              </span>
+            </button>
+
+            {accountExpanded && (
+              <div className="ml-4 pl-3 border-l border-border space-y-0.5 mt-1">
+                <button
+                  onClick={() => { setActiveTab("account-guardrails"); setExpandedWorkspace(null); }}
+                  className={cn(
+                    "chat-item w-full justify-start gap-2",
+                    activeTab === "account-guardrails" && "chat-item-active"
+                  )}
+                >
+                  <Shield className="w-3.5 h-3.5 shrink-0" />
+                  <span className="text-sm">Guardrails</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Account Logs — top-level */}
           <button
-            onClick={() => {
-              setActiveTab("account");
-              setExpandedWorkspace(null);
-            }}
+            onClick={() => { setActiveTab("account-logs"); setExpandedWorkspace(null); }}
             className={cn(
               "nav-item w-full justify-start gap-2",
-              activeTab === "account" && "bg-accent text-foreground"
+              activeTab === "account-logs" && "bg-accent text-foreground"
             )}
           >
-            <User className="w-4 h-4 shrink-0" />
-            <span className="truncate text-sm">My Account</span>
+            <ScrollText className="w-4 h-4 shrink-0" />
+            <span className="truncate text-sm">Logs</span>
           </button>
 
           {/* Separator */}
