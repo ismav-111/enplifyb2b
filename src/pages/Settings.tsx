@@ -6,6 +6,7 @@ import { SSOSection } from "@/components/settings/SSOSection";
 import { AdministratorsSection } from "@/components/settings/AdministratorsSection";
 import { ApiKeysSection } from "@/components/settings/ApiKeysSection";
 import { DangerZoneSection } from "@/components/settings/DangerZoneSection";
+import { UserLogsSection } from "@/components/settings/UserLogsSection";
 import { WorkspaceSettingsSection } from "@/components/settings/WorkspaceSettingsSection";
 import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceListSection";
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
@@ -162,6 +163,7 @@ const Settings = () => {
           <SSOSection />
           <AdministratorsSection />
           <ApiKeysSection />
+          <UserLogsSection />
           <DangerZoneSection />
         </div>
       );
