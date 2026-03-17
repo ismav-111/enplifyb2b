@@ -170,6 +170,14 @@ const Settings = () => {
       );
     }
 
+    if (activeTab === "account-guardrails") {
+      return <WorkspaceGuardRailsSection />;
+    }
+
+    if (activeTab === "account-logs") {
+      return <WorkspaceLogsSection />;
+    }
+
     // Workspace list views
     if (activeTab === "workspace-list-personal") {
       return (
