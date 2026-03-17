@@ -408,19 +408,59 @@ const Settings = () => {
             <div className="h-px bg-border/60" />
           </div>
 
-          {/* Account */}
+          {/* Account group */}
+          <div className="mb-1">
+            <button
+              onClick={() => {
+                setActiveTab("account");
+                setExpandedWorkspace(null);
+                setAccountExpanded(true);
+              }}
+              className={cn(
+                "w-full flex items-center justify-between px-3 py-2 hover:bg-accent/50 rounded-lg transition-colors group/acct",
+                activeTab === "account" && "bg-accent text-foreground"
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="text-sm font-medium">My Account</span>
+              </div>
+              <span
+                onClick={(e) => { e.stopPropagation(); setAccountExpanded(p => !p); }}
+                className="p-1 hover:bg-accent rounded transition-all"
+              >
+                {accountExpanded
+                  ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                  : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+              </span>
+            </button>
+
+            {accountExpanded && (
+              <div className="ml-4 pl-3 border-l border-border space-y-0.5 mt-1">
+                <button
+                  onClick={() => { setActiveTab("account-guardrails"); setExpandedWorkspace(null); }}
+                  className={cn(
+                    "chat-item w-full justify-start gap-2",
+                    activeTab === "account-guardrails" && "chat-item-active"
+                  )}
+                >
+                  <Shield className="w-3.5 h-3.5 shrink-0" />
+                  <span className="text-sm">Guardrails</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Account Logs — top-level */}
           <button
-            onClick={() => {
-              setActiveTab("account");
-              setExpandedWorkspace(null);
-            }}
+            onClick={() => { setActiveTab("account-logs"); setExpandedWorkspace(null); }}
             className={cn(
               "nav-item w-full justify-start gap-2",
-              activeTab === "account" && "bg-accent text-foreground"
+              activeTab === "account-logs" && "bg-accent text-foreground"
             )}
           >
-            <User className="w-4 h-4 shrink-0" />
-            <span className="truncate text-sm">My Account</span>
+            <ScrollText className="w-4 h-4 shrink-0" />
+            <span className="truncate text-sm">Logs</span>
           </button>
 
           {/* Separator */}
