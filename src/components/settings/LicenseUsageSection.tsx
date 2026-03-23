@@ -40,7 +40,6 @@ import { cn } from "@/lib/utils";
 const licenseData = {
   plan: "Enterprise",
   tenantName: "Quadrant Technologies",
-  licenseKey: "ENT-2025-QTECH-7F4D-A3C1",
   startDate: "Jan 1, 2025",
   renewalDate: "Dec 31, 2025",
   daysUntilRenewal: 283,
