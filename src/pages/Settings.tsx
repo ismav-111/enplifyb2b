@@ -178,6 +178,10 @@ const Settings = () => {
       return <WorkspaceLogsSection />;
     }
 
+    if (activeTab === "account-license") {
+      return <LicenseUsageSection />;
+    }
+
     // Workspace list views
     if (activeTab === "workspace-list-personal") {
       return (
