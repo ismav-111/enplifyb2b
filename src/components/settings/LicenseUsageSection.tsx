@@ -105,14 +105,14 @@ function UsageCard({ metric }: { metric: UsageMetric }) {
           <span className="text-sm font-medium text-foreground">{metric.label}</span>
         </div>
         {isWarning && (
-          <AlertTriangle className="w-4 h-4 text-amber-500" />
+          <AlertTriangle className="w-4 h-4 text-destructive" />
         )}
       </div>
 
       <div className="space-y-1.5">
         <Progress
           value={pct}
-          className={`h-2 ${isWarning ? "[&>div]:bg-amber-500" : ""}`}
+          className={`h-2 ${isWarning ? "[&>div]:bg-destructive" : ""}`}
         />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
