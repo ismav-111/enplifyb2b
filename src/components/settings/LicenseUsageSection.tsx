@@ -167,10 +167,10 @@ function MetricCard({ metric }: { metric: UsageMetric }) {
   );
 }
 
-const statusConfig = {
-  success: { label: "Success", classes: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+const statusConfig: Record<"success" | "error" | "timeout", { label: string; classes: string }> = {
+  success: { label: "Success", classes: "bg-primary/10 text-primary border-primary/20" },
   error:   { label: "Error",   classes: "bg-destructive/10 text-destructive border-destructive/20" },
-  timeout: { label: "Timeout", classes: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+  timeout: { label: "Timeout", classes: "bg-muted text-muted-foreground border-border" },
 };
 
 // ─── Main component ───────────────────────────────────────────────────────────
