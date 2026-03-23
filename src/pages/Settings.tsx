@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog, LogOut, ScrollText } from "lucide-react";
+import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog, LogOut, ScrollText, BadgeCheck } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AccountSection } from "@/components/settings/AccountSection";
 import { SSOSection } from "@/components/settings/SSOSection";
@@ -10,6 +10,7 @@ import { WorkspaceSettingsSection } from "@/components/settings/WorkspaceSetting
 import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceListSection";
 import { WorkspaceGuardRailsSection } from "@/components/settings/workspace/WorkspaceGuardRailsSection";
 import { WorkspaceLogsSection } from "@/components/settings/workspace/WorkspaceLogsSection";
+import { LicenseUsageSection } from "@/components/settings/LicenseUsageSection";
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
 import { EditWorkspaceDialog } from "@/components/settings/workspace/EditWorkspaceDialog";
 import { DeleteWorkspaceDialog } from "@/components/settings/workspace/DeleteWorkspaceDialog";
@@ -177,6 +178,10 @@ const Settings = () => {
       return <WorkspaceLogsSection />;
     }
 
+    if (activeTab === "account-license") {
+      return <LicenseUsageSection />;
+    }
+
     // Workspace list views
     if (activeTab === "workspace-list-personal") {
       return (
@@ -229,6 +234,7 @@ const Settings = () => {
     if (activeTab === "account") return "My Account";
     if (activeTab === "account-guardrails") return "Account Guardrails";
     if (activeTab === "account-logs") return "Account Logs";
+    if (activeTab === "account-license") return "License & Usage";
     if (activeTab === "workspace-list-personal") return "My Workspaces";
     if (activeTab === "workspace-list-shared") return "Shared Workspaces";
     if (activeTab === "workspace-list-organization") return "Org Workspaces";
@@ -243,6 +249,7 @@ const Settings = () => {
     if (activeTab === "account") return "Manage your account settings and preferences";
     if (activeTab === "account-guardrails") return "Configure safety controls and compliance rules at the account level";
     if (activeTab === "account-logs") return "Monitor all account-wide activity, events, and audit trails";
+    if (activeTab === "account-license") return "View your enterprise plan, entitlements, seat usage, and query consumption";
     if (activeTab === "workspace-list-personal") return "Manage your personal workspaces";
     if (activeTab === "workspace-list-shared") return "View workspaces shared with you";
     if (activeTab === "workspace-list-organization") return "Manage organization-wide workspaces";
@@ -441,6 +448,18 @@ const Settings = () => {
           >
             <ScrollText className="w-4 h-4 shrink-0" />
             <span className="truncate text-sm">Logs</span>
+          </button>
+
+          {/* License & Usage — top-level */}
+          <button
+            onClick={() => { setActiveTab("account-license"); setExpandedWorkspace(null); }}
+            className={cn(
+              "nav-item w-full justify-start gap-2",
+              activeTab === "account-license" && "bg-accent text-foreground"
+            )}
+          >
+            <BadgeCheck className="w-4 h-4 shrink-0" />
+            <span className="truncate text-sm">License & Usage</span>
           </button>
 
           {/* Separator */}
