@@ -254,16 +254,16 @@ export const LicenseUsageSection = () => {
         </div>
 
         {/* Meta grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
+        <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-border">
           {[
-            { label: "License Key",  value: licenseData.licenseKey,          mono: true },
-            { label: "Valid From",   value: licenseData.startDate,            mono: false },
-            { label: "Renews On",    value: licenseData.renewalDate,          mono: false },
-            { label: "Support Tier", value: licenseData.supportTier,          mono: false },
-          ].map(({ label, value, mono }) => (
-            <div key={label} className="px-5 py-4">
+            { label: "License Key",  value: licenseData.licenseKey,  mono: true },
+            { label: "Valid From",   value: licenseData.startDate,   mono: false },
+            { label: "Renews On",    value: licenseData.renewalDate, mono: false },
+            { label: "Support Tier", value: licenseData.supportTier, mono: false },
+          ].map(({ label, value, mono }, i) => (
+            <div key={label} className={cn("px-5 py-4", i < 3 && "border-r border-border")}>
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-              <p className={cn("text-sm font-medium text-foreground truncate", mono && "font-mono text-xs")}>{value}</p>
+              <p className={cn("text-sm font-medium text-foreground truncate", mono && "font-mono text-xs")} title={value}>{value}</p>
             </div>
           ))}
         </div>
