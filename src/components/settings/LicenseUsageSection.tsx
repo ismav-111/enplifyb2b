@@ -20,7 +20,6 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Users,
   HardDrive,
-  MessageSquare,
   Database,
   ShieldCheck,
   Search,
@@ -30,6 +29,7 @@ import {
   Zap,
   TrendingUp,
   ArrowUpRight,
+  MessageSquare,
 } from "lucide-react";
 import { format, subDays, isWithinInterval, parseISO } from "date-fns";
 import type { DateRange } from "react-day-picker";
