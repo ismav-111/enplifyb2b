@@ -234,6 +234,7 @@ const Settings = () => {
     if (activeTab === "account") return "My Account";
     if (activeTab === "account-guardrails") return "Account Guardrails";
     if (activeTab === "account-logs") return "Account Logs";
+    if (activeTab === "account-license") return "License & Usage";
     if (activeTab === "workspace-list-personal") return "My Workspaces";
     if (activeTab === "workspace-list-shared") return "Shared Workspaces";
     if (activeTab === "workspace-list-organization") return "Org Workspaces";
@@ -248,6 +249,7 @@ const Settings = () => {
     if (activeTab === "account") return "Manage your account settings and preferences";
     if (activeTab === "account-guardrails") return "Configure safety controls and compliance rules at the account level";
     if (activeTab === "account-logs") return "Monitor all account-wide activity, events, and audit trails";
+    if (activeTab === "account-license") return "View your enterprise plan, entitlements, seat usage, and query consumption";
     if (activeTab === "workspace-list-personal") return "Manage your personal workspaces";
     if (activeTab === "workspace-list-shared") return "View workspaces shared with you";
     if (activeTab === "workspace-list-organization") return "Manage organization-wide workspaces";
