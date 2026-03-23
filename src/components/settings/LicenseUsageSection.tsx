@@ -121,7 +121,7 @@ function UsageCard({ metric }: { metric: UsageMetric }) {
             </span>{" "}
             / {formatNumber(metric.total)} {metric.unit}
           </span>
-          <span className={isWarning ? "text-amber-500 font-medium" : ""}>
+          <span className={isWarning ? "text-warning font-medium" : ""}>
             {pct}%
           </span>
         </div>

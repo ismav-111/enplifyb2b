@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog, LogOut, ScrollText } from "lucide-react";
+import { ArrowLeft, User, Building2, FolderOpen, Users, ChevronDown, ChevronRight, Settings2, Database, Shield, Plus, UserCog, LogOut, ScrollText, BadgeCheck } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AccountSection } from "@/components/settings/AccountSection";
 import { SSOSection } from "@/components/settings/SSOSection";
