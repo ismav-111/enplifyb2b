@@ -20,7 +20,6 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Users,
   HardDrive,
-  MessageSquare,
   Database,
   ShieldCheck,
   Search,
@@ -30,6 +29,7 @@ import {
   Zap,
   TrendingUp,
   ArrowUpRight,
+  MessageSquare,
 } from "lucide-react";
 import { format, subDays, isWithinInterval, parseISO } from "date-fns";
 import type { DateRange } from "react-day-picker";
@@ -61,10 +61,9 @@ interface UsageMetric {
 }
 
 const usageMetrics: UsageMetric[] = [
-  { label: "Active Seats",     used: 34,      total: 50,       unit: "seats",   icon: Users,         warnAt: 90 },
-  { label: "Storage",          used: 148,     total: 500,      unit: "GB",      icon: HardDrive,     warnAt: 85 },
-  { label: "Data Sources",     used: 7,       total: 20,       unit: "sources", icon: Database },
-  { label: "Queries (Month)",  used: 84_230,  total: 150_000,  unit: "queries", icon: MessageSquare, warnAt: 80 },
+  { label: "Active Seats", used: 34,  total: 50,  unit: "seats",   icon: Users,     warnAt: 90 },
+  { label: "Storage",      used: 148, total: 500, unit: "GB",      icon: HardDrive, warnAt: 85 },
+  { label: "Data Sources", used: 7,   total: 20,  unit: "sources", icon: Database },
 ];
 
 function fmt(n: number) {
@@ -254,16 +253,16 @@ export const LicenseUsageSection = () => {
         </div>
 
         {/* Meta grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
+        <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-border">
           {[
-            { label: "License Key",  value: licenseData.licenseKey,          mono: true },
-            { label: "Valid From",   value: licenseData.startDate,            mono: false },
-            { label: "Renews On",    value: licenseData.renewalDate,          mono: false },
-            { label: "Support Tier", value: licenseData.supportTier,          mono: false },
-          ].map(({ label, value, mono }) => (
-            <div key={label} className="px-5 py-4">
+            { label: "License Key",  value: licenseData.licenseKey,  mono: true },
+            { label: "Valid From",   value: licenseData.startDate,   mono: false },
+            { label: "Renews On",    value: licenseData.renewalDate, mono: false },
+            { label: "Support Tier", value: licenseData.supportTier, mono: false },
+          ].map(({ label, value, mono }, i) => (
+            <div key={label} className={cn("px-5 py-4", i < 3 && "border-r border-border")}>
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-              <p className={cn("text-sm font-medium text-foreground truncate", mono && "font-mono text-xs")}>{value}</p>
+              <p className={cn("text-sm font-medium text-foreground truncate", mono && "font-mono text-xs")} title={value}>{value}</p>
             </div>
           ))}
         </div>
