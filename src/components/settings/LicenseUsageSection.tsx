@@ -26,7 +26,7 @@ import {
   Download,
   CalendarDays,
   ChevronDown,
-  Zap,
+  Coins,
   TrendingUp,
   ArrowUpRight,
   MessageSquare,
@@ -46,6 +46,8 @@ const licenseData = {
   supportTier: "Priority",
   includedQueries: 150_000,
   usedQueries: 84_230,
+  includedCredits: 500_000,
+  usedCredits: 312_400,
 };
 
 // ─── Usage metrics ────────────────────────────────────────────────────────────
@@ -79,9 +81,7 @@ interface QueryRecord {
   user: string;
   workspace: string;
   model: string;
-  promptTokens: number;
-  completionTokens: number;
-  totalTokens: number;
+  credits: number;
   latencyMs: number;
   status: "success" | "error" | "timeout";
 }
@@ -93,27 +93,22 @@ const WORKSPACES = ["test", "production", "analytics", "support"];
 function generateQueryRecords(): QueryRecord[] {
   const records: QueryRecord[] = [];
   const now = new Date("2026-03-23T12:00:00Z");
-  const promptOptions     = [8_200, 14_500, 22_300, 31_800, 48_600, 62_900, 88_000, 120_400, 145_000, 198_000];
-  const completionOptions = [4_100,  7_200, 11_600, 16_400, 25_200, 34_000, 48_500,  62_000,  78_000, 104_000];
-  const latencyOptions    = [420, 610, 820, 1050, 1340, 1760, 2200, 2900, 3400, 4200];
+  const creditOptions  = [12, 25, 38, 54, 72, 98, 130, 180, 240, 310];
+  const latencyOptions = [420, 610, 820, 1050, 1340, 1760, 2200, 2900, 3400, 4200];
   const statuses: Array<"success" | "error" | "timeout"> = ["success", "success", "success", "success", "success", "success", "success", "error", "success", "timeout"];
 
   for (let i = 0; i < 120; i++) {
     const offsetMin = i * 38 + Math.floor(Math.random() * 20);
     const date      = new Date(now.getTime() - offsetMin * 60 * 1000);
-    const prompt    = promptOptions[i % promptOptions.length];
-    const completion = completionOptions[i % completionOptions.length];
     records.push({
-      id:               `q-${i}`,
-      date:             date.toISOString(),
-      user:             USERS[i % USERS.length],
-      workspace:        WORKSPACES[i % WORKSPACES.length],
-      model:            AI_MODELS[i % AI_MODELS.length],
-      promptTokens:     prompt,
-      completionTokens: completion,
-      totalTokens:      prompt + completion,
-      latencyMs:        latencyOptions[i % latencyOptions.length],
-      status:           statuses[i % statuses.length],
+      id:        `q-${i}`,
+      date:      date.toISOString(),
+      user:      USERS[i % USERS.length],
+      workspace: WORKSPACES[i % WORKSPACES.length],
+      model:     AI_MODELS[i % AI_MODELS.length],
+      credits:   creditOptions[i % creditOptions.length],
+      latencyMs: latencyOptions[i % latencyOptions.length],
+      status:    statuses[i % statuses.length],
     });
   }
   return records;
@@ -198,7 +193,7 @@ export const LicenseUsageSection = () => {
     });
   }, [dateRange, search]);
 
-  const totalTokens   = filteredRecords.reduce((s, r) => s + r.totalTokens, 0);
+  const totalCredits  = filteredRecords.reduce((s, r) => s + r.credits, 0);
   const avgLatency    = filteredRecords.length
     ? Math.round(filteredRecords.reduce((s, r) => s + r.latencyMs, 0) / filteredRecords.length)
     : 0;
@@ -207,11 +202,11 @@ export const LicenseUsageSection = () => {
   const pageRecords   = filteredRecords.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleExportCSV = () => {
-    const headers = ["Date", "User", "Workspace", "Model", "Prompt Tokens", "Completion Tokens", "Total Tokens", "Latency (ms)", "Status"];
+    const headers = ["Date", "User", "Workspace", "Model", "Credits", "Latency (ms)", "Status"];
     const rows    = filteredRecords.map((r) => [
       format(parseISO(r.date), "yyyy-MM-dd HH:mm"),
       r.user, r.workspace, r.model,
-      r.promptTokens, r.completionTokens, r.totalTokens, r.latencyMs, r.status,
+      r.credits, r.latencyMs, r.status,
     ]);
     const csv  = [headers, ...rows].map(row => row.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -223,7 +218,8 @@ export const LicenseUsageSection = () => {
     URL.revokeObjectURL(url);
   };
 
-  const includedPct = Math.round((licenseData.usedQueries / licenseData.includedQueries) * 100);
+  const includedQueryPct  = Math.round((licenseData.usedQueries  / licenseData.includedQueries)  * 100);
+  const includedCreditPct = Math.round((licenseData.usedCredits  / licenseData.includedCredits)  * 100);
 
   return (
     <div className="space-y-8">
@@ -254,8 +250,8 @@ export const LicenseUsageSection = () => {
         {/* Meta grid */}
         <div className="grid grid-cols-3 border-t border-border">
           {[
-            { label: "Valid From",   value: licenseData.startDate },
-            { label: "Renews On",   value: licenseData.renewalDate },
+            { label: "Valid From",    value: licenseData.startDate },
+            { label: "Renews On",    value: licenseData.renewalDate },
             { label: "Support Tier", value: licenseData.supportTier },
           ].map(({ label, value }, i) => (
             <div key={label} className={cn("px-5 py-4", i < 2 && "border-r border-border")}>
@@ -276,8 +272,9 @@ export const LicenseUsageSection = () => {
         </div>
       </div>
 
-      {/* ── Query quota ── */}
+      {/* ── Query & Credit quota ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Queries */}
         <div className="rounded-xl border border-border bg-card p-5 space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Included Queries</p>
@@ -288,36 +285,41 @@ export const LicenseUsageSection = () => {
             <span className="text-base text-muted-foreground">/ {fmt(licenseData.includedQueries)}</span>
           </div>
           <Progress
-            value={includedPct}
-            className={cn("h-2", includedPct >= 80 ? "[&>div]:bg-destructive" : "")}
+            value={includedQueryPct}
+            className={cn("h-2", includedQueryPct >= 80 ? "[&>div]:bg-destructive" : "")}
           />
-          <p className="text-xs text-muted-foreground">{includedPct}% of monthly quota used</p>
+          <p className="text-xs text-muted-foreground">{includedQueryPct}% of monthly quota used</p>
         </div>
 
+        {/* Credits */}
         <div className="rounded-xl border border-border bg-card p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">On-Demand Usage</p>
-            <Badge variant="outline" className="text-[11px]">Disabled</Badge>
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Credits</p>
+            <span className="text-xs text-muted-foreground">Resets Apr 1, 2026</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">$0.00</p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Enable on-demand to continue querying after your included quota is exhausted. Billed per 1K tokens beyond plan limits.
-          </p>
-          <Button variant="outline" size="sm" className="text-xs h-8">Enable On-Demand</Button>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-bold text-foreground tabular-nums">{fmt(licenseData.usedCredits)}</span>
+            <span className="text-base text-muted-foreground">/ {fmt(licenseData.includedCredits)}</span>
+          </div>
+          <Progress
+            value={includedCreditPct}
+            className={cn("h-2", includedCreditPct >= 80 ? "[&>div]:bg-destructive" : "")}
+          />
+          <p className="text-xs text-muted-foreground">{includedCreditPct}% of monthly credits used</p>
         </div>
       </div>
 
       {/* ── Resource metrics ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {usageMetrics.map(m => <MetricCard key={m.label} metric={m} />)}
       </div>
 
-      {/* ── Query token stats ── */}
+      {/* ── Query stats ── */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Query Token Usage</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Detailed per-query breakdown — prompt, completion, latency, and status</p>
+            <h2 className="text-sm font-semibold text-foreground">Query Usage</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Detailed per-query breakdown — user, model, credits consumed, and status</p>
           </div>
           <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5" onClick={handleExportCSV}>
             <Download className="w-3.5 h-3.5" />
@@ -327,7 +329,6 @@ export const LicenseUsageSection = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Date range */}
           <Popover open={calOpen} onOpenChange={setCalOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
@@ -374,10 +375,10 @@ export const LicenseUsageSection = () => {
         {/* Summary strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Total Queries",  value: filteredRecords.length.toLocaleString(), icon: MessageSquare },
-            { label: "Total Tokens",   value: fmt(totalTokens),                        icon: Zap },
-            { label: "Avg Latency",    value: `${avgLatency} ms`,                      icon: TrendingUp },
-            { label: "Errors / Timeouts", value: errorCount.toString(),                icon: ShieldCheck },
+            { label: "Total Queries",     value: filteredRecords.length.toLocaleString(), icon: MessageSquare },
+            { label: "Credits Consumed",  value: fmt(totalCredits),                       icon: Coins },
+            { label: "Avg Latency",       value: `${avgLatency} ms`,                      icon: TrendingUp },
+            { label: "Errors / Timeouts", value: errorCount.toString(),                   icon: ShieldCheck },
           ].map(({ label, value, icon: Icon }) => (
             <div key={label} className="rounded-lg border border-border bg-card px-4 py-3 flex items-center gap-3">
               <div className="p-1.5 rounded-md bg-muted shrink-0">
@@ -400,9 +401,7 @@ export const LicenseUsageSection = () => {
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">User</TableHead>
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28">Workspace</TableHead>
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-40">Model</TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 text-right">Prompt</TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 text-right">Completion</TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 text-right">Total</TableHead>
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 text-right">Credits</TableHead>
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-24 text-right">Latency</TableHead>
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-20 text-center">Status</TableHead>
               </TableRow>
@@ -420,14 +419,8 @@ export const LicenseUsageSection = () => {
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground capitalize">{r.workspace}</TableCell>
                     <TableCell className="text-xs font-mono text-foreground">{r.model}</TableCell>
-                    <TableCell className="text-xs text-right tabular-nums text-muted-foreground">
-                      {fmt(r.promptTokens)}
-                    </TableCell>
-                    <TableCell className="text-xs text-right tabular-nums text-muted-foreground">
-                      {fmt(r.completionTokens)}
-                    </TableCell>
                     <TableCell className="text-xs text-right tabular-nums font-semibold text-foreground">
-                      {fmt(r.totalTokens)}
+                      {r.credits.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-xs text-right tabular-nums text-muted-foreground">
                       {r.latencyMs} ms
@@ -442,7 +435,7 @@ export const LicenseUsageSection = () => {
               })}
               {filteredRecords.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground text-sm py-12">
+                  <TableCell colSpan={7} className="text-center text-muted-foreground text-sm py-12">
                     No queries found for this period.
                   </TableCell>
                 </TableRow>
@@ -487,7 +480,7 @@ export const LicenseUsageSection = () => {
       <section className="space-y-4">
         <div>
           <h2 className="text-sm font-semibold text-foreground">Workspace Breakdown</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Query and token usage split by workspace for the selected period</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Query count, credits consumed, and quota share by workspace for the selected period</p>
         </div>
         <div className="rounded-xl border border-border overflow-hidden">
           <Table>
@@ -495,20 +488,20 @@ export const LicenseUsageSection = () => {
               <TableRow className="bg-muted/40 hover:bg-muted/40">
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Workspace</TableHead>
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 text-right">Queries</TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-32 text-right">Total Tokens</TableHead>
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-32 text-right">Credits</TableHead>
                 <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-40">% of Quota</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {(() => {
-                const wsMap = new Map<string, { queries: number; tokens: number }>();
+                const wsMap = new Map<string, { queries: number; credits: number }>();
                 filteredRecords.forEach(r => {
-                  const e = wsMap.get(r.workspace) ?? { queries: 0, tokens: 0 };
-                  wsMap.set(r.workspace, { queries: e.queries + 1, tokens: e.tokens + r.totalTokens });
+                  const e = wsMap.get(r.workspace) ?? { queries: 0, credits: 0 };
+                  wsMap.set(r.workspace, { queries: e.queries + 1, credits: e.credits + r.credits });
                 });
                 const rows = Array.from(wsMap.entries())
                   .map(([name, stats]) => ({ name, ...stats }))
-                  .sort((a, b) => b.tokens - a.tokens);
+                  .sort((a, b) => b.credits - a.credits);
                 const quotaTotal = licenseData.includedQueries;
                 return rows.length === 0 ? (
                   <TableRow>
@@ -523,7 +516,7 @@ export const LicenseUsageSection = () => {
                     <TableRow key={row.name}>
                       <TableCell className="text-sm font-medium text-foreground capitalize">{row.name}</TableCell>
                       <TableCell className="text-sm text-right tabular-nums text-muted-foreground">{row.queries.toLocaleString()}</TableCell>
-                      <TableCell className="text-sm text-right tabular-nums font-medium text-foreground">{fmt(row.tokens)}</TableCell>
+                      <TableCell className="text-sm text-right tabular-nums font-medium text-foreground">{row.credits.toLocaleString()}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Progress
