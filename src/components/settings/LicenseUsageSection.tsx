@@ -241,7 +241,7 @@ export const LicenseUsageSection = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-semibold text-foreground">{licenseData.plan}</h2>
-                <Badge className="text-[11px] font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/10">
+                <Badge className="text-[11px] font-medium bg-primary/10 text-primary border border-primary/20 hover:bg-primary/10">
                   Active
                 </Badge>
               </div>
