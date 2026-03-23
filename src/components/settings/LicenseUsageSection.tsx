@@ -61,10 +61,9 @@ interface UsageMetric {
 }
 
 const usageMetrics: UsageMetric[] = [
-  { label: "Active Seats",     used: 34,      total: 50,       unit: "seats",   icon: Users,         warnAt: 90 },
-  { label: "Storage",          used: 148,     total: 500,      unit: "GB",      icon: HardDrive,     warnAt: 85 },
-  { label: "Data Sources",     used: 7,       total: 20,       unit: "sources", icon: Database },
-  { label: "Queries (Month)",  used: 84_230,  total: 150_000,  unit: "queries", icon: MessageSquare, warnAt: 80 },
+  { label: "Active Seats", used: 34,  total: 50,  unit: "seats",   icon: Users,     warnAt: 90 },
+  { label: "Storage",      used: 148, total: 500, unit: "GB",      icon: HardDrive, warnAt: 85 },
+  { label: "Data Sources", used: 7,   total: 20,  unit: "sources", icon: Database },
 ];
 
 function fmt(n: number) {
