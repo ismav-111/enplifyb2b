@@ -40,7 +40,6 @@ import { cn } from "@/lib/utils";
 const licenseData = {
   plan: "Enterprise",
   tenantName: "Quadrant Technologies",
-  licenseKey: "ENT-2025-QTECH-7F4D-A3C1",
   startDate: "Jan 1, 2025",
   renewalDate: "Dec 31, 2025",
   daysUntilRenewal: 283,
@@ -253,16 +252,15 @@ export const LicenseUsageSection = () => {
         </div>
 
         {/* Meta grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-border">
+        <div className="grid grid-cols-3 border-t border-border">
           {[
-            { label: "License Key",  value: licenseData.licenseKey,  mono: true },
-            { label: "Valid From",   value: licenseData.startDate,   mono: false },
-            { label: "Renews On",    value: licenseData.renewalDate, mono: false },
-            { label: "Support Tier", value: licenseData.supportTier, mono: false },
-          ].map(({ label, value, mono }, i) => (
-            <div key={label} className={cn("px-5 py-4", i < 3 && "border-r border-border")}>
+            { label: "Valid From",   value: licenseData.startDate },
+            { label: "Renews On",   value: licenseData.renewalDate },
+            { label: "Support Tier", value: licenseData.supportTier },
+          ].map(({ label, value }, i) => (
+            <div key={label} className={cn("px-5 py-4", i < 2 && "border-r border-border")}>
               <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-              <p className={cn("text-sm font-medium text-foreground truncate", mono && "font-mono text-xs")} title={value}>{value}</p>
+              <p className="text-sm font-medium text-foreground">{value}</p>
             </div>
           ))}
         </div>
@@ -483,6 +481,67 @@ export const LicenseUsageSection = () => {
             </div>
           </div>
         )}
+      </section>
+
+      {/* ── Per-workspace breakdown ── */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">Workspace Breakdown</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Query and token usage split by workspace for the selected period</p>
+        </div>
+        <div className="rounded-xl border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/40 hover:bg-muted/40">
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Workspace</TableHead>
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-28 text-right">Queries</TableHead>
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-32 text-right">Total Tokens</TableHead>
+                <TableHead className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-40">% of Quota</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {(() => {
+                const wsMap = new Map<string, { queries: number; tokens: number }>();
+                filteredRecords.forEach(r => {
+                  const e = wsMap.get(r.workspace) ?? { queries: 0, tokens: 0 };
+                  wsMap.set(r.workspace, { queries: e.queries + 1, tokens: e.tokens + r.totalTokens });
+                });
+                const rows = Array.from(wsMap.entries())
+                  .map(([name, stats]) => ({ name, ...stats }))
+                  .sort((a, b) => b.tokens - a.tokens);
+                const quotaTotal = licenseData.includedQueries;
+                return rows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground text-sm py-10">
+                      No data for this period.
+                    </TableCell>
+                  </TableRow>
+                ) : rows.map(row => {
+                  const pct = Math.min(100, Math.round((row.queries / quotaTotal) * 100));
+                  const warn = pct >= 80;
+                  return (
+                    <TableRow key={row.name}>
+                      <TableCell className="text-sm font-medium text-foreground capitalize">{row.name}</TableCell>
+                      <TableCell className="text-sm text-right tabular-nums text-muted-foreground">{row.queries.toLocaleString()}</TableCell>
+                      <TableCell className="text-sm text-right tabular-nums font-medium text-foreground">{fmt(row.tokens)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Progress
+                            value={pct}
+                            className={cn("h-1.5 flex-1", warn ? "[&>div]:bg-destructive" : "")}
+                          />
+                          <span className={cn("text-xs tabular-nums w-8 text-right shrink-0", warn ? "text-destructive font-semibold" : "text-muted-foreground")}>
+                            {pct}%
+                          </span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                });
+              })()}
+            </TableBody>
+          </Table>
+        </div>
       </section>
     </div>
   );
