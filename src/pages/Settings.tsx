@@ -448,6 +448,18 @@ const Settings = () => {
             <span className="truncate text-sm">Logs</span>
           </button>
 
+          {/* License & Usage — top-level */}
+          <button
+            onClick={() => { setActiveTab("account-license"); setExpandedWorkspace(null); }}
+            className={cn(
+              "nav-item w-full justify-start gap-2",
+              activeTab === "account-license" && "bg-accent text-foreground"
+            )}
+          >
+            <BadgeCheck className="w-4 h-4 shrink-0" />
+            <span className="truncate text-sm">License & Usage</span>
+          </button>
+
           {/* Separator */}
           <div className="py-2">
             <div className="h-px bg-border/60" />
