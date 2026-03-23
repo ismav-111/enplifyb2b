@@ -152,7 +152,7 @@ export const LicenseUsageSection = () => {
                 </span>
                 <Badge
                   variant="outline"
-                  className="text-emerald-600 border-emerald-600/30 bg-emerald-600/10 text-[11px]"
+                  className="text-primary border-primary/30 bg-primary/10 text-[11px]"
                 >
                   Active
                 </Badge>
