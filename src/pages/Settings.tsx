@@ -10,6 +10,7 @@ import { WorkspaceSettingsSection } from "@/components/settings/WorkspaceSetting
 import { WorkspaceListSection } from "@/components/settings/workspace/WorkspaceListSection";
 import { WorkspaceGuardRailsSection } from "@/components/settings/workspace/WorkspaceGuardRailsSection";
 import { WorkspaceLogsSection } from "@/components/settings/workspace/WorkspaceLogsSection";
+import { LicenseUsageSection } from "@/components/settings/LicenseUsageSection";
 import { CreateWorkspaceDialog } from "@/components/settings/workspace/CreateWorkspaceDialog";
 import { EditWorkspaceDialog } from "@/components/settings/workspace/EditWorkspaceDialog";
 import { DeleteWorkspaceDialog } from "@/components/settings/workspace/DeleteWorkspaceDialog";
